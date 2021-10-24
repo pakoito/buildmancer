@@ -6,7 +6,7 @@ import { readString } from 'react-papaparse'
 type Snapshot = { player: PlayerStats, monster: MonsterStats };
 type EffectFun = (start: Snapshot, curr: Snapshot) => Snapshot;
 
-const snap = ([player, monster]: [PlayerStats, MonsterStats]) => ({ player, monster })
+const snap = (player: PlayerStats, monster: MonsterStats) => ({ player, monster });
 
 const chain = (...funs: Array<EffectFun>): EffectFun =>
   funs.reduce((acc, value) => (start, curr) => acc(start, value(start, curr)));
@@ -15,14 +15,14 @@ const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, 
 
 const skills = {
   attackMonster: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap([curr.player, { ...curr.monster, hp: clamp(curr.monster.hp - amount, 0, start.monster.hp) }]),
+    snap(curr.player, { ...curr.monster, hp: clamp(curr.monster.hp - amount, 0, start.monster.hp) }),
   changeDistance: (curr: Snapshot, amount: number): Snapshot =>
-    snap([curr.player, { ...curr.monster, distance: clamp(curr.monster.distance + amount, 1, 5) }]),
+    snap(curr.player, { ...curr.monster, distance: clamp(curr.monster.distance + amount, 1, 5) }),
 
   attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap([{ ...curr.player, hp: clamp(curr.player.hp - amount, 0, start.player.hp) }, curr.monster]),
+    snap({ ...curr.player, hp: clamp(curr.player.hp - amount, 0, start.player.hp) }, curr.monster),
   reducePlayerStamina: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap([{ ...curr.player, stamina: clamp(curr.player.stamina - amount, 0, start.player.stamina) }, curr.monster]),
+    snap({ ...curr.player, stamina: clamp(curr.player.stamina - amount, 0, start.player.stamina) }, curr.monster),
 }
 
 const build: Record<string, [{ display: string, effects: { display: string, effect: EffectFun }[], [key: string]: any; }]> = {
@@ -163,7 +163,7 @@ const Game = ({ versus: { player, enemies } }: typeof prop): JSX.Element => {
         </p>
       )}
       {Object.values(player.build).flatMap(a => a.effects.map(e => <Button key={e.display} onClick={(_) => {
-        const newState = e.effect(snap([player.stats, enemies[selectedMonster].stats]), snap([playerState, monsterState]));
+        const newState = e.effect(snap(player.stats, enemies[selectedMonster].stats), snap(playerState, monsterState));
         updatePlayerState(newState.player);
         updateMonsterState(newState.monster);
       }}>{e.display}</Button>))}
