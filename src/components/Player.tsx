@@ -3,9 +3,10 @@ import { Card, Button, Stack } from "react-bootstrap";
 import { Player, EffectFun } from "../types";
 
 const PlayerCard: React.FC<{
+  selectedButtons: Set<string>,
   player: Player;
   onClickEffect: (effect: EffectFun) => void;
-}> = ({ player, onClickEffect }) => (
+}> = ({ selectedButtons, player, onClickEffect }) => (
   <Card>
     <Card.Body>
       <Card.Title>{player.lore.name}</Card.Title>
@@ -16,18 +17,19 @@ const PlayerCard: React.FC<{
     </Card.Body>
     <Card.Body>
       <Stack direction="horizontal" gap={2}>
-      {Object.values(player.build).flatMap((a) =>
-        a.effects.map((e) => (
+        {Object.values(player.build)
+        .flatMap((a) => a.effects)
+        .map((e, idx) => (
           <Button
             key={e.display}
+            active={selectedButtons.has(e.display)}
             onClick={(_) => {
               onClickEffect(e.effect);
             }}
           >
-            {e.display}
+           [{idx + 1}] {e.display}
           </Button>
-        )),
-      )}
+        ))}
       </Stack>
     </Card.Body>
   </Card>

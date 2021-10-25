@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 
-export default function usePressedKeys(): Set<string> {
-  // State for keeping track of whether key is pressed
-  const [keyPressed, setKeyPressed] = useState(new Set<string>());
-  // Add event listeners
+export default function usePressedKeys(onUp: (e: string) => void): Set<string> {
+
+  const [pressedKeys, updatePressedKeys] = useState(new Set<string>());
+
+  const downHandler = ({ key }: { key: string }) => {
+    updatePressedKeys((set) => new Set([...set, key]));
+  }
+
+  const upHandler = useCallback(({ key }: { key: string }) => {
+    updatePressedKeys((set) => new Set([...set].filter((k) => k !== key)));
+    onUp(key);
+  }, [onUp]);
+
   useEffect(() => {
-    // @ts-ignore
-    const downHandler = ({ key }) => {
-      setKeyPressed((set) => new Set([...set, key]));
-    }
-
-    // @ts-ignore
-    const upHandler = ({ key }) => {
-      setKeyPressed((set) => new Set([...set].filter((v) => v === key)));
-    };
-
     window.addEventListener("keydown", downHandler);
     window.addEventListener("keyup", upHandler);
-    // Remove event listeners on cleanup
+
     return () => {
       window.removeEventListener("keydown", downHandler);
       window.removeEventListener("keyup", upHandler);
     };
-  }, []);
-  return keyPressed;
+  }, [upHandler]);
+
+  return pressedKeys;
 }

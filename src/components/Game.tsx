@@ -5,12 +5,9 @@ import { Player, Enemy, EffectFun } from "../types";
 import useGame from "../hooks/useGame";
 import { snap } from "../utils";
 
-import { useCallback } from "react";
-
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
-import usePrevious from "../hooks/usePrevious";
 
 const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
   const {
@@ -41,27 +38,23 @@ const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
     updateEnemyStats(selectedEnemy, newState.monster);
   };
 
-  const pressedKeys = usePressedKeys();
-  const previousPressed = usePrevious(pressedKeys);
-
-  const currentSet = previousPressed.current ?? new Set();
-  previousPressed.current = new Set();
-
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
-  const upKeys = [...currentSet].filter((k) => !pressedKeys.has(k));
 
-  upKeys.reduce((hasRun, val) => {
-    if (hasRun) {
-      return hasRun;
-    } else {
-      // Key pressed is 1-9
-      const valNum = parseInt(val);
-      if (valNum > 0 && valNum <= playerSkills.length) {
-        handlePlayerEffect(playerSkills[valNum - 1].effect);
-      }
-      return true;
+  const pressed = usePressedKeys((key) => {
+    const valNum = parseInt(key);
+    if (valNum > 0 && valNum <= playerSkills.length) {
+      handlePlayerEffect(playerSkills[valNum - 1].effect);
     }
-  }, false);
+  });
+
+  const selectedButtons = new Set<string>([...pressed].flatMap((key: string) => {
+    const valNum = parseInt(key);
+    if (valNum > 0 && valNum <= playerSkills.length) {
+      return [playerSkills[valNum - 1].display];
+    } else {
+      return [];
+    }
+  }));
 
   return (
     <Container fluid>
@@ -69,7 +62,7 @@ const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
         <Col sm={12} md={8}>
           <Row>
             <Col>
-              <PlayerCard player={player} onClickEffect={handlePlayerEffect} />
+              <PlayerCard player={player} onClickEffect={handlePlayerEffect} selectedButtons={selectedButtons} />
             </Col>
           </Row>
           <Row className="mt-2 g-2">
