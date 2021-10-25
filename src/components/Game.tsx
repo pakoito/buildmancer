@@ -1,4 +1,3 @@
-import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 
 import { Player, Enemy, EffectFun } from "../types";
@@ -6,8 +5,12 @@ import { Player, Enemy, EffectFun } from "../types";
 import useGame from "../hooks/useGame";
 import { snap } from "../utils";
 
+import { useCallback } from "react";
+
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
+import usePressedKeys from "../hooks/usePressedKeys";
+import usePrevious from "../hooks/usePrevious";
 
 const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
   const {
@@ -37,6 +40,28 @@ const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
     updatePlayerStats(newState.player);
     updateEnemyStats(selectedEnemy, newState.monster);
   };
+
+  const pressedKeys = usePressedKeys();
+  const previousPressed = usePrevious(pressedKeys);
+
+  const currentSet = previousPressed.current ?? new Set();
+  previousPressed.current = new Set();
+
+  const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
+  const upKeys = [...currentSet].filter((k) => !pressedKeys.has(k));
+
+  upKeys.reduce((hasRun, val) => {
+    if (hasRun) {
+      return hasRun;
+    } else {
+      // Key pressed is 1-9
+      const valNum = parseInt(val);
+      if (valNum > 0 && valNum <= playerSkills.length) {
+        handlePlayerEffect(playerSkills[valNum - 1].effect);
+      }
+      return true;
+    }
+  }, false);
 
   return (
     <Container fluid>

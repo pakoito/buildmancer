@@ -75,11 +75,11 @@ export const build: Record<
       effects: [
         {
           display: "Chop",
-          effect: (player, monster) => skills.attackMonster(player, monster, 3),
+          effect: (start, curr) => skills.attackMonster(start, curr, 3),
         },
         {
           display: "Cut",
-          effect: (player, monster) => skills.attackMonster(player, monster, 3),
+          effect: (start, curr) => skills.attackMonster(start, curr, 3),
         },
       ],
     },
