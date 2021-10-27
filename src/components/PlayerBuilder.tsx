@@ -25,10 +25,10 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
       {},
     ),
   );
-  const lore = {
+  const [lore, setLore] = React.useState({
     name: randomName(),
     age: randomAge(),
-  };
+  });
   const setField = (field: string, value: number) => {
     setForm({
       ...form,
@@ -65,14 +65,14 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
               isSelected={(value) => form[type] === value} />
           )}
         </Row>
-        <Navbar fixed="bottom" bg="dark" variant="dark">
+        <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
           <Container>
-            <Navbar.Text color="white">You are <b>{lore.name}</b>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
-            <Button type="submit">Submit!</Button>
+            <Navbar.Text>You are <i onClick={() => setLore((lore) => ({ ...lore, name: randomName() }))}>{lore.name}</i>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
+            <Button type="submit">To Battle!</Button>
           </Container>
         </ Navbar>
-      </Container>
-    </Form>
+      </Container >
+    </Form >
   );
 };
 
