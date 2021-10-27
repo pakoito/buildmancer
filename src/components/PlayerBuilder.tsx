@@ -67,7 +67,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
         </Row>
         <Navbar fixed="bottom" bg="dark" variant="dark">
           <Container>
-            <Navbar.Text color="white">You are <b>{lore.name}</b> the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
+            <Navbar.Text color="white">You are <b>{lore.name}</b>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
             <Button type="submit">Submit!</Button>
           </Container>
         </ Navbar>
