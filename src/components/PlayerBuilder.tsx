@@ -68,7 +68,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
         <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
           <Container>
             <Navbar.Text>You are <i onClick={() => setLore((lore) => ({ ...lore, name: randomName() }))}>{lore.name}</i>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
-            <Button type="submit">To Battle!</Button>
+            <Button type="submit">Pick your foe!</Button>
           </Container>
         </ Navbar>
       </Container >
