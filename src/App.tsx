@@ -1,72 +1,47 @@
 import React from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Enemy, Player } from "./types";
+import { Enemies, Player } from "./types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
+import EncounterBuilder from "./components/EncounterBuilder";
 
-const enemies: Enemy[] = [
-  {
-    id: "m-1",
-    lore: {
-      name: "Sacapuntas",
-    },
-    stats: {
-      hp: 25,
-      rage: 0,
-      distance: 5,
-    },
-  },
-  {
-    id: "m-2",
-    lore: {
-      name: "Sacapuntas",
-    },
-    stats: {
-      hp: 25,
-      rage: 0,
-      distance: 5,
-    },
-  },
-  {
-    id: "m-3",
-    lore: {
-      name: "Sacapuntas",
-    },
-    stats: {
-      hp: 25,
-      rage: 0,
-      distance: 5,
-    },
-  },
-];
 
-type AppStatus = "buildingPlayer" | "game" | "endGame";
+type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
 
 function App() {
-  const [status, setStatus] = React.useState<AppStatus>("buildingPlayer");
-  const [initialGameState, setInitialGameState] = React.useState<
-    { player: Player; enemies: Enemy[] } | undefined
+  const [status, setStatus] = React.useState<AppStatus>("buildPlayer");
+  const [player, setPlayerBuild] = React.useState<
+    Player | undefined
   >();
 
+  const [encounter, setEncounter] = React.useState<Enemies>();
+
   const handleSavePlayer = (player: Player) => {
-    setInitialGameState({
-      player,
-      enemies,
-    });
-    setStatus("game");
+    setPlayerBuild(player);
+    setStatus("buildEncounter");
   };
+  const handleSaveEncounter = (encounter: Enemies) => {
+    setEncounter(encounter);
+    setStatus("game");
+  }
   return (
     <div className="App">
-      {status === "buildingPlayer" ? (
+      {status === "buildPlayer" ? (
         <PlayerBuilder onSave={handleSavePlayer} />
       ) : null}
-      {status === "game" && initialGameState ? (
+      {status === "buildEncounter" && player ? (
+        <EncounterBuilder
+          player={player}
+          onSave={handleSaveEncounter}
+        />
+      ) : null}
+      {status === "game" && player && encounter ? (
         <Game
-          player={initialGameState.player}
-          enemies={initialGameState.enemies}
+          player={player}
+          enemies={encounter}
         />
       ) : null}
     </div>

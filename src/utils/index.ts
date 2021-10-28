@@ -1,4 +1,4 @@
-import { EnemyStats, PlayerStats, EffectFun, Snapshot, Effect } from "../types";
+import { EnemyStats, PlayerStats, EffectFun, Snapshot, Effect, Enemy } from "../types";
 
 export const snap = (player: PlayerStats, monster: EnemyStats) => ({
   player,
@@ -140,6 +140,42 @@ export const build: Record<
 };
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
+
+export const enemies: Enemy[] = [
+  {
+    id: "m-1",
+    lore: {
+      name: "Sacapuntas",
+    },
+    stats: {
+      hp: 25,
+      rage: 0,
+      distance: 5,
+    },
+  },
+  {
+    id: "m-2",
+    lore: {
+      name: "Cacahue",
+    },
+    stats: {
+      hp: 30,
+      rage: 0,
+      distance: 5,
+    },
+  },
+  {
+    id: "m-3",
+    lore: {
+      name: "Toro",
+    },
+    stats: {
+      hp: 22,
+      rage: 0,
+      distance: 5,
+    },
+  },
+];
 
 const names = [
   "Lydan",
