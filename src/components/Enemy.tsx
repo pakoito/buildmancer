@@ -4,7 +4,7 @@ import { Enemy, Effect } from "../types";
 import { Seq } from "immutable";
 
 const skillPercents = (effects: Effect[]) =>
-  Seq(effects).countBy((e) => e.display).toArray().map(([k, v]) => <Card.Text>[{v / effects.length * 100}%] {k}</Card.Text>);
+  Seq(effects).countBy((e) => e.display).toArray().map(([k, v]) => <Card.Text>[{(v / effects.length * 100).toFixed(2)}%] {k}</Card.Text>);
 
 const EnemyCard: React.FC<{
   enemy: Enemy;
