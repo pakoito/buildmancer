@@ -1,6 +1,10 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
-import { Enemy } from "../types";
+import { Enemy, Effect } from "../types";
+import { Seq } from "immutable";
+
+const skillPercents = (effects: Effect[]) =>
+  Seq(effects).countBy((e) => e.display).toArray().map(([k, v]) => <Card.Text>[{v / effects.length * 100}%] {k}</Card.Text>);
 
 const EnemyCard: React.FC<{
   enemy: Enemy;
@@ -14,6 +18,8 @@ const EnemyCard: React.FC<{
         {enemy.lore.name}. Has {enemy.stats.hp} HP and is at distance{" "}
         {enemy.stats.distance}
       </Card.Text>
+      <Card.Text>Next attack prediction:</Card.Text>
+      {skillPercents(enemy.rolls[enemy.stats.distance - 1].map((idx) => enemy.effects[idx]))}
       <Button disabled={isSelected} onClick={onSelect}>Select</Button>
     </Card.Body>
   </Card>

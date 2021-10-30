@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { Ref } from "react-bootstrap/node_modules/@types/react";
+import { Ref, useRef } from "react";
 
 type ScrollToFn = () => void;
 

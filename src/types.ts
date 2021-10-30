@@ -13,9 +13,22 @@ type EQ<A, B> =
   A extends B
   ? (B extends A ? true : false)
   : false;
+type AtTerminus<A extends number, B extends number> =
+  A extends 0
+  ? true
+  : (B extends 0 ? true : false);
+type LT<A extends number, B extends number> =
+  AtTerminus<A, B> extends true
+  ? EQ<A, B> extends true
+  ? false
+  : (A extends 0 ? true : false)
+  : LT<Subtract<A, 1>, Subtract<B, 1>>;
 
 export type TupleUpTo<T, N extends number> =
-  EQ<N, 1> extends true ? [T] : Tuple<T, N> | TupleUpTo<T, Subtract<N, 1>>;
+  EQ<N, 1> extends true ? [T] : TupleUpTo<T, Subtract<N, 1>> | Tuple<T, N>;
+
+type UpTo<N extends number> =
+  EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N
 
 export type PlayerStats = Record<string, number>;
 export type EnemyStats = Record<string, number>;
@@ -26,6 +39,7 @@ export type EffectFun = (start: Snapshot, curr: Snapshot) => Snapshot;
 export type Effect = {
   display: string;
   effect: EffectFun;
+  priority: UpTo<4>
 };
 
 export type Build = Record<
@@ -46,9 +60,10 @@ export type Player = {
 
 export type Enemy = {
   id: string;
-  lore: Record<string, string | number>
+  lore: Record<string, string | number>;
   stats: EnemyStats;
-  // build: Build;
+  effects: Effect[];
+  rolls: Tuple<number[], 5>;
 }
 
 export type Enemies = TupleUpTo<Enemy, 5>;

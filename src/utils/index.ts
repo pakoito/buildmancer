@@ -84,10 +84,12 @@ export const build: Record<
         {
           display: "Chop",
           effect: (start, curr) => skills.attackMonster(start, curr, 3),
+          priority: 2,
         },
         {
           display: "Cut",
           effect: (start, curr) => skills.attackMonster(start, curr, 3),
+          priority: 3,
         },
       ],
     },
@@ -103,6 +105,7 @@ export const build: Record<
             (start, curr) => skills.reducePlayerStamina(start, curr, 2),
             (_, curr) => skills.changeDistance(curr, -1),
           ),
+          priority: 4,
         },
       ],
     },
@@ -152,6 +155,18 @@ export const enemies: Enemy[] = [
       rage: 0,
       distance: 5,
     },
+    rolls: [
+      [0, 1, 2, 1, 0],
+      [0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ],
+    effects: [
+      { display: "Swipe", priority: 3, effect: (start, curr) => skills.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (start, curr) => skills.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (start, _) => skills.changeDistance(start, -2) },
+    ],
   },
   {
     id: "m-2",
@@ -163,6 +178,18 @@ export const enemies: Enemy[] = [
       rage: 0,
       distance: 5,
     },
+    effects: [
+      { display: "Swipe", priority: 3, effect: (start, curr) => skills.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (start, curr) => skills.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (start, _) => skills.changeDistance(start, -2) },
+    ],
+    rolls: [
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0],
+    ]
   },
   {
     id: "m-3",
@@ -174,6 +201,18 @@ export const enemies: Enemy[] = [
       rage: 0,
       distance: 5,
     },
+    effects: [
+      { display: "Swipe", priority: 3, effect: (start, curr) => skills.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (start, curr) => skills.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (start, _) => skills.changeDistance(start, -2) },
+    ],
+    rolls: [
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0],
+    ]
   },
 ];
 
