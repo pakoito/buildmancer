@@ -5,9 +5,15 @@ import { Player, Enemy, EffectFun } from "../types";
 import useGame from "../hooks/useGame";
 import { snap } from "../utils";
 
+import { Chance } from "chance";
+
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
+import { Seq } from "immutable";
+
+const select = new Chance();
+const rand = select.natural;
 
 const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
   const {
@@ -34,8 +40,13 @@ const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
         enemies.filter((enemy) => enemy.id === selectedEnemy)[0].stats,
       ),
     );
-    updatePlayerStats(newState.player);
-    updateEnemyStats(selectedEnemy, newState.monster);
+
+    const lastState = Seq(props.enemies)
+      .map(e => [e, e.effects[e.rolls[e.stats.distance - 1][rand({ min: 0, max: e.rolls[e.stats.distance - 1].length })]]] as const)
+      .reduce((state, [enemy, effect]) => effect.effect(snap(props.player.stats, enemy.stats), state), newState);
+
+    updatePlayerStats(lastState.player);
+    updateEnemyStats(selectedEnemy, lastState.monster);
   };
 
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
