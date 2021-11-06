@@ -8,8 +8,7 @@ type UpdatePlayerStatsAction = {
 
 type UpdateEnemyStatsAction = {
   type: "updateEnemyStats";
-  id: Enemy["id"];
-  stats: Enemy["stats"];
+  stats: Enemy["stats"][];
 };
 
 type SetSelectedEnemy = {
@@ -70,10 +69,9 @@ function useGame(initialState: GameState) {
       stats,
     });
   };
-  const updateEnemyStats = (id: Enemy["id"], stats: Enemy["stats"]) => {
+  const updateEnemyStats = (id: Enemy["id"], stats: Enemy["stats"][]) => {
     dispatch({
       type: "updateEnemyStats",
-      id,
       stats,
     });
   };

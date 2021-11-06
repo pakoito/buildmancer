@@ -13,7 +13,6 @@ import usePressedKeys from "../hooks/usePressedKeys";
 import { Seq } from "immutable";
 
 const select = new Chance();
-const rand = select.natural;
 
 const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
   const {
@@ -29,24 +28,25 @@ const Game = (props: { player: Player; enemies: Enemy[] }): JSX.Element => {
     selectedEnemy: props.enemies[0].id,
   });
 
+  const startState = snap(
+    props.player.stats,
+    props.enemies.map(e => e.stats),
+  );
+
   const handlePlayerEffect = (effect: EffectFun) => {
-    const newState = effect(
-      snap(
-        props.player.stats,
-        props.enemies.filter((enemy) => enemy.id === selectedEnemy)[0].stats,
-      ),
+    const newState = effect(startState,
       snap(
         player.stats,
-        enemies.filter((enemy) => enemy.id === selectedEnemy)[0].stats,
+        enemies.map(e => e.stats),
       ),
     );
 
     const lastState = Seq(props.enemies)
-      .map(e => [e, e.effects[e.rolls[e.stats.distance - 1][rand({ min: 0, max: e.rolls[e.stats.distance - 1].length })]]] as const)
-      .reduce((state, [enemy, effect]) => effect.effect(snap(props.player.stats, enemy.stats), state), newState);
+      .map(e => e.effects[e.rolls[e.stats.distance - 1][select.natural({ min: 0, max: e.rolls[e.stats.distance - 1].length - 1 })]])
+      .reduce((state, effect) => effect.effect(startState, state), newState);
 
     updatePlayerStats(lastState.player);
-    updateEnemyStats(selectedEnemy, lastState.monster);
+    updateEnemyStats(selectedEnemy, lastState.monsters);
   };
 
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
