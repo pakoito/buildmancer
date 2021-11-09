@@ -62,6 +62,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
               setField={(value) => setField(type, value)}
               section={type}
               options={options}
+              key={type}
               isSelected={(value) => form[type] === value} />
           )}
         </Row>

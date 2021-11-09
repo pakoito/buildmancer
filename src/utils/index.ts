@@ -1,8 +1,8 @@
 import { EnemyStats, PlayerStats, EffectFun, Snapshot, Effect, Enemy } from "../types";
 
-export const snap = (player: PlayerStats, monster: EnemyStats) => ({
+export const snap = (player: PlayerStats, monster: EnemyStats[]): Snapshot => ({
   player,
-  monster,
+  monsters,
 });
 
 export const chain = (...funs: Array<EffectFun>): EffectFun =>

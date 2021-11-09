@@ -33,7 +33,7 @@ type UpTo<N extends number> =
 export type PlayerStats = Record<string, number>;
 export type EnemyStats = Record<string, number>;
 
-export type Snapshot = { player: PlayerStats; monster: EnemyStats };
+export type Snapshot = { player: PlayerStats; monsters: EnemyStats[] };
 export type EffectFun = (start: Snapshot, curr: Snapshot) => Snapshot;
 
 export type Effect = {
