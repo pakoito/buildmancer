@@ -33,14 +33,21 @@ type UpTo<N extends number> =
 export type PlayerStats = Record<string, number>;
 export type EnemyStats = Record<string, number>;
 
-export type Snapshot = { player: PlayerStats; monsters: EnemyStats[] };
-export type EffectFun = (start: Snapshot, curr: Snapshot) => Snapshot;
+type Priorities = 5;
+type Distances = 5;
+type MonsterCount = 5;
+
+export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget };
+export type EffectFun = (origin: Target, start: Snapshot, curr: Snapshot) => Snapshot;
 
 export type Effect = {
   display: string;
   effect: EffectFun;
-  priority: UpTo<4>
+  priority: UpTo<Subtract<Priorities, 1>>;
 };
+
+export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
+export type Target = MonsterTarget | 'Player';
 
 export type Build = Record<
   string,
@@ -63,7 +70,7 @@ export type Enemy = {
   lore: Record<string, string | number>;
   stats: EnemyStats;
   effects: Effect[];
-  rolls: Tuple<number[], 5>;
+  rolls: Tuple<number[], Distances>;
 }
 
-export type Enemies = TupleUpTo<Enemy, 5>;
+export type Enemies = TupleUpTo<Enemy, MonsterCount>;
