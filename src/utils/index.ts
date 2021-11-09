@@ -1,60 +1,9 @@
-import { Player, EffectFun, Snapshot, Effect, Enemy, Enemies, Target, MonsterTarget } from "../types";
+import { actions } from "../playGame";
+import { EffectFun, Effect, Enemy } from "../types";
 
-export const snap = (player: Player, enemies: Enemies, target: MonsterTarget): Snapshot => ({
-  player,
-  enemies,
-  target,
-});
-
-export const chain = (...funs: Array<EffectFun>): EffectFun =>
-  funs.reduce((acc, value) => (start, curr, target) => acc(start, value(start, curr, target), target));
-
-export const clamp = (num: number, min: number, max: number) =>
-  Math.min(Math.max(num, min), max);
-
-const updateMonster = (enemies: Enemies, target: Target, override: (stats: Enemy) => object): Enemies =>
-  enemies.map((m, idx) => (idx === target) ? { ...m, ...override(m) } : m) as Enemies;
-
-export const skills = {
-  attackMonster: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap(
-      curr.player,
-      updateMonster(curr.enemies, curr.target, ({ stats: { hp } }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
-      curr.target
-    ),
-  changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
-    snap(
-      curr.player,
-      updateMonster(curr.enemies, origin, ({ stats: { distance } }) => ({ distance: clamp(distance + amount, 1, 5) })),
-      curr.target,
-    ),
-
-  attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap(
-      {
-        ...curr.player,
-        stats: { ...curr.player.stats, hp: clamp(curr.player.stats.hp - amount, 0, start.player.stats.hp) },
-      },
-      curr.enemies,
-      curr.target,
-    ),
-  reducePlayerStamina: (
-    start: Snapshot,
-    curr: Snapshot,
-    amount: number,
-  ): Snapshot =>
-    snap(
-      {
-        ...curr.player,
-        stats: {
-          ...curr.player.stats,
-          stamina: clamp(curr.player.stats.stamina - amount, 0, start.player.stats.stamina),
-        },
-      },
-      curr.enemies,
-      curr.target,
-    ),
-};
+const chain = (...funs: Array<EffectFun>): EffectFun =>
+  // TODO check direction of the fold
+  funs.reduce((acc, value) => (origin, start, curr) => acc(origin, start, value(origin, start, curr)));
 
 export const build: Record<
   string,
@@ -94,12 +43,12 @@ export const build: Record<
       effects: [
         {
           display: "Chop",
-          effect: (_, start, curr) => skills.attackMonster(start, curr, 3),
+          effect: (_, start, curr) => actions.attackMonster(start, curr, 3),
           priority: 2,
         },
         {
           display: "Cut",
-          effect: (_, start, curr) => skills.attackMonster(start, curr, 3),
+          effect: (_, start, curr) => actions.attackMonster(start, curr, 3),
           priority: 3,
         },
       ],
@@ -112,9 +61,9 @@ export const build: Record<
         {
           display: "Get over here!",
           effect: chain(
-            (_, start, curr) => skills.attackMonster(start, curr, 3),
-            (_, start, curr) => skills.reducePlayerStamina(start, curr, 2),
-            (origin, _, curr) => skills.changeDistance(curr, origin, -1),
+            (_, start, curr) => actions.attackMonster(start, curr, 3),
+            (_, start, curr) => actions.reducePlayerStamina(start, curr, 2),
+            (origin, _, curr) => actions.changeDistance(curr, origin, -1),
           ),
           priority: 4,
         },
@@ -174,9 +123,9 @@ export const enemies: Enemy[] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, start, curr) => skills.attackPlayer(start, curr, 2) },
-      { display: "Roar", priority: 1, effect: (_TupleOf, start, curr) => skills.reducePlayerStamina(start, curr, 5) },
-      { display: "Jump", priority: 2, effect: (origin, start, _) => skills.changeDistance(start, origin, -2) },
+      { display: "Swipe", priority: 3, effect: (_, start, curr) => actions.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (_TupleOf, start, curr) => actions.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (origin, start, _) => actions.changeDistance(start, origin, -2) },
     ],
   },
   {
@@ -190,9 +139,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, start, curr) => skills.attackPlayer(start, curr, 2) },
-      { display: "Roar", priority: 1, effect: (_, start, curr) => skills.reducePlayerStamina(start, curr, 5) },
-      { display: "Jump", priority: 2, effect: (origin, start, _) => skills.changeDistance(start, origin, -2) },
+      { display: "Swipe", priority: 3, effect: (_, start, curr) => actions.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (_, start, curr) => actions.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (origin, start, _) => actions.changeDistance(start, origin, -2) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],
@@ -213,9 +162,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, start, curr) => skills.attackPlayer(start, curr, 2) },
-      { display: "Roar", priority: 1, effect: (_, start, curr) => skills.reducePlayerStamina(start, curr, 5) },
-      { display: "Jump", priority: 2, effect: (origin, start, _) => skills.changeDistance(start, origin, -2) },
+      { display: "Swipe", priority: 3, effect: (_, start, curr) => actions.attackPlayer(start, curr, 2) },
+      { display: "Roar", priority: 1, effect: (_, start, curr) => actions.reducePlayerStamina(start, curr, 5) },
+      { display: "Jump", priority: 2, effect: (origin, start, _) => actions.changeDistance(start, origin, -2) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],

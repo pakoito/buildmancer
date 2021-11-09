@@ -5,7 +5,7 @@ import { MonsterTarget } from "../types";
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
-import { Play } from "../play_game";
+import { Play } from "../playGame";
 
 const Game = (props: { game: Play }): JSX.Element => {
   const { handlePlayerEffect, setSelected, states } = props.game;

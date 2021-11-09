@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { Play } from "./play_game";
+import play, { Play } from "./playGame";
 import { Chance } from "chance";
 
 
