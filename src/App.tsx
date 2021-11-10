@@ -7,11 +7,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { Play } from "./playGame";
+import play, { handlePlayerEffect, Play, setSelected } from "./playGame";
 import { Chance } from "chance";
 
 
 type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
+
+const chance = new Chance();
 
 function App() {
   const [status, setStatus] = React.useState<AppStatus>("buildPlayer");
@@ -29,23 +31,10 @@ function App() {
     setEncounter(encounter);
     setStatus("game");
   }
-  const makeReactGame = (game: Play): Play => ({
-    ...game,
-    handlePlayerEffect: (idx) => {
-      const newGame = game.handlePlayerEffect(idx);
-      setGame(makeReactGame(newGame));
-      return newGame;
-    },
-    setSelected: (idx) => {
-      const newGame = game.setSelected(idx);
-      setGame(makeReactGame(newGame));
-      return newGame;
-    },
-  });
 
   if (!game && player && encounter) {
-    const game = play(player, encounter, new Chance());
-    setGame(makeReactGame(game));
+    const game = play(player, encounter);
+    setGame(game);
   }
 
   return (
@@ -60,7 +49,7 @@ function App() {
         />
       ) : null}
       {status === "game" && game ? (
-        <Game game={game} />
+        <Game game={game} setSelected={(idx) => setGame(setSelected(game, idx))} handlePlayerEffect={(idx) => setGame(handlePlayerEffect(game, idx, chance))} />
       ) : null}
     </div>
   );

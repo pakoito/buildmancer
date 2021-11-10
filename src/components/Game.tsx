@@ -7,8 +7,9 @@ import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
 import { Play } from "../playGame";
 
-const Game = (props: { game: Play }): JSX.Element => {
-  const { handlePlayerEffect, setSelected, states } = props.game;
+const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void }): JSX.Element => {
+  const { states } = props.game;
+  const { handlePlayerEffect, setSelected } = props;
   const { player, enemies, target } = states[states.length - 1];
 
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
@@ -42,6 +43,7 @@ const Game = (props: { game: Play }): JSX.Element => {
             {enemies.map((enemy, idx) => (
               <Col key={idx} xs={6} md={4}>
                 <EnemyCard
+                  key={idx}
                   enemy={enemy}
                   isSelected={idx === target}
                   onSelect={() => setSelected(idx as MonsterTarget)}
