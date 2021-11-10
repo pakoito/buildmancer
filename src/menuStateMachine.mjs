@@ -2,11 +2,13 @@ import WebSocket from 'ws';
 import { createMachine, interpret } from 'xstate';
 import { inspect } from '@xstate/inspect/lib/server.js';
 
-inspect({
-  server: new WebSocket.Server({
-    port: 8888
-  })
-});
+if (process.env['SMD'] === '1') {
+  inspect({
+    server: new WebSocket.Server({
+      port: 8888
+    })
+  });
+}
 
 const gameMenuMachine = createMachine({
   id: 'menus',
@@ -27,6 +29,6 @@ const gameMenuMachine = createMachine({
   }
 });
 
-interpret(gameMenuMachine, { devTools: true })
+interpret(gameMenuMachine, { devTools: process.env['SMD'] === '1' ? true : false })
   .onTransition((state) => console.log(state))
   .start();
