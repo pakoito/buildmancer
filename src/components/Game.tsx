@@ -41,7 +41,7 @@ const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void;
           </Row>
           <Row className="mt-2 g-2">
             {enemies.map((enemy, idx) => (
-              <Col key={idx} xs={6} md={4}>
+              <Col xs={6} md={4}>
                 <EnemyCard
                   key={idx}
                   enemy={enemy}

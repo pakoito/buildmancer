@@ -1,3 +1,5 @@
+import { Play } from "./playGame";
+
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
 
@@ -22,6 +24,7 @@ type LT<A extends number, B extends number> =
   ? EQ<A, B> extends true
   ? false
   : (A extends 0 ? true : false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   : LT<Subtract<A, 1>, Subtract<B, 1>>;
 
 export type TupleUpTo<T, N extends number> =
@@ -38,7 +41,7 @@ type Distances = 5;
 type MonsterCount = 5;
 
 export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget };
-export type EffectFun = (origin: Target, start: Snapshot, curr: Snapshot) => Snapshot;
+export type EffectFun = (origin: Target, play: Play) => Play;
 
 export type Effect = {
   display: string;
@@ -66,7 +69,6 @@ export type Player = {
 };
 
 export type Enemy = {
-  id: string;
   lore: Record<string, string | number>;
   stats: EnemyStats;
   effects: Effect[];

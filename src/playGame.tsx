@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, Enemy } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats } from "./types";
 import { Seq } from "immutable";
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];
@@ -16,20 +16,23 @@ const snap = (player: Player, enemies: Enemies, target: MonsterTarget): Snapshot
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);
 
-const updateMonster = (enemies: Enemies, target: Target, override: (stats: Enemy) => object): Enemies =>
-  enemies.map((m, idx) => (idx === target) ? { ...m, ...override(m) } : m) as Enemies;
+const updateMonster = (enemies: Enemies, target: Target, override: (stats: EnemyStats) => object): Enemies =>
+  enemies.map((m, idx) =>
+    (idx === target)
+      ? { ...m, stats: { ...m.stats, ...override(m.stats) } }
+      : m) as Enemies;
 
 export const actions = {
   attackMonster: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
     snap(
       curr.player,
-      updateMonster(curr.enemies, curr.target, ({ stats: { hp } }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
+      updateMonster(curr.enemies, curr.target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
       curr.target
     ),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
     snap(
       curr.player,
-      updateMonster(curr.enemies, origin, ({ stats: { distance } }) => ({ distance: clamp(distance + amount, 1, 5) })),
+      updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 1, 5) })),
       curr.target,
     ),
 
@@ -78,18 +81,19 @@ export const handlePlayerEffect = (play: Play, index: number, select: Chance.Cha
     .map((e, idx) => [idx as MonsterTarget, e.effects[e.rolls[e.stats.distance - 1][select.natural({ min: 0, max: e.rolls[e.stats.distance - 1].length - 1 })]]] as const)
     .concat([['Player', playerSkills[index]] as const])
     .sortBy(([_origin, effect]) => effect.priority);
+
+  const newPlay: Play = {
+    ...play,
+    states: [...play.states, play.states[play.states.length - 1]]
+  }
   const newState =
-    functions.reduce((state, [origin, effect]) => effect.effect(origin, history[0], state), history[history.length - 1]);
-  const states = [...history, newState] as PlayHistory;
-  return { states };
+    functions.reduce((accPlay, [origin, effect]) => effect.effect(origin, accPlay), newPlay);
+  return newState;
 };
 
 export const setSelected = (play: Play, target: MonsterTarget): Play => {
-  const history = play.states;
-  const newState: Snapshot = {
-    ...history[history.length - 1],
-    target,
+  play.states[play.states.length - 1].target = target;
+  return {
+    states: [...play.states],
   };
-  const states = [...history, newState] as PlayHistory;
-  return { states };
 }
