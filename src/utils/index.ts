@@ -3,14 +3,11 @@ import { EffectFun, Effect, Enemy, Snapshot } from "../types";
 
 const chain = (...funs: Array<EffectFun>): EffectFun =>
   // TODO check direction of the fold
-  funs.reduce((acc, value) => (origin, play) => value(origin, acc(origin, play)));
-
-const updateLatest = (play: Play, latest: Snapshot): Play =>
-  ({ states: [play.states[0], ...play.states.slice(1, play.states.length - 1), latest] })
+  funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
 
 const startState = (play: Play): Snapshot => play.states[0];
-
-const currentState = (play: Play): Snapshot => play.states[play.states.length - 1];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
 
 export const build: Record<
   string,
@@ -50,12 +47,12 @@ export const build: Record<
       effects: [
         {
           display: "Chop",
-          effect: (_, play) => updateLatest(play, actions.attackMonster(startState(play), currentState(play), 3)),
+          effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
           priority: 2,
         },
         {
           display: "Cut",
-          effect: (_, play) => updateLatest(play, actions.attackMonster(startState(play), currentState(play), 3)),
+          effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
           priority: 3,
         },
       ],
@@ -68,9 +65,9 @@ export const build: Record<
         {
           display: "Get over here!",
           effect: chain(
-            (_, play) => updateLatest(play, actions.attackMonster(startState(play), currentState(play), 3)),
-            (_, play) => updateLatest(play, actions.reducePlayerStamina(startState(play), currentState(play), 2)),
-            (origin, play) => updateLatest(play, actions.changeDistance(currentState(play), origin, -1)),
+            (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+            (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 2),
+            (origin, _, currentState) => actions.changeDistance(currentState, currentState.target, -1),
           ),
           priority: 4,
         },
@@ -129,9 +126,9 @@ export const enemies: Enemy[] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play) => updateLatest(play, actions.attackPlayer(startState(play), currentState(play), 2)) },
-      { display: "Roar", priority: 1, effect: (_, play) => updateLatest(play, actions.reducePlayerStamina(startState(play), currentState(play), 5)) },
-      { display: "Jump", priority: 2, effect: (origin, play) => updateLatest(play, actions.changeDistance(startState(play), origin, -2)) },
+      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
   },
   {
@@ -144,9 +141,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play) => updateLatest(play, actions.attackPlayer(startState(play), currentState(play), 2)) },
-      { display: "Roar", priority: 1, effect: (_, play) => updateLatest(play, actions.reducePlayerStamina(startState(play), currentState(play), 5)) },
-      { display: "Jump", priority: 2, effect: (origin, play) => updateLatest(play, actions.changeDistance(startState(play), origin, -2)) },
+      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],
@@ -166,9 +163,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play) => updateLatest(play, actions.attackPlayer(startState(play), currentState(play), 2)) },
-      { display: "Roar", priority: 1, effect: (_, play) => updateLatest(play, actions.reducePlayerStamina(startState(play), currentState(play), 5)) },
-      { display: "Jump", priority: 2, effect: (origin, play) => updateLatest(play, actions.changeDistance(startState(play), origin, -2)) },
+      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],

@@ -82,13 +82,13 @@ export const handlePlayerEffect = (play: Play, index: number, select: Chance.Cha
     .concat([['Player', playerSkills[index]] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 
-  const newPlay: Play = {
-    ...play,
-    states: [...play.states, play.states[play.states.length - 1]]
-  }
+  const latestState: Snapshot = play.states[play.states.length - 1];
   const newState =
-    functions.reduce((accPlay, [origin, effect]) => effect.effect(origin, accPlay), newPlay);
-  return newState;
+    functions.reduce((accState, [origin, effect]) => effect.effect(origin, play, accState), latestState);
+  return {
+    ...play,
+    states: [...play.states, newState],
+  };
 };
 
 export const setSelected = (play: Play, target: MonsterTarget): Play => {

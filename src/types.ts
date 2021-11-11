@@ -41,7 +41,7 @@ type Distances = 5;
 type MonsterCount = 5;
 
 export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget };
-export type EffectFun = (origin: Target, play: Play) => Play;
+export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
 export type Effect = {
   display: string;
