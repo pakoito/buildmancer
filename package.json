@@ -46,6 +46,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "sm": "open https://statecharts.io/inspect?server=localhost:8888 && SMD=1 ts-node src/menuStateMachine.mjs",
     "wsm": "powershell.exe /c 'start https://statecharts.io/inspect?server=localhost:8888' && SMD=1 ts-node src/menuStateMachine.mjs"
   },
   "eslintConfig": {
