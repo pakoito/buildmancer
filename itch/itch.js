@@ -4,7 +4,7 @@ async function start() {
   const spawnAsync = util.promisify(child.spawn);
   console.log('Updating itch');
   try {
-    await spawnAsync('./itch/butler', ['push', './build', 'pakoito/buildmancer:alpha'], { stdio: 'inherit' });
+    await spawnAsync('./itch/butler', ['push', './itch/index.html', 'pakoito/buildmancer:alpha'], { stdio: 'inherit' });
     console.log('Updated itch');
   } catch (err) {
     console.log(`FAILED updating itch ${err}`);
