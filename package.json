@@ -41,7 +41,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build --before-add ./itch/itch.js",
+    "deploy": "gh-pages -d build && node ./itch/itch.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
