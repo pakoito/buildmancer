@@ -8,9 +8,10 @@ const skillPercents = (effects: Effect[]) =>
 
 const EnemyCard: React.FC<{
   enemy: Enemy;
+  latestAttack: string | undefined;
   isSelected?: boolean;
   onSelect: () => void;
-}> = ({ enemy, isSelected, onSelect }) => (
+}> = ({ enemy, isSelected, onSelect, latestAttack }) => (
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
       <Card.Title>{enemy.lore.name}</Card.Title>
@@ -18,6 +19,7 @@ const EnemyCard: React.FC<{
         {enemy.lore.name}. Has {enemy.stats.hp} HP and is at distance{" "}
         {enemy.stats.distance}
       </Card.Text>
+      {latestAttack && (<Card.Text>Latest attack: {latestAttack}</Card.Text>)}
       <Card.Text>Next attack prediction:</Card.Text>
       {skillPercents(enemy.rolls[enemy.stats.distance - 1].map((idx) => enemy.effects[idx]))}
       <Button disabled={isSelected} onClick={onSelect}>Select</Button>

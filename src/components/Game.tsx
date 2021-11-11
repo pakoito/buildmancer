@@ -6,11 +6,12 @@ import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
 import { Play } from "../playGame";
+import { Seq } from "immutable";
 
 const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void }): JSX.Element => {
   const { states } = props.game;
   const { handlePlayerEffect, setSelected } = props;
-  const { player, enemies, target } = states[states.length - 1];
+  const { player, enemies, target, lastAttacks } = states[states.length - 1];
 
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
 
@@ -45,6 +46,7 @@ const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void;
                 <EnemyCard
                   key={idx}
                   enemy={enemy}
+                  latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}
                   isSelected={idx === target}
                   onSelect={() => setSelected(idx as MonsterTarget)}
                 />

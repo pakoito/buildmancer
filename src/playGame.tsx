@@ -7,12 +7,6 @@ export type Play = {
   states: PlayHistory;
 };
 
-const snap = (player: Player, enemies: Enemies, target: MonsterTarget): Snapshot => ({
-  player,
-  enemies,
-  target,
-});
-
 export const chain = (...funs: Array<EffectFun>): EffectFun =>
   // TODO check direction of the fold
   funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
@@ -28,43 +22,39 @@ const updateMonster = (enemies: Enemies, target: Target, override: (stats: Enemy
 
 export const actions = {
   attackMonster: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap(
-      curr.player,
-      updateMonster(curr.enemies, curr.target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
-      curr.target
-    ),
+  ({
+    ...curr,
+    enemies: updateMonster(curr.enemies, curr.target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
+  }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
-    snap(
-      curr.player,
-      updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 1, 5) })),
-      curr.target,
-    ),
+  ({
+    ...curr,
+    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 1, 5) })),
+  }),
 
   attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-    snap(
-      {
-        ...curr.player,
-        stats: { ...curr.player.stats, hp: clamp(curr.player.stats.hp - amount, 0, start.player.stats.hp) },
-      },
-      curr.enemies,
-      curr.target,
-    ),
+  ({
+    ...curr,
+    player: {
+      ...curr.player,
+      stats: { ...curr.player.stats, hp: clamp(curr.player.stats.hp - amount, 0, start.player.stats.hp) },
+    },
+  }),
   modifyPlayerStamina: (
     start: Snapshot,
     curr: Snapshot,
     amount: number,
   ): Snapshot =>
-    snap(
-      {
-        ...curr.player,
-        stats: {
-          ...curr.player.stats,
-          stamina: clamp(curr.player.stats.stamina + amount, 0, start.player.stats.stamina),
-        },
+  ({
+    ...curr,
+    player: {
+      ...curr.player,
+      stats: {
+        ...curr.player.stats,
+        stamina: clamp(curr.player.stats.stamina + amount, 0, start.player.stats.stamina),
       },
-      curr.enemies,
-      curr.target,
-    ),
+    },
+  }),
 };
 
 export default function play(player: Player, enemies: Enemies): Play {
@@ -73,6 +63,7 @@ export default function play(player: Player, enemies: Enemies): Play {
       player,
       enemies,
       target: 0,
+      lastAttacks: []
     }],
   };
 }
@@ -83,12 +74,13 @@ export const handlePlayerEffect = (play: Play, index: number, select: Chance.Cha
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
   const usedSkill = playerSkills[index];
   const functions = Seq(enemies)
-    .map((e, idx) => [idx as MonsterTarget, e.effects[e.rolls[e.stats.distance - 1][select.natural({ min: 0, max: e.rolls[e.stats.distance - 1].length - 1 })]]] as const)
-    .concat([['Player', usedSkill] as const])
+    .map((e, idx) => [idx as Target, e.effects[e.rolls[e.stats.distance - 1][select.natural({ min: 0, max: e.rolls[e.stats.distance - 1].length - 1 })]]] as const)
+    .concat([['Player' as Target, usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 
   const latestState: Snapshot =
     actions.modifyPlayerStamina(history[0], history[history.length - 1], player.stats.staminaPerTurn - usedSkill.stamina);
+  latestState.lastAttacks = functions.map(([origin, effect]) => [origin, effect.display] as const).toArray();
   const newState =
     functions.reduce((accState, [origin, effect]) => effect.effect(origin, play, accState), latestState);
   return {
