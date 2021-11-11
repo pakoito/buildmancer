@@ -67,7 +67,7 @@ export const build: Record<
           effect: chain(
             (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
             (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 2),
-            (origin, _, currentState) => actions.changeDistance(currentState, currentState.target, -1),
+            (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
           ),
           priority: 4,
         },
