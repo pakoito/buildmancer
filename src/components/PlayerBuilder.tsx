@@ -43,13 +43,14 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
       stats: {
         hp: 10,
         stamina: 8,
+        staminaPerTurn: 2,
       },
       build: Object.entries(form).reduce((acc, [type, value]) => {
         return {
           ...acc,
           [type]: build[type][value]
         }
-      }, {}),
+      }, { basic: build.basic[0] }),
     });
   };
   const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;

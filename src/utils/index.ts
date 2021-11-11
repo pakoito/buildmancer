@@ -1,5 +1,5 @@
 import { actions, chain, Play } from "../playGame";
-import { Effect, Enemy, Snapshot } from "../types";
+import { Enemy, InventoryEffect, Snapshot } from "../types";
 
 const startState = (play: Play): Snapshot => play.states[0];
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -9,10 +9,35 @@ export const build: Record<
   string,
   {
     display: string;
-    effects: Effect[];
+    effects: InventoryEffect[];
     [key: string]: any;
   }[]
 > = {
+  basic: [
+    {
+      display: "Basic",
+      effects: [
+        {
+          display: "Rest",
+          effect: (_origin, _play, newState) => newState,
+          priority: 4,
+          stamina: 0,
+        },
+        {
+          display: "Advance",
+          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
+          priority: 4,
+          stamina: 1,
+        },
+        {
+          display: "Retreat",
+          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
+          priority: 4,
+          stamina: 1,
+        }
+      ]
+    }
+  ],
   class: [
     {
       display: "Warrior",
@@ -45,11 +70,13 @@ export const build: Record<
           display: "Chop",
           effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
           priority: 2,
+          stamina: 2,
         },
         {
           display: "Cut",
           effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
           priority: 3,
+          stamina: 2,
         },
       ],
     },
@@ -62,10 +89,10 @@ export const build: Record<
           display: "Get over here!",
           effect: chain(
             (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
-            (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 2),
             (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
           ),
           priority: 4,
+          stamina: 3,
         },
       ],
     },
@@ -123,7 +150,7 @@ export const enemies: Enemy[] = [
     ],
     effects: [
       { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
       { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
   },
@@ -138,7 +165,7 @@ export const enemies: Enemy[] = [
     },
     effects: [
       { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
       { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
     rolls: [
@@ -160,7 +187,7 @@ export const enemies: Enemy[] = [
     },
     effects: [
       { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.reducePlayerStamina(startState(play), currentState, 5) },
+      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
       { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
     ],
     rolls: [

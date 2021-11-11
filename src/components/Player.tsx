@@ -13,7 +13,7 @@ const PlayerCard: React.FC<{
       <Card.Subtitle className="mb-2 text-muted">
         {player.build.class.display}
       </Card.Subtitle>
-      <Card.Text>Has {player.stats.hp} HP</Card.Text>
+      <Card.Text>Has {player.stats.hp} HP and {player.stats.stamina} stamina</Card.Text>
     </Card.Body>
     <Card.Body>
       <Stack direction="horizontal" gap={2}>
@@ -23,9 +23,12 @@ const PlayerCard: React.FC<{
             <Button
               key={e.display}
               active={selectedButtons.has(e.display)}
+              disabled={player.stats.stamina < e.stamina}
               onClick={(_) => onClickEffect(idx)}
             >
-              [{idx + 1}] {e.display}
+              [<b>{e.display}</b> <i>{idx + 1}</i>]
+              <br />
+              Sta: {e.stamina} | Prio: {e.priority}
             </Button>
           ))}
       </Stack>

@@ -49,7 +49,7 @@ export const actions = {
       curr.enemies,
       curr.target,
     ),
-  reducePlayerStamina: (
+  modifyPlayerStamina: (
     start: Snapshot,
     curr: Snapshot,
     amount: number,
@@ -59,7 +59,7 @@ export const actions = {
         ...curr.player,
         stats: {
           ...curr.player.stats,
-          stamina: clamp(curr.player.stats.stamina - amount, 0, start.player.stats.stamina),
+          stamina: clamp(curr.player.stats.stamina + amount, 0, start.player.stats.stamina),
         },
       },
       curr.enemies,
@@ -81,12 +81,14 @@ export const handlePlayerEffect = (play: Play, index: number, select: Chance.Cha
   const history = play.states;
   const { enemies, player } = history[history.length - 1];
   const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
+  const usedSkill = playerSkills[index];
   const functions = Seq(enemies)
     .map((e, idx) => [idx as MonsterTarget, e.effects[e.rolls[e.stats.distance - 1][select.natural({ min: 0, max: e.rolls[e.stats.distance - 1].length - 1 })]]] as const)
-    .concat([['Player', playerSkills[index]] as const])
+    .concat([['Player', usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 
-  const latestState: Snapshot = play.states[play.states.length - 1];
+  const latestState: Snapshot =
+    actions.modifyPlayerStamina(history[0], history[history.length - 1], player.stats.staminaPerTurn - usedSkill.stamina);
   const newState =
     functions.reduce((accState, [origin, effect]) => effect.effect(origin, play, accState), latestState);
   return {

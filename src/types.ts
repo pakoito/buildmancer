@@ -36,9 +36,10 @@ type UpTo<N extends number> =
 export type PlayerStats = Record<string, number>;
 export type EnemyStats = Record<string, number>;
 
-type Priorities = 5;
-type Distances = 5;
-type MonsterCount = 5;
+export type Priorities = 5;
+export type Distances = 5;
+export type MonsterCount = 5;
+export type Staminas = 5;
 
 export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget };
 export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
@@ -49,6 +50,10 @@ export type Effect = {
   priority: UpTo<Subtract<Priorities, 1>>;
 };
 
+export type InventoryEffect = Effect & {
+  stamina: UpTo<Subtract<Staminas, 1>>;
+};
+
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type Target = MonsterTarget | 'Player';
 
@@ -56,7 +61,7 @@ export type Build = Record<
   string,
   {
     display: string;
-    effects: Effect[];
+    effects: InventoryEffect[];
     [key: string]: any;
   }
 >;
