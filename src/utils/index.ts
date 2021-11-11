@@ -1,9 +1,5 @@
-import { actions, Play } from "../playGame";
-import { EffectFun, Effect, Enemy, Snapshot } from "../types";
-
-const chain = (...funs: Array<EffectFun>): EffectFun =>
-  // TODO check direction of the fold
-  funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
+import { actions, chain, Play } from "../playGame";
+import { Effect, Enemy, Snapshot } from "../types";
 
 const startState = (play: Play): Snapshot => play.states[0];
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
