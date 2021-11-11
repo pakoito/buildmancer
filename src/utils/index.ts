@@ -25,13 +25,13 @@ export const build: Record<
         },
         {
           display: "Advance",
-          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
+          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
           priority: 4,
           stamina: 1,
         },
         {
           display: "Retreat",
-          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
+          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
           priority: 4,
           stamina: 1,
         }
