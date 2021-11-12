@@ -6,7 +6,7 @@ import { Seq } from 'immutable';
 
 type IndexPlay = [number, Play];
 
-export default function tinkerer(play: Play, iter: number, seed: any, options: { globalSeed: any } = { globalSeed: "Miau" }): ScoredPhenotype<Play>[] {
+export default function tinkerer(play: Play, iter: number, seed: any, options: { globalSeed: any; turns: number } = { globalSeed: "Miau", turns: 50 }): ScoredPhenotype<Play>[] {
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.globalSeed);
   const rnd = range.map(() => new Chance(seed));
@@ -41,7 +41,7 @@ export default function tinkerer(play: Play, iter: number, seed: any, options: {
 
   const genC = new GeneticAlgorithmConstructor<IndexPlay>(config);
   let gen = genC;
-  for (const i in range) {
+  for (let i = options.turns; i > 0; i--) {
     gen = gen.evolve();
   }
   return Seq(gen.scoredPopulation()).sortBy(({ score }) => score).toArray();
