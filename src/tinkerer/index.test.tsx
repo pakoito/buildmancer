@@ -35,6 +35,13 @@ const play: Play = {
 }
 
 test('10 gens', () => {
-  const result = tinkerer(play, 10, "PACO");
-  expect(result).toMatchSnapshot();
+  let best = tinkerer(play, 100, "PACO")[0];
+  for (let i = 0; i < 0; i++) {
+    const result = tinkerer(play, 100, "PACO")[0];
+    if (result.score > best.score) {
+      best = result;
+    }
+  }
+  console.log(best);
+  console.log(JSON.stringify(best));
 });

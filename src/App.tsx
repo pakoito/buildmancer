@@ -35,7 +35,7 @@ function App() {
 
   if (!game && player && encounter) {
     const game = play(player, encounter);
-    setGame(tinkerer(game, 2, "PACO").phenotype);
+    setGame(tinkerer(game, 2, "PACO")[0].phenotype);
   }
 
   return (

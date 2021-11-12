@@ -44,9 +44,12 @@ export type Staminas = 5;
 export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget, lastAttacks: (readonly [Target, string])[] };
 export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
+export type EffectFunIndex = string;
+export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
+
 export type Effect = {
   display: string;
-  effect: EffectFun;
+  effect: EffectFunIndex;
   priority: UpTo<Subtract<Priorities, 1>>;
 };
 

@@ -1,9 +1,24 @@
 import { actions, chain, Play } from "../playGame";
-import { Enemy, InventoryEffect, Snapshot } from "../types";
+import { EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
 
 const startState = (play: Play): Snapshot => play.states[0];
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
+
+export const effectRepository: EffectFunRepo = {
+  'Basic:Rest': (_origin, _play, newState) => newState,
+  'Basic:Advance': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
+  'Basic:Retreat': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
+  'Axe:Chop': (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+  'Axe:Cut': (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+  'Hook:GetHere': chain(
+    (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+    (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
+  ),
+  'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
+  'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
+  'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
+};
 
 export const build: Record<
   string,
@@ -19,19 +34,19 @@ export const build: Record<
       effects: [
         {
           display: "Rest",
-          effect: (_origin, _play, newState) => newState,
+          effect: "Basic:Rest",
           priority: 4,
           stamina: 0,
         },
         {
           display: "Advance",
-          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
+          effect: "Basic:Advance",
           priority: 4,
           stamina: 1,
         },
         {
           display: "Retreat",
-          effect: (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
+          effect: "Basic:Retreat",
           priority: 4,
           stamina: 1,
         }
@@ -68,13 +83,13 @@ export const build: Record<
       effects: [
         {
           display: "Chop",
-          effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+          effect: "Axe:Chop",
           priority: 2,
           stamina: 2,
         },
         {
           display: "Cut",
-          effect: (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+          effect: "Axe:Cut",
           priority: 3,
           stamina: 2,
         },
@@ -87,10 +102,7 @@ export const build: Record<
       effects: [
         {
           display: "Get over here!",
-          effect: chain(
-            (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
-            (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
-          ),
+          effect: "Hook:GetHere",
           priority: 4,
           stamina: 3,
         },
@@ -149,9 +161,9 @@ export const enemies: Enemy[] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
-      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
+      { display: "Roar", priority: 1, effect: "Monster:Roar" },
+      { display: "Jump", priority: 2, effect: "Monster:Jump" },
     ],
   },
   {
@@ -164,9 +176,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
-      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
+      { display: "Roar", priority: 1, effect: "Monster:Roar" },
+      { display: "Jump", priority: 2, effect: "Monster:Jump" },
     ],
     rolls: [
       [0, 0, 0, 1, 0],
@@ -186,9 +198,9 @@ export const enemies: Enemy[] = [
       distance: 5,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2) },
-      { display: "Roar", priority: 1, effect: (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5) },
-      { display: "Jump", priority: 2, effect: (origin, _, currentState) => actions.changeDistance(currentState, origin, -2) },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
+      { display: "Roar", priority: 1, effect: "Monster:Roar" },
+      { display: "Jump", priority: 2, effect: "Monster:Jump" },
     ],
     rolls: [
       [0, 0, 0, 1, 0],
