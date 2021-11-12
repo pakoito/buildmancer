@@ -7,7 +7,7 @@ type Length<T extends any[]> =
   T extends { length: infer L } ? L : never;
 type BuildTuple<L extends number, T extends any[] = []> =
   T extends { length: L } ? T : BuildTuple<L, [...T, any]>;
-type Subtract<A extends number, B extends number> =
+export type Subtract<A extends number, B extends number> =
   BuildTuple<A> extends [...(infer U), ...BuildTuple<B>]
   ? Length<U>
   : never;
@@ -30,7 +30,7 @@ type LT<A extends number, B extends number> =
 export type TupleUpTo<T, N extends number> =
   EQ<N, 1> extends true ? [T] : TupleUpTo<T, Subtract<N, 1>> | Tuple<T, N>;
 
-type UpTo<N extends number> =
+export type UpTo<N extends number> =
   EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N
 
 export type PlayerStats = Record<string, number>;

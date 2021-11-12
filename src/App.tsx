@@ -9,6 +9,7 @@ import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
 import play, { handlePlayerEffect, Play, setSelected } from "./playGame";
 import { Chance } from "chance";
+import { start } from "./tinkerer";
 
 
 type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
@@ -34,7 +35,7 @@ function App() {
 
   if (!game && player && encounter) {
     const game = play(player, encounter);
-    setGame(game);
+    setGame(start(game, 10).phenotype);
   }
 
   return (
