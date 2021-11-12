@@ -1,6 +1,6 @@
 import { Play } from '../playGame';
 import { build, enemies } from '../utils';
-import { start } from './index';
+import tinkerer from './tinkerer'
 
 const play: Play = {
   states: [{
@@ -35,6 +35,6 @@ const play: Play = {
 }
 
 test('10 gens', () => {
-  const result = start(play, 10, "PACO");
+  const result = tinkerer(play, 10, "PACO");
   expect(result).toMatchSnapshot();
 });

@@ -10,7 +10,7 @@ type N = 5;
 
 type IndexPlay = [UpTo<Subtract<N, 1>>, Play];
 
-export const start = (play: Play, iter: number, seed: any): ScoredPhenotype<Play> => {
+export default function tinkerer(play: Play, iter: number, seed: any): ScoredPhenotype<Play> {
   const rnd = [...Array(iter).keys()].map(() => new Chance(seed));
   const config: GeneticAlgorithmConfig<IndexPlay> = {
     mutationFunction: ([idx, oldPlay]) => {
