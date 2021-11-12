@@ -5,15 +5,15 @@ import { MonsterTarget } from "../types";
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
-import { Play } from "../playGame";
+import { Play, playerActions } from "../playGame";
 import { Seq } from "immutable";
+import { previousState } from "../utils";
 
 const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void }): JSX.Element => {
-  const { states } = props.game;
-  const { handlePlayerEffect, setSelected } = props;
-  const { player, enemies, target, lastAttacks } = states[states.length - 1];
+  const { handlePlayerEffect, setSelected, game } = props;
+  const { player, enemies, target, lastAttacks } = previousState(game);
 
-  const playerSkills = Object.values(player.build).flatMap((s) => s.effects);
+  const playerSkills = playerActions(player);
 
   const pressed = usePressedKeys((key) => {
     const valNum = parseInt(key);

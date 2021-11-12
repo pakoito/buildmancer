@@ -1,6 +1,6 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, EffectFun, InventoryEffect } from "./types";
 import { Seq } from "immutable";
-import { effectRepository } from "./utils";
+import { effectRepository, previousState } from "./utils";
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];
 
@@ -73,8 +73,7 @@ export default function play(player: Player, enemies: Enemies): Play {
 }
 
 export const handlePlayerEffect = (play: Play, index: number, select: Chance.Chance): Play => {
-  const history = play.states;
-  const { enemies, player } = history[history.length - 1];
+  const { enemies, player } = previousState(play);
   const playerSkills = playerActions(player);
   const usedSkill = playerSkills[index];
   const functions = Seq(enemies)
@@ -87,7 +86,7 @@ export const handlePlayerEffect = (play: Play, index: number, select: Chance.Cha
     .sortBy(([_origin, effect]) => effect.priority);
 
   const latestState: Snapshot =
-    actions.modifyPlayerStamina(history[0], history[history.length - 1], player.stats.staminaPerTurn - usedSkill.stamina);
+    actions.modifyPlayerStamina(play.states[0], previousState(play), player.stats.staminaPerTurn - usedSkill.stamina);
   latestState.lastAttacks = functions.map(([origin, effect]) => [origin, effect.effect] as const).toArray();
   const newState =
     functions.reduce((accState, [origin, effect]) => effectRepository[effect.effect](origin, play, accState), latestState);

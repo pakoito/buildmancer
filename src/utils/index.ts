@@ -1,9 +1,8 @@
 import { actions, chain, Play } from "../playGame";
 import { EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
 
-const startState = (play: Play): Snapshot => play.states[0];
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
+export const startState = (play: Play): Snapshot => play.states[0];
+export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
 
 export const effectRepository: EffectFunRepo = {
   'Basic:Rest': (_origin, _play, newState) => newState,
