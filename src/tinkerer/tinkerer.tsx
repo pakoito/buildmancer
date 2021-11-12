@@ -6,10 +6,10 @@ import { Seq } from 'immutable';
 
 type IndexPlay = [number, Play];
 
-export default function tinkerer(play: Play, iter: number, seed: any, options: { globalSeed: any; turns: number } = { globalSeed: "Miau", turns: 50 }): ScoredPhenotype<Play>[] {
+export default function tinkerer(play: Play, iter: number, monsterSeed: any, options: { playerSeed: any; turns: number } = { globalSeed: "Miau", turns: 50 }): ScoredPhenotype<Play>[] {
   const range = [...Array(iter).keys()];
-  const rand = new Chance(options.globalSeed);
-  const rnd = range.map(() => new Chance(seed));
+  const rand = new Chance(options.playerSeed);
+  const rnd = range.map(() => new Chance(monsterSeed));
   const config: GeneticAlgorithmConfig<IndexPlay> = {
     mutationFunction: ([idx, oldPlay]) => {
       const latestState = play.states[play.states.length - 1];
