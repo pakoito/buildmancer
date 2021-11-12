@@ -35,7 +35,7 @@ function App() {
 
   if (!game && player && encounter) {
     const game = play(player, encounter);
-    setGame(start(game, 10).phenotype);
+    setGame(start(game, 10, "PACO").phenotype);
   }
 
   return (

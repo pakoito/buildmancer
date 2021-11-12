@@ -25,6 +25,6 @@
     "src"
   ],
   "exclude": [
-    "*.test.tsx"
+    "**/*.test.tsx"
   ],
 }
