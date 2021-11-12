@@ -41,7 +41,7 @@ test('Some gens', () => {
   const results = tinkerer(play, 5, "PACO", { ...defaultTinkererOptions, debug: false });
   const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score);
   const lastState = best.phenotype[1].states[best.phenotype[1].states.length - 1];
-  console.log(`BEST BY ${best.score}\n` +
+  console.log(`BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
     prettyjson.render([
       lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target].lore.name}`, id]),
       lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
