@@ -3,6 +3,7 @@ import { handlePlayerEffect, Play, playerActions, setSelected } from '../playGam
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
 import { Seq } from 'immutable';
+import { previousState } from '../utils';
 
 type IndexPlay = [number, Play];
 
@@ -12,7 +13,7 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
   const rnd = range.map(() => new Chance(monsterSeed));
   const config: GeneticAlgorithmConfig<IndexPlay> = {
     mutationFunction: ([idx, oldPlay]) => {
-      const latestState = play.states[play.states.length - 1];
+      const latestState = previousState(oldPlay);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
       if (playerHealth === 0 || monsterHealth === 0) {
@@ -20,16 +21,16 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       }
       let newPlay = oldPlay;
       if (rand.d6() === 6) {
-        newPlay = setSelected(newPlay, rand.natural({ min: 0, max: newPlay.states[newPlay.states.length - 1].enemies.length - 1 }) as MonsterTarget);
+        newPlay = setSelected(newPlay, rand.natural({ min: 0, max: previousState(newPlay).enemies.length - 1 }) as MonsterTarget);
       }
-      const latest = newPlay.states[newPlay.states.length - 1];
+      const latest = previousState(newPlay);
       const actions = playerActions(latest.player);
       const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stats.stamina).map(([_, idx]) => idx);
       newPlay = handlePlayerEffect(newPlay, rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }), rnd[idx]);
       return [idx, newPlay];
     },
     fitnessFunction: ([_, play]) => {
-      const latestState = play.states[play.states.length - 1];
+      const latestState = previousState(play);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
       const startHealth = play.states[0].player.stats.hp;
