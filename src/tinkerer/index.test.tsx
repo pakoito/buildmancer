@@ -1,8 +1,9 @@
 import { Seq } from 'immutable';
 import { Play } from '../playGame';
 import { build, enemies } from '../utils';
-import tinkerer from './tinkerer';
+import tinkerer, { defaultTinkererOptions, IndexPlay } from './tinkerer';
 import prettyjson from 'prettyjson';
+import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 
 const play: Play = {
   states: [{
@@ -36,9 +37,9 @@ const play: Play = {
   }]
 }
 
-test('10 gens', () => {
-  const results = tinkerer(play, 5, "PACO");
-  const best = Seq(results).maxBy(a => a.score);
+test('Some gens', () => {
+  const results = tinkerer(play, 5, "PACO", { ...defaultTinkererOptions, debug: false });
+  const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score);
   const lastState = best.phenotype[1].states[best.phenotype[1].states.length - 1];
   console.log(`BEST BY ${best.score}\n` +
     prettyjson.render([

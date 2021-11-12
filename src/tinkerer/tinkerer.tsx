@@ -4,14 +4,14 @@ import Chance from 'chance';
 import { MonsterTarget } from '../types';
 import { previousState } from '../utils';
 
-type IndexPlay = readonly [number, Play];
+export type IndexPlay = readonly [number, Play];
 
-export type TinkererOptions = { playerSeed: any; turns: number; monsterWeight: number, playerWeight: number, turnWeight: number };
+export type TinkererOptions = { playerSeed: any; turns: number; monsterWeight: number, playerWeight: number, turnWeight: number, debug: boolean };
 
-const defaultOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, monsterWeight: 0.8, playerWeight: 0.15, turnWeight: 0.05 };
+export const defaultTinkererOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, monsterWeight: 0.8, playerWeight: 0.15, turnWeight: 0.05, debug: false };
 
-export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<Play>[] {
-  const options = { ...defaultOptions, ...options_ };
+export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<IndexPlay>[] {
+  const options = { ...defaultTinkererOptions, ...options_ };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
   const rnd = range.map(() => new Chance(monsterSeed));
@@ -45,8 +45,8 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       const killSpeedFitness = (options.turns - play.states.length) / options.turns;
 
       const fitness = (monsterKillingFitness * options.monsterWeight) + (playerAlivenessFitness * options.playerWeight) + (killSpeedFitness * options.turnWeight);
-      if (process.env['DEBUG']) {
-        console.log(`[${idx}] MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`)
+      if (options.debug) {
+        console.log(`[${idx}] MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`);
       }
       return fitness;
     },

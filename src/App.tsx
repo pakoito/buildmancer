@@ -9,7 +9,6 @@ import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
 import play, { handlePlayerEffect, Play, setSelected } from "./playGame";
 import { Chance } from "chance";
-import tinkerer from "./tinkerer/tinkerer";
 
 
 type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
