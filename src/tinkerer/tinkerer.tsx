@@ -1,13 +1,17 @@
-import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from 'geneticalgorithm';
+import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { handlePlayerEffect, Play, playerActions, setSelected } from '../playGame';
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
-import { Seq } from 'immutable';
 import { previousState } from '../utils';
 
-type IndexPlay = [number, Play];
+type IndexPlay = readonly [number, Play];
 
-export default function tinkerer(play: Play, iter: number, monsterSeed: any, options: { playerSeed: any; turns: number } = { playerSeed: "Miau", turns: 50 }): ScoredPhenotype<Play>[] {
+export type TinkererOptions = { playerSeed: any; turns: number; monsterWeight: number, playerWeight: number, turnWeight: number };
+
+const defaultOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, monsterWeight: 0.8, playerWeight: 0.15, turnWeight: 0.05 };
+
+export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<Play>[] {
+  const options = { ...defaultOptions, ...options_ };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
   const rnd = range.map(() => new Chance(monsterSeed));
@@ -29,21 +33,30 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       newPlay = handlePlayerEffect(newPlay, rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }), rnd[idx]);
       return [idx, newPlay];
     },
-    fitnessFunction: ([_, play]) => {
+    fitnessFunction: ([idx, play]) => {
       const latestState = previousState(play);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
-      const startHealth = play.states[0].player.stats.hp;
-      return (1 / (monsterHealth + 0.001)) + (playerHealth / startHealth) + (1 / play.states.length);
+      const startPlayerHealth = play.states[0].player.stats.hp;
+      const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
+
+      const monsterKillingFitness = ((startMonsterHealth - monsterHealth) / startMonsterHealth);
+      const playerAlivenessFitness = (playerHealth / startPlayerHealth);
+      const killSpeedFitness = (options.turns - play.states.length) / options.turns;
+
+      const fitness = (monsterKillingFitness * options.monsterWeight) + (playerAlivenessFitness * options.playerWeight) + (killSpeedFitness * options.turnWeight);
+      if (process.env['DEBUG']) {
+        console.log(`[${idx}] MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`)
+      }
+      return fitness;
     },
     population: range.map((_, idx) => [idx, play]) as IndexPlay[],
     populationSize: iter,
   }
 
-  const genC = new GeneticAlgorithmConstructor<IndexPlay>(config);
-  let gen = genC;
-  for (let i = options.turns; i > 0; i--) {
+  let gen = new GeneticAlgorithmConstructor<IndexPlay>(config);
+  for (let i = 0; i < options.turns; i++) {
     gen = gen.evolve();
   }
-  return Seq(gen.scoredPopulation()).sortBy(({ score }) => score).toArray();
+  return gen.scoredPopulation();
 }

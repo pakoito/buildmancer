@@ -1,6 +1,8 @@
+import { Seq } from 'immutable';
 import { Play } from '../playGame';
 import { build, enemies } from '../utils';
-import tinkerer from './tinkerer'
+import tinkerer from './tinkerer';
+import prettyjson from 'prettyjson';
 
 const play: Play = {
   states: [{
@@ -35,13 +37,14 @@ const play: Play = {
 }
 
 test('10 gens', () => {
-  let best = tinkerer(play, 100, "PACO")[0];
-  for (let i = 0; i < 0; i++) {
-    const result = tinkerer(play, 100, "PACO")[0];
-    if (result.score > best.score) {
-      best = result;
-    }
-  }
-  console.log(best);
-  console.log(JSON.stringify(best));
+  const results = tinkerer(play, 5, "PACO");
+  const best = Seq(results).maxBy(a => a.score);
+  const lastState = best.phenotype[1].states[best.phenotype[1].states.length - 1];
+  console.log(`BEST BY ${best.score}\n` +
+    prettyjson.render([
+      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target].lore.name}`, id]),
+      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
+      lastState.player.stats
+    ])
+  );
 });
