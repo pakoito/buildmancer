@@ -6,9 +6,9 @@ import { previousState } from '../utils';
 
 export type IndexPlay = readonly [number, Play];
 
-export type TinkererOptions = { playerSeed: any; turns: number; monsterWeight: number, playerWeight: number, turnWeight: number, debug: boolean };
+export type TinkererOptions = { playerSeed: any; turns: number; weights: { player: number; turn: number; monster: number }; debug: boolean };
 
-export const defaultTinkererOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, monsterWeight: 0.8, playerWeight: 0.15, turnWeight: 0.05, debug: false };
+export const defaultTinkererOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, weights: { monster: 0.8, player: 0.15, turn: 0.05 }, debug: false };
 
 export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<IndexPlay>[] {
   const options = { ...defaultTinkererOptions, ...options_ };
@@ -44,7 +44,7 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       const playerAlivenessFitness = (playerHealth / startPlayerHealth);
       const killSpeedFitness = (options.turns - play.states.length) / options.turns;
 
-      const fitness = (monsterKillingFitness * options.monsterWeight) + (playerAlivenessFitness * options.playerWeight) + (killSpeedFitness * options.turnWeight);
+      const fitness = (monsterKillingFitness * options.weights.monster) + (playerAlivenessFitness * options.weights.player) + (killSpeedFitness * options.weights.turn);
       if (options.debug) {
         console.log(`[${idx}] MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`);
       }

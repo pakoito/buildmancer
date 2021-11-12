@@ -38,7 +38,7 @@ const play: Play = {
 }
 
 test('Some gens', () => {
-  const results = tinkerer(play, 5, "PACO", { ...defaultTinkererOptions, debug: false });
+  const results = tinkerer(play, 5, "PACO", { ...defaultTinkererOptions, debug: false, weights: { player: 0.3, monster: 0.65, turn: 0.05 } });
   const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score);
   const lastState = best.phenotype[1].states[best.phenotype[1].states.length - 1];
   console.log(`BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
