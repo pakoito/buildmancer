@@ -9,13 +9,13 @@ const PlayerCard: React.FC<{
 }> = ({ selectedButtons, player, onClickEffect }) => (
   <Card>
     <Card.Body>
-      <Card.Title>{player.lore.name}</Card.Title>
+      <Card.Title>{player.lore.name}{player.stats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
       <Card.Subtitle className="mb-2 text-muted">
         {player.build.class.display}
       </Card.Subtitle>
       <Card.Text>Has {player.stats.hp} HP and {player.stats.stamina} stamina</Card.Text>
     </Card.Body>
-    <Card.Body>
+    {player.stats.hp > 0 && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
         {Object.values(player.build)
           .flatMap((a) => a.effects)
@@ -32,7 +32,7 @@ const PlayerCard: React.FC<{
             </Button>
           ))}
       </Stack>
-    </Card.Body>
+    </Card.Body>)}
   </Card>
 );
 

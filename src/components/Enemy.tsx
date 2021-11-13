@@ -14,7 +14,7 @@ const EnemyCard: React.FC<{
 }> = ({ enemy, isSelected, onSelect, latestAttack }) => (
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
-      <Card.Title>{enemy.lore.name}</Card.Title>
+      <Card.Title>{enemy.lore.name}{enemy.stats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
       <Card.Text>
         {enemy.lore.name}. Has {enemy.stats.hp} HP and is at distance{" "}
         {enemy.stats.distance}

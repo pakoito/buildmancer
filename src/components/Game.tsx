@@ -1,4 +1,4 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 
 import { MonsterTarget } from "../types";
 
@@ -8,14 +8,17 @@ import usePressedKeys from "../hooks/usePressedKeys";
 import { Play, playerActions } from "../playGame";
 import { Seq } from "immutable";
 import { previousState } from "../utils/data";
+import { Button } from "react-bootstrap";
 
-const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void }): JSX.Element => {
-  const { handlePlayerEffect, setSelected, game } = props;
+const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void, solveGame: (play: Play) => void }): JSX.Element => {
+  const { handlePlayerEffect, setSelected, game, solveGame } = props;
   const { player, enemies, target, lastAttacks } = previousState(game);
 
   const playerSkills = playerActions(player);
+  const isAlive = player.stats.hp > 0;
 
   const pressed = usePressedKeys((key) => {
+    if (!isAlive) return;
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= playerSkills.length) {
       handlePlayerEffect(valNum - 1);
@@ -36,6 +39,11 @@ const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void;
       <Row className="justify-content-center align-items-flex-start">
         <Col sm={12} md={8}>
           <Row>
+            <Card.Title>
+              Turn {game.states.length}
+            </Card.Title>
+          </Row>
+          <Row>
             <Col>
               <PlayerCard player={player} onClickEffect={handlePlayerEffect} selectedButtons={selectedButtons} />
             </Col>
@@ -52,6 +60,9 @@ const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void;
                 />
               </Col>
             ))}
+          </Row>
+          <Row>
+            <Button onClick={(_) => solveGame(game)}>Solve</Button>
           </Row>
         </Col>
       </Row>

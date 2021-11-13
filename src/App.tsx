@@ -8,6 +8,8 @@ import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
 import play, { handlePlayerEffect, Play, turnDeterministicRng, setSelected } from "./playGame";
+import tinkerer, { defaultTinkererOptions } from "./tinkerer/tinkerer";
+import { Seq } from "immutable";
 
 type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
 
@@ -49,6 +51,7 @@ function App() {
           game={game}
           setSelected={(idx) => setGame(setSelected(game, idx))}
           handlePlayerEffect={(idx) => setGame(handlePlayerEffect(game, idx, turnDeterministicRng(50, 10, 'SEED')))}
+          solveGame={() => setGame(Seq(tinkerer(game, 150, 'SEED', { ...defaultTinkererOptions, turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
         />
       ) : null}
     </div>

@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, EffectFun, InventoryEffect } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect } from "./types";
 import { Seq } from "immutable";
 import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
@@ -8,10 +8,6 @@ export type PlayHistory = [Snapshot, ...Snapshot[]];
 export type Play = {
   states: PlayHistory;
 };
-
-export const chain = (...funs: Array<EffectFun>): EffectFun =>
-  // TODO check direction of the fold
-  funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
 
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);

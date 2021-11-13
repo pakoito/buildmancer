@@ -41,7 +41,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
       id: "p-1",
       lore,
       stats: {
-        hp: 10,
+        hp: 25,
         stamina: 8,
         staminaPerTurn: 2,
       },

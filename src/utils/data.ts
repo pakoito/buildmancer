@@ -1,8 +1,13 @@
-import { actions, chain, Play } from "../playGame";
-import { EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
+import { actions, Play } from "../playGame";
+import { EffectFun, EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
+
+export const chain = (...funs: Array<EffectFun>): EffectFun =>
+  // TODO check direction of the fold
+  funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
+
 
 export const effectRepository: EffectFunRepo = {
   'Basic:Rest': (_origin, _play, newState) => newState,
