@@ -1,10 +1,10 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import { Play } from '../playGame';
-import { build, enemies } from '../utils/data.js';
 import { Enemies } from '../types';
-import tinker, { gameRender } from './tinkerer.js'
 import prettyjson from 'prettyjson';
+import { build, enemies } from '../utils/data';
+import tinker, { gameRender } from './tinkerer';
 
 const makeGame = (gameConfig: GameConfig): Play => ({
   states: [{

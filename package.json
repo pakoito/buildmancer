@@ -54,9 +54,9 @@
     "eject": "react-scripts eject",
     "sm": "open https://statecharts.io/inspect?server=localhost:8888 && SMD=1 ts-node src/menuStateMachine.mjs",
     "wsm": "powershell.exe /c 'start https://statecharts.io/inspect?server=localhost:8888' && SMD=1 ts-node src/menuStateMachine.mjs",
-    "smoke": "node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=5 --seed=paco",
-    "tinker": "node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=$BM_ITER --seed=$BM_SEED",
-    "play": "node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json'"
+    "smoke": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=5 --seed=paco",
+    "tinker": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=$BM_ITER --seed=$BM_SEED",
+    "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json'"
   },
   "eslintConfig": {
     "extends": [

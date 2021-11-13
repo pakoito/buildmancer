@@ -1,6 +1,6 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, EffectFun, InventoryEffect } from "./types";
 import { Seq } from "immutable";
-import { effectRepository, previousState } from "./utils/data.js";
+import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];

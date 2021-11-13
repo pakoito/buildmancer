@@ -1,8 +1,8 @@
-import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm.js';
-import { handlePlayerEffect, Play, playerActions, turnDeterministicRng, setSelected } from '../playGame.js';
+import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
+import { handlePlayerEffect, Play, playerActions, turnDeterministicRng, setSelected } from '../playGame';
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
-import { previousState } from '../utils/data.js';
+import { previousState } from '../utils/data';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';
 
