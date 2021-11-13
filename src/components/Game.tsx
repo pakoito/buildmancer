@@ -22,10 +22,13 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
   const { player, enemies, target, lastAttacks } = previousState(game);
 
   const playerSkills = playerActions(player);
+  const monsterHealth = enemies.reduce((acc, m) => m.stats.hp + acc, 0);
   const isAlive = player.stats.hp > 0;
+  const areMonstersAlive = monsterHealth > 0;
+  const canAct = isAlive && areMonstersAlive;
 
   const pressed = usePressedKeys((key) => {
-    if (!isAlive) return;
+    if (!canAct) return;
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= playerSkills.length) {
       handlePlayerEffect(valNum - 1);
@@ -52,7 +55,11 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
           </Row>
           <Row>
             <Col>
-              <PlayerCard player={player} onClickEffect={handlePlayerEffect} selectedButtons={selectedButtons} />
+              <PlayerCard
+                player={player}
+                onClickEffect={handlePlayerEffect}
+                selectedButtons={selectedButtons}
+                canAct={canAct} />
             </Col>
           </Row>
           <Row className="mt-2 g-2">
@@ -61,6 +68,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
                 <EnemyCard
                   key={idx}
                   enemy={enemy}
+                  canAct={canAct}
                   latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}
                   isSelected={idx === target}
                   onSelect={() => setSelected(idx as MonsterTarget)}

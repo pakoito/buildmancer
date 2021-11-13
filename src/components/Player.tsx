@@ -5,8 +5,9 @@ import { Player } from "../types";
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,
   player: Player;
+  canAct: boolean;
   onClickEffect: (index: number) => void;
-}> = ({ selectedButtons, player, onClickEffect }) => (
+}> = ({ selectedButtons, player, onClickEffect, canAct }) => (
   <Card>
     <Card.Body>
       <Card.Title>{player.lore.name}{player.stats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
@@ -15,7 +16,7 @@ const PlayerCard: React.FC<{
       </Card.Subtitle>
       <Card.Text>Has {player.stats.hp} HP and {player.stats.stamina} stamina</Card.Text>
     </Card.Body>
-    {player.stats.hp > 0 && (<Card.Body>
+    {canAct && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
         {Object.values(player.build)
           .flatMap((a) => a.effects)

@@ -11,7 +11,8 @@ const EnemyCard: React.FC<{
   latestAttack: string | undefined;
   isSelected?: boolean;
   onSelect: () => void;
-}> = ({ enemy, isSelected, onSelect, latestAttack }) => (
+  canAct: boolean;
+}> = ({ enemy, isSelected, onSelect, latestAttack, canAct }) => (
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
       <Card.Title>{enemy.lore.name}{enemy.stats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
@@ -22,7 +23,7 @@ const EnemyCard: React.FC<{
       {latestAttack && (<Card.Text>Latest attack: {latestAttack}</Card.Text>)}
       <Card.Text>Next attack prediction:</Card.Text>
       {skillPercents(enemy.rolls[enemy.stats.distance - 1].map((idx) => enemy.effects[idx]))}
-      <Button disabled={isSelected} onClick={onSelect}>Select</Button>
+      {canAct && (<Button disabled={isSelected} onClick={onSelect}>Select</Button>)}
     </Card.Body>
   </Card>
 );
