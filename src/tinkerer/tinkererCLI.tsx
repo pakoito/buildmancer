@@ -66,7 +66,7 @@ const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
   if (output != null) {
     console.log(`Writing to ${output}...`);
-    writeFileSync(output, JSON.stringify(results));
+    writeFileSync(output, JSON.stringify(results, null, 2));
   }
 }
 
