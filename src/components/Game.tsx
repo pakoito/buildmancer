@@ -23,9 +23,9 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
 
   const playerSkills = playerActions(player);
   const monsterHealth = enemies.reduce((acc, m) => m.stats.hp + acc, 0);
-  const isAlive = player.stats.hp > 0;
+  const isPlayerAlive = player.stats.hp > 0;
   const areMonstersAlive = monsterHealth > 0;
-  const canAct = isAlive && areMonstersAlive;
+  const canAct = isPlayerAlive && areMonstersAlive;
 
   const pressed = usePressedKeys((key) => {
     if (!canAct) return;
@@ -50,7 +50,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
         <Col sm={12} md={8}>
           <Row>
             <Card.Title>
-              Turn {game.states.length}
+              Turn {game.states.length} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
             </Card.Title>
           </Row>
           <Row>
@@ -77,9 +77,9 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
             ))}
           </Row>
           <Row>
-            <Button onClick={(_) => undo()}>Undo turn</Button>
-            <Button onClick={(_) => solveGame(100)}>Solve</Button>
-            <Button onClick={(_) => solveGame(1000)}>Solve thoroughly</Button>
+            <Button onClick={(_) => undo()}>Undo ↩</Button>
+            <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
+            <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
           </Row>
         </Col>
       </Row>
