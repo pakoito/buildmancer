@@ -60,7 +60,7 @@ type GameConfig = {
 
 const start = ({ json, iterations, seed }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(params)}\n==========\n`);
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${prettyjson.render(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
   const results = tinker(makeGame(params), iterations, seed, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
