@@ -10,8 +10,15 @@ import { Seq } from "immutable";
 import { previousState } from "../utils/data";
 import { Button } from "react-bootstrap";
 
-const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void, solveGame: (play: Play) => void }): JSX.Element => {
-  const { handlePlayerEffect, setSelected, game, solveGame } = props;
+export type GameProps = {
+  game: Play;
+  setSelected: (target: MonsterTarget) => void;
+  handlePlayerEffect: (index: number) => void,
+  solveGame: (iterations: number) => void,
+  undo: () => void
+};
+
+const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GameProps): JSX.Element => {
   const { player, enemies, target, lastAttacks } = previousState(game);
 
   const playerSkills = playerActions(player);
@@ -62,7 +69,9 @@ const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void;
             ))}
           </Row>
           <Row>
-            <Button onClick={(_) => solveGame(game)}>Solve</Button>
+            <Button onClick={(_) => undo()}>Undo turn</Button>
+            <Button onClick={(_) => solveGame(100)}>Solve</Button>
+            <Button onClick={(_) => solveGame(1000)}>Solve thoroughly</Button>
           </Row>
         </Col>
       </Row>

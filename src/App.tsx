@@ -49,9 +49,10 @@ function App() {
       {status === "game" && game ? (
         <Game
           game={game}
+          undo={() => setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] })}
           setSelected={(idx) => setGame(setSelected(game, idx))}
           handlePlayerEffect={(idx) => setGame(handlePlayerEffect(game, idx, turnDeterministicRng(50, 10, 'SEED')))}
-          solveGame={() => setGame(Seq(tinkerer(game, 150, 'SEED', { ...defaultTinkererOptions, turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
+          solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, 'SEED', { ...defaultTinkererOptions, turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
         />
       ) : null}
     </div>
