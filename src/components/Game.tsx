@@ -79,7 +79,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo }: 
             ))}
           </Row>
           <Row>
-            <Button onClick={(_) => undo()}>Undo ↩</Button>
+            {game.states.length > 1 && <Button onClick={(_) => undo()}>Undo ↩</Button>}
             {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
             <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
             <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
