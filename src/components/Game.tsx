@@ -59,6 +59,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
                 player={player}
                 onClickEffect={handlePlayerEffect}
                 selectedButtons={selectedButtons}
+                lastAction={(lastAttacks.find(a => a[0] === 'Player') ?? [undefined, undefined])[1]}
                 canAct={canAct} />
             </Col>
           </Row>

@@ -6,8 +6,9 @@ const PlayerCard: React.FC<{
   selectedButtons: Set<string>,
   player: Player;
   canAct: boolean;
+  lastAction: string | undefined;
   onClickEffect: (index: number) => void;
-}> = ({ selectedButtons, player, onClickEffect, canAct }) => (
+}> = ({ selectedButtons, player, onClickEffect, canAct, lastAction }) => (
   <Card>
     <Card.Body>
       <Card.Title>{player.lore.name}{player.stats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
@@ -15,6 +16,7 @@ const PlayerCard: React.FC<{
         {player.build.class.display}
       </Card.Subtitle>
       <Card.Text>Has {player.stats.hp} HP and {player.stats.stamina} stamina</Card.Text>
+      {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
     {canAct && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
