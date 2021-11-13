@@ -16,6 +16,9 @@ export const chain = (...funs: Array<EffectFun>): EffectFun =>
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);
 
+/**
+ * @returns min inclusive, max exclusive rand
+ */
 export function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: string | number): (turn: number) => (min: number, max: number) => number {
   const monsterChance = new Chance(monsterSeed);
   const monsterRng =
@@ -24,7 +27,7 @@ export function turnDeterministicRng(turns: number, randPerTurn: number, monster
         .map(_ => monsterChance.floating({ min: 0, max: 1, fixed: 2 })));
   return (turn) => {
     const turnRng = [...monsterRng[turn]];
-    return (min, max) => ((max - min) * turnRng.pop()!!) + min;
+    return (min, max) => Math.floor(((max - min) * turnRng.pop()!!) + min);
   }
 }
 
@@ -94,7 +97,7 @@ export const handlePlayerEffect = (play: Play, index: number, select: (turn: num
     .map((e, idx) =>
       [idx as Target, e.effects[
         e.rolls[e.stats.distance - 1]
-        [rand(0, e.rolls[e.stats.distance - 1].length - 1)]
+        [rand(0, e.rolls[e.stats.distance - 1].length)]
       ]] as const)
     .concat([['Player' as Target, usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);

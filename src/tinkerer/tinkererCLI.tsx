@@ -4,6 +4,7 @@ import { Play } from '../playGame';
 import { build, enemies } from '../utils/data.js';
 import { Enemies } from '../types';
 import tinker, { gameRender } from './tinkerer.js'
+import prettyjson from 'prettyjson';
 
 const makeGame = (gameConfig: GameConfig): Play => ({
   states: [{
@@ -54,12 +55,15 @@ type GameConfig = {
     stamina: number,
     staminaPerTurn: number,
   }
+  gameOptions?: any,
 }
 
 const start = ({ json, iterations, seed }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
-  const results = tinker(makeGame(params), iterations, seed);
-  console.log(gameRender(results));
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(params)}\n==========\n`);
+  const gameOptions = params.gameOptions || {};
+  const results = tinker(makeGame(params), iterations, seed, gameOptions);
+  console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
 }
 
 start(minimist(process.argv.slice(2)));

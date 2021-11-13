@@ -10,7 +10,13 @@ export type IndexPlay = readonly [number, Play];
 
 export type TinkererOptions = typeof defaultTinkererOptions;
 
-export const defaultTinkererOptions = { playerSeed: "Miau", turns: 50, weights: { monster: 0.8, player: 0.15, turn: 0.05 }, debug: false, randPerTurn: 10 };
+export const defaultTinkererOptions = {
+  playerSeed: "Miau",
+  turns: 50,
+  weights: { monster: 0.8, player: 0.15, turn: 0.05 },
+  debug: false,
+  randPerTurn: 10
+};
 
 export const gameRender = (results: ScoredPhenotype<IndexPlay>[]): string => {
   const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score)!!;

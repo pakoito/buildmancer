@@ -16,5 +16,8 @@
     "hp": 20,
     "stamina": 8,
     "staminaPerTurn": 2
+  },
+  "gameOptions": {
+    "debug": false
   }
 }
