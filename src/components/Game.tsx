@@ -16,9 +16,10 @@ export type GameProps = {
   handlePlayerEffect: (index: number) => void,
   solveGame: (iterations: number) => void,
   undo: () => void
+  redo: (() => void) | undefined;
 };
 
-const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GameProps): JSX.Element => {
+const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo }: GameProps): JSX.Element => {
   const { player, enemies, target, lastAttacks } = previousState(game);
 
   const playerSkills = playerActions(player);
@@ -78,7 +79,8 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo }: GamePr
             ))}
           </Row>
           <Row>
-            <Button onClick={(_) => undo()}>Undo ↩</Button>
+            {!redo && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
+            {redo && (<Col><Button onClick={(_) => undo()}>Undo ↩</Button><Button onClick={(_) => redo()}>Redo ↪</Button></Col>)}
             <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
             <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
           </Row>
