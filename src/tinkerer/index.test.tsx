@@ -1,9 +1,7 @@
-import { Seq } from 'immutable';
 import { Play } from '../playGame';
-import { build, enemies, previousState } from '../utils';
-import tinkerer, { defaultTinkererOptions, IndexPlay } from './tinkerer';
-import prettyjson from 'prettyjson';
-import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
+import { build, enemies } from '../utils';
+import tinkerer, { defaultTinkererOptions, gameRender } from './tinkerer';
+
 
 const play: Play = {
   states: [{
@@ -39,13 +37,5 @@ const play: Play = {
 
 test('Some gens', () => {
   const results = tinkerer(play, 5, "PACO", { ...defaultTinkererOptions, debug: false, weights: { player: 0.3, monster: 0.65, turn: 0.05 } });
-  const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score);
-  const lastState = previousState(best.phenotype[1]);
-  console.log(`BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
-    prettyjson.render([
-      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target].lore.name}`, id]),
-      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
-      lastState.player.stats
-    ])
-  );
+  console.log(gameRender(results));
 });

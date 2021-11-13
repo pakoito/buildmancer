@@ -3,12 +3,25 @@ import { handlePlayerEffect, Play, playerActions, setSelected } from '../playGam
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
 import { previousState } from '../utils';
+import prettyjson from 'prettyjson';
+import { Seq } from 'immutable';
 
 export type IndexPlay = readonly [number, Play];
 
 export type TinkererOptions = { playerSeed: any; turns: number; weights: { player: number; turn: number; monster: number }; debug: boolean };
 
 export const defaultTinkererOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, weights: { monster: 0.8, player: 0.15, turn: 0.05 }, debug: false };
+
+export const gameRender = (results: ScoredPhenotype<IndexPlay>[]): string => {
+  const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score)!!;
+  const lastState = previousState(best.phenotype[1]);
+  return `BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
+    prettyjson.render([
+      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target].lore.name}`, id]),
+      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
+      lastState.player.stats
+    ]);
+}
 
 export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<IndexPlay>[] {
   const options = { ...defaultTinkererOptions, ...options_ };
