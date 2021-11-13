@@ -3,7 +3,7 @@ import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstr
 import useScroll from "../hooks/useScroll";
 
 import { Player } from "../types";
-import { build, randomName } from "../utils";
+import { build, randomName } from "../utils/data";
 
 const randomAge = () => Math.floor((Math.random() * 50) + 16);
 

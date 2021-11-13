@@ -1,4 +1,4 @@
-import { actions, chain, Play } from "../playGame";
+import { actions, chain, Play } from "../playGame.js";
 import { EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];

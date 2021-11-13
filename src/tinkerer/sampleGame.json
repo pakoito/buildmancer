@@ -1,0 +1,20 @@
+{
+  "enemies": [
+    0
+  ],
+  "basic": 0,
+  "class": 0,
+  "weapon": 0,
+  "skill": 0,
+  "offhand": 0,
+  "consumable": 0,
+  "armor": 0,
+  "headgear": 0,
+  "footwear": 0,
+  "charm": 0,
+  "player": {
+    "hp": 20,
+    "stamina": 8,
+    "staminaPerTurn": 2
+  }
+}

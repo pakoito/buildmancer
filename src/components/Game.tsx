@@ -7,7 +7,7 @@ import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
 import { Play, playerActions } from "../playGame";
 import { Seq } from "immutable";
-import { previousState } from "../utils";
+import { previousState } from "../utils/data";
 
 const Game = (props: { game: Play; setSelected: (target: MonsterTarget) => void; handlePlayerEffect: (index: number) => void }): JSX.Element => {
   const { handlePlayerEffect, setSelected, game } = props;
