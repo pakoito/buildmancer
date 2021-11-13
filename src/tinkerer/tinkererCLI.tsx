@@ -1,5 +1,5 @@
 import minimist from 'minimist';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { Play } from '../playGame';
 import { build, enemies } from '../utils/data.js';
 import { Enemies } from '../types';
@@ -58,12 +58,16 @@ type GameConfig = {
   gameOptions?: any,
 }
 
-const start = ({ json, iterations, seed }: minimist.ParsedArgs) => {
+const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${prettyjson.render(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
   const results = tinker(makeGame(params), iterations, seed, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
+  if (output != null) {
+    console.log(`Writing to ${output}...`);
+    writeFileSync(output, JSON.stringify(results));
+  }
 }
 
 start(minimist(process.argv.slice(2)));

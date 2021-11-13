@@ -6,8 +6,6 @@ import { previousState } from '../utils/data.js';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';
 
-export type IndexPlay = readonly [number, Play];
-
 export type TinkererOptions = typeof defaultTinkererOptions;
 
 export const defaultTinkererOptions = {
@@ -18,10 +16,10 @@ export const defaultTinkererOptions = {
   randPerTurn: 10
 };
 
-export const gameRender = (results: ScoredPhenotype<IndexPlay>[]): string => {
-  const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score)!!;
-  const lastState = previousState(best.phenotype[1]);
-  return `BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
+export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
+  const best: ScoredPhenotype<Play> = Seq(results).maxBy(a => a.score)!!;
+  const lastState = previousState(best.phenotype);
+  return `BEST BY ${best.score} in ${best.phenotype.states.length - 1} turns\n` +
     prettyjson.render([
       lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target]!!.lore.name}`, id]),
       lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
@@ -29,17 +27,17 @@ export const gameRender = (results: ScoredPhenotype<IndexPlay>[]): string => {
     ]);
 }
 
-export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<IndexPlay>[] {
+export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<Play>[] {
   const options = { ...defaultTinkererOptions, ...options_ };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
-  const config: GeneticAlgorithmConfig<IndexPlay> = {
-    mutationFunction: ([idx, oldPlay]) => {
+  const config: GeneticAlgorithmConfig<Play> = {
+    mutationFunction: (oldPlay) => {
       const latestState = previousState(oldPlay);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
       if (playerHealth === 0 || monsterHealth === 0) {
-        return [idx, oldPlay];
+        return oldPlay;
       }
       let newPlay = oldPlay;
       if (rand.d6() === 6) {
@@ -53,9 +51,9 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
         rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }),
         turnDeterministicRng(options.turns, options.randPerTurn, monsterSeed)
       );
-      return [idx, newPlay];
+      return newPlay;
     },
-    fitnessFunction: ([idx, play]) => {
+    fitnessFunction: (play) => {
       const latestState = previousState(play);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
@@ -68,15 +66,15 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
 
       const fitness = (monsterKillingFitness * options.weights.monster) + (playerAlivenessFitness * options.weights.player) + (killSpeedFitness * options.weights.turn);
       if (options.debug) {
-        console.log(`[${idx}] MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`);
+        console.log(`MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`);
       }
       return fitness;
     },
-    population: range.map((_, idx) => [idx, play]) as IndexPlay[],
+    population: range.map((_) => play),
     populationSize: iter,
   }
 
-  let gen = new GeneticAlgorithmConstructor<IndexPlay>(config);
+  let gen = new GeneticAlgorithmConstructor<Play>(config);
   for (let i = 0; i < options.turns; i++) {
     gen = gen.evolve();
   }
