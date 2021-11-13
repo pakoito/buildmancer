@@ -7,13 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, Play, setSelected } from "./playGame";
-import { Chance } from "chance";
-
+import play, { handlePlayerEffect, Play, turnDeterministicRng, setSelected } from "./playGame";
 
 type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
-
-const chance = new Chance();
 
 function App() {
   const [status, setStatus] = React.useState<AppStatus>("buildPlayer");
@@ -49,7 +45,11 @@ function App() {
         />
       ) : null}
       {status === "game" && game ? (
-        <Game game={game} setSelected={(idx) => setGame(setSelected(game, idx))} handlePlayerEffect={(idx) => setGame(handlePlayerEffect(game, idx, chance))} />
+        <Game
+          game={game}
+          setSelected={(idx) => setGame(setSelected(game, idx))}
+          handlePlayerEffect={(idx) => setGame(handlePlayerEffect(game, idx, turnDeterministicRng(50, 10, 'SEED')))}
+        />
       ) : null}
     </div>
   );

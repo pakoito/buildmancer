@@ -1,5 +1,5 @@
 import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
-import { handlePlayerEffect, Play, playerActions, setSelected } from '../playGame';
+import { handlePlayerEffect, Play, playerActions, turnDeterministicRng, setSelected } from '../playGame';
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
 import { previousState } from '../utils';
@@ -8,16 +8,16 @@ import { Seq } from 'immutable';
 
 export type IndexPlay = readonly [number, Play];
 
-export type TinkererOptions = { playerSeed: any; turns: number; weights: { player: number; turn: number; monster: number }; debug: boolean };
+export type TinkererOptions = typeof defaultTinkererOptions;
 
-export const defaultTinkererOptions: TinkererOptions = { playerSeed: "Miau", turns: 50, weights: { monster: 0.8, player: 0.15, turn: 0.05 }, debug: false };
+export const defaultTinkererOptions = { playerSeed: "Miau", turns: 50, weights: { monster: 0.8, player: 0.15, turn: 0.05 }, debug: false, randPerTurn: 10 };
 
 export const gameRender = (results: ScoredPhenotype<IndexPlay>[]): string => {
   const best: ScoredPhenotype<IndexPlay> = Seq(results).maxBy(a => a.score)!!;
   const lastState = previousState(best.phenotype[1]);
   return `BEST BY ${best.score} in ${best.phenotype[1].states.length - 1} turns\n` +
     prettyjson.render([
-      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target].lore.name}`, id]),
+      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target]!!.lore.name}`, id]),
       lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
       lastState.player.stats
     ]);
@@ -27,7 +27,6 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
   const options = { ...defaultTinkererOptions, ...options_ };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
-  const rnd = range.map(() => new Chance(monsterSeed));
   const config: GeneticAlgorithmConfig<IndexPlay> = {
     mutationFunction: ([idx, oldPlay]) => {
       const latestState = previousState(oldPlay);
@@ -43,7 +42,11 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       const latest = previousState(newPlay);
       const actions = playerActions(latest.player);
       const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stats.stamina).map(([_, idx]) => idx);
-      newPlay = handlePlayerEffect(newPlay, rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }), rnd[idx]);
+      newPlay = handlePlayerEffect(
+        newPlay,
+        rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }),
+        turnDeterministicRng(options.turns, options.randPerTurn, monsterSeed)
+      );
       return [idx, newPlay];
     },
     fitnessFunction: ([idx, play]) => {
