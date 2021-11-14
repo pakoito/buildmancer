@@ -33,6 +33,8 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo }: 
     if (!canAct) return;
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= playerSkills.length) {
+      const hasStamina = playerSkills[valNum - 1].stamina <= player.stats.stamina;
+      if (!hasStamina) return;
       handlePlayerEffect(valNum - 1);
     }
   });
