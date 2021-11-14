@@ -51,7 +51,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo }: 
         <Col sm={12} md={8}>
           <Row>
             <Card.Title>
-              Turn {game.states.length} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
+              Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
             </Card.Title>
           </Row>
           <Row>
