@@ -64,6 +64,12 @@ function App() {
           setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
           handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
           solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
+          hint={(iterations) =>
+            setGame({
+              ...game,
+              states: [...game.states, Seq(tinkerer(game, iterations, { turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
+            })
+          }
         />
       ) : null}
     </div>
