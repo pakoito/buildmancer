@@ -10,7 +10,7 @@ export type TinkererOptions = typeof defaultTinkererOptions;
 
 export const defaultTinkererOptions = {
   playerSeed: "Miau",
-  weights: { monster: 0.8, player: 0.15, turn: 0.05 },
+  weights: { monster: 0.70, player: 0.125, turn: 0.05, stamina: 0.075 },
   debug: false,
 };
 
@@ -54,16 +54,19 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
       const latestState = previousState(play);
       const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
       const playerHealth = latestState.player.stats.hp;
+      const playerStamina = latestState.player.stats.stamina;
       const startPlayerHealth = play.states[0].player.stats.hp;
+      const startPlayerStamina = play.states[0].player.stats.hp;
       const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
 
       const monsterKillingFitness = ((startMonsterHealth - monsterHealth) / startMonsterHealth);
       const playerAlivenessFitness = (playerHealth / startPlayerHealth);
       const killSpeedFitness = (play.turns - play.states.length) / play.turns;
+      const staminaFitness = (playerStamina / startPlayerStamina);
 
-      const fitness = (monsterKillingFitness * options.weights.monster) + (playerAlivenessFitness * options.weights.player) + (killSpeedFitness * options.weights.turn);
+      const fitness = (monsterKillingFitness * options.weights.monster) + (playerAlivenessFitness * options.weights.player) + (killSpeedFitness * options.weights.turn) + (staminaFitness * options.weights.stamina);
       if (options.debug) {
-        console.log(`MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | TF: ${killSpeedFitness}`);
+        console.log(`MH: ${monsterHealth} | PH: ${playerHealth} | TR: ${play.states.length}\nFitness: ${fitness} | MF: ${monsterKillingFitness} | PF: ${playerAlivenessFitness} | SF: ${staminaFitness} | TF: ${killSpeedFitness}\nWeights: ${JSON.stringify(options.weights)}`);
       }
       return fitness;
     },
