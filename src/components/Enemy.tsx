@@ -4,7 +4,10 @@ import { Enemy, Effect } from "../types";
 import { Seq } from "immutable";
 
 const skillPercents = (effects: Effect[]) =>
-  Seq(effects).countBy((e) => e.display).toArray().map(([k, v], idx) => `[${(v / effects.length * 100).toFixed(2)}%] ${k}`).join("\n");
+  Seq(effects).countBy((e) => e.display).toArray().map(([display, v], idx) => {
+    const { range, priority } = effects.find(a => a.display === display)!!;
+    return <>[{(v / effects.length * 100).toFixed(2)}%] {display} ⏱:{priority} 🏹:{range.length === 5 ? 'Any' : range.map(a => a + 1).join(",")}<br key={idx} /></>
+  });
 
 const EnemyCard: React.FC<{
   enemy: Enemy;

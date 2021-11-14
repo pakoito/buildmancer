@@ -119,7 +119,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
         ? [effectRepository[effect.effect](origin, play, oldState), [...lastAttacks, [origin, effect.display] as [Target, string]]]
         : [oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]];
     }, [latestState, [] as [Target, string][]]);
-  latestState.lastAttacks = lastAttacks;
+  newState.lastAttacks = lastAttacks;
   return {
     ...play,
     states: [...play.states, newState],

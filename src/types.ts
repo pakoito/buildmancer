@@ -1,4 +1,3 @@
-import { Opaque } from "type-fest";
 import { Play } from "./playGame";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
@@ -48,7 +47,7 @@ export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snap
 export type EffectFunIndex = string;
 export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
 
-export type Ranges = Opaque<UpTo<Subtract<Distances, 1>>[], 'Ranges'>;
+export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
 export type Effect = {
   display: string;
