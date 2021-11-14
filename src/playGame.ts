@@ -2,14 +2,17 @@ import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, Inventory
 import { Seq } from "immutable";
 import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
+import { Opaque } from "type-fest";
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];
 
-export type Play = {
+type RNG = Opaque<number[][], 'RNG'>;
+
+export type Play = Readonly<{
   states: PlayHistory;
-  rng: (turn: number) => (min: number, max: number) => number;
+  rng: RNG;
   turns: number;
-};
+}>;
 
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);
@@ -17,16 +20,18 @@ const clamp = (num: number, min: number, max: number) =>
 /**
  * @returns min inclusive, max exclusive rand
  */
-export function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: string | number): (turn: number) => (min: number, max: number) => number {
+function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: string | number): RNG {
   const monsterChance = new Chance(monsterSeed);
   const monsterRng =
     [...Array(turns).keys()]
       .map(_ => [...Array(randPerTurn).keys()]
         .map(_ => monsterChance.floating({ min: 0, max: 1, fixed: 2 })));
-  return (turn) => {
-    const turnRng = [...monsterRng[turn]];
-    return (min, max) => Math.floor(((max - min) * turnRng.pop()!!) + min);
-  }
+  return monsterRng as RNG;
+}
+
+export const turnRng = (play: Play, turn: number) => (min: number, max: number): number => {
+  const turnRng = [...play.rng[turn]];
+  return Math.floor(((max - min) * turnRng.pop()!!) + min);
 }
 
 const updateMonster = (enemies: Enemies, target: Target, override: (stats: EnemyStats) => object): Enemies =>
@@ -92,7 +97,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const { enemies, player } = previousState(play);
   const playerSkills = playerActions(player);
   const usedSkill = playerSkills[index];
-  const rand = play.rng(play.states.length - 1);
+  const rand = turnRng(play, play.states.length - 1);
   const functions = Seq(enemies)
     .map((e, idx) =>
       [idx as Target, e.effects[

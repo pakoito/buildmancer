@@ -17,6 +17,8 @@
     "stamina": 8,
     "staminaPerTurn": 2
   },
+  "turns": 50,
+  "seed": "paco",
   "gameOptions": {
     "debug": false
   }
