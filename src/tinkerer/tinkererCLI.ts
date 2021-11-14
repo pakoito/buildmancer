@@ -1,13 +1,14 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
-import play, { Play } from '../playGame';
+import play, { Play, PlayHistory } from '../playGame';
 import { Enemies } from '../types';
 import prettyjson from 'prettyjson';
-import { build, enemies } from '../utils/data';
+import { build, enemies, previousState } from '../utils/data';
 import tinker, { gameRender, TinkererOptions } from './tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import hasher from 'object-hash';
+import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
 
 PouchDb.plugin(pouchFind);
 
@@ -77,6 +78,37 @@ export const paramsRender = (params: GameConfig): string => {
   return prettyjson.render(resolve);
 }
 
+const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
+  const pouch = new PouchDb(db);
+  await pouch.createIndex({
+    index: { fields: ['score'] }
+  });
+  await pouch.get('_design/game_analysis').then((c) => pouch.remove(c)).catch((e) => { });
+  const designDoc = {
+    _id: '_design/game_analysis',
+    views: {
+      victory: {
+        map: ((doc: ScoredPhenotype<Play>) => {
+          const lastState = doc.phenotype.states[doc.phenotype.states.length - 1];
+          const playerHp = lastState.player.stats.hp;
+          const monsterHp = lastState.enemies.reduce((acc, m) => m.stats.hp + acc, 0);
+          // @ts-ignore
+          emit(playerHp > 0 && monsterHp <= 0 ? 'VICTORY' : 'LOSS');
+        }).toString(),
+      },
+    }
+  }
+  await pouch.put(designDoc);
+  const docs = await Promise.all(results.flatMap(async (r) => {
+    const hash = hasher(r);
+    const res = await pouch.get(hash).catch(() => null);
+    return (res == null)
+      ? { _id: hash, ...r }
+      : [];
+  }));
+  await pouch.bulkDocs(docs).catch(e => console.log(JSON.stringify(e)));
+}
+
 const start = async ({ json, iterations, seed, output, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${paramsRender(params)}\n==========\n`);
@@ -89,17 +121,7 @@ const start = async ({ json, iterations, seed, output, db }: minimist.ParsedArgs
   }
   if (db != null) {
     console.log(`Storing in ${db}...`);
-    const pouch = new PouchDb(db);
-    await pouch.createIndex({
-      index: { fields: ['score'] }
-    });
-    for (const r of results) {
-      const hash = hasher(r);
-      const res = await pouch.get(hash).catch(() => null);
-      if (res == null) {
-        await pouch.put({ _id: hash, ...r }).catch((e) => { });
-      }
-    }
+    await writeToDb(db, results);
   }
 }
 

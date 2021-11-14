@@ -13,12 +13,11 @@ const start = async ({ json, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as Partial<GameConfig>;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(params)}\n==========\n`);
   const pouch = new PouchDb(db);
-  const result = await pouch.find({
-    selector: {
-      score: { $gte: 0.8 }
-    }
+  const q1 = await pouch.query('game_analysis/victory', {
+    key: 'VICTORY',
+    include_docs: true,
   });
-  console.log(`End ${result.docs.length}`);
+  console.log(`Victory: ${q1.rows.length / q1.total_rows * 100}%`);
 }
 
 start(minimist(process.argv.slice(2)));
