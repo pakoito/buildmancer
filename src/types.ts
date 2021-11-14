@@ -1,3 +1,4 @@
+import { Opaque } from "type-fest";
 import { Play } from "./playGame";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
@@ -34,7 +35,7 @@ export type UpTo<N extends number> =
   EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N
 
 export type PlayerStats = Record<string, number>;
-export type EnemyStats = Record<string, number>;
+export type EnemyStats = Record<string, number> & { distance: UpTo<Subtract<Distances, 1>> };
 
 export type Priorities = 5;
 export type Distances = 5;
@@ -47,10 +48,13 @@ export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snap
 export type EffectFunIndex = string;
 export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
 
+export type Ranges = Opaque<UpTo<Subtract<Distances, 1>>[], 'Ranges'>;
+
 export type Effect = {
   display: string;
   effect: EffectFunIndex;
   priority: UpTo<Subtract<Priorities, 1>>;
+  range: Ranges;
 };
 
 export type InventoryEffect = Effect & {

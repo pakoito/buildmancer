@@ -1,6 +1,7 @@
 import { Chance } from "chance";
+import { Subtract } from "type-fest/source/internal";
 import { actions, Play } from "../playGame";
-import { Build, EffectFun, EffectFunRepo, Enemy, InventoryEffect, Player, PlayerStats, Snapshot } from "../types";
+import { Build, Distances, EffectFun, EffectFunRepo, Enemy, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -39,6 +40,10 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
   };
 }
 
+export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new Set(number)] as Ranges;
+export const allRanges = makeRange(0, 1, 2, 3, 4);
+export const selfRange = allRanges;
+
 export const effectRepository: EffectFunRepo = {
   'Basic:Rest': (_origin, _play, newState) => newState,
   'Basic:Advance': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
@@ -71,18 +76,21 @@ export const build: Record<
           effect: "Basic:Rest",
           priority: 4,
           stamina: 0,
+          range: selfRange,
         },
         {
           display: "Advance",
           effect: "Basic:Advance",
           priority: 4,
           stamina: 1,
+          range: selfRange,
         },
         {
           display: "Retreat",
           effect: "Basic:Retreat",
           priority: 4,
           stamina: 1,
+          range: selfRange,
         }
       ]
     }
@@ -120,12 +128,14 @@ export const build: Record<
           effect: "Axe:Chop",
           priority: 2,
           stamina: 2,
+          range: makeRange(0, 1),
         },
         {
           display: "Cut",
           effect: "Axe:Cut",
           priority: 3,
           stamina: 2,
+          range: makeRange(0),
         },
       ],
     },
@@ -139,6 +149,7 @@ export const build: Record<
           effect: "Hook:GetHere",
           priority: 4,
           stamina: 3,
+          range: makeRange(2, 3, 4),
         },
       ],
     },
@@ -185,7 +196,7 @@ export const enemies: Enemy[] = [
     stats: {
       hp: 25,
       rage: 0,
-      distance: 5,
+      distance: 4,
     },
     rolls: [
       [0, 1, 2, 1, 0],
@@ -195,9 +206,9 @@ export const enemies: Enemy[] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
-      { display: "Roar", priority: 1, effect: "Monster:Roar" },
-      { display: "Jump", priority: 2, effect: "Monster:Jump" },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
+      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
+      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
   },
   {
@@ -207,12 +218,12 @@ export const enemies: Enemy[] = [
     stats: {
       hp: 30,
       rage: 0,
-      distance: 5,
+      distance: 4,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
-      { display: "Roar", priority: 1, effect: "Monster:Roar" },
-      { display: "Jump", priority: 2, effect: "Monster:Jump" },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
+      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
+      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],
@@ -229,12 +240,12 @@ export const enemies: Enemy[] = [
     stats: {
       hp: 22,
       rage: 0,
-      distance: 5,
+      distance: 4,
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe" },
-      { display: "Roar", priority: 1, effect: "Monster:Roar" },
-      { display: "Jump", priority: 2, effect: "Monster:Jump" },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
+      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
+      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 1, 0],

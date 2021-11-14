@@ -109,9 +109,17 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   const latestState: Snapshot =
     actions.modifyPlayerStamina(play.states[0], previousState(play), player.stats.staminaPerTurn - usedSkill.stamina);
-  latestState.lastAttacks = functions.map(([origin, effect]) => [origin, effect.effect] as const).toArray();
-  const newState =
-    functions.reduce((accState, [origin, effect]) => effectRepository[effect.effect](origin, play, accState), latestState);
+  const [newState, lastAttacks] =
+    functions.reduce((acc, value) => {
+      const [origin, effect] = value;
+      const [oldState, lastAttacks] = acc;
+      const target = origin === 'Player' ? latestState.target : origin;
+      const isInRange = new Set([...effect.range]).has(latestState.enemies[target]?.stats.distance!!);
+      return isInRange
+        ? [effectRepository[effect.effect](origin, play, oldState), [...lastAttacks, [origin, effect.display] as [Target, string]]]
+        : [oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]];
+    }, [latestState, [] as [Target, string][]]);
+  latestState.lastAttacks = lastAttacks;
   return {
     ...play,
     states: [...play.states, newState],
