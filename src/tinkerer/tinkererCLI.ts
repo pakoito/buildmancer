@@ -54,9 +54,27 @@ type GameConfig = {
   gameOptions?: Partial<TinkererOptions>,
 }
 
+const paramsRender = (params: GameConfig): string => {
+  const resolve = {
+    ...params,
+    enemies: params.enemies.map(a => enemies[a].lore.name),
+    basic: build.basic[params.basic].display,
+    class: build.class[params.class].display,
+    weapon: build.weapon[params.weapon].display,
+    skill: build.skill[params.skill].display,
+    offhand: build.offhand[params.offhand].display,
+    consumable: build.consumable[params.consumable].display,
+    armor: build.armor[params.armor].display,
+    headgear: build.headgear[params.headgear].display,
+    footwear: build.footwear[params.footwear].display,
+    charm: build.charm[params.charm].display,
+  }
+  return prettyjson.render(resolve);
+}
+
 const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${prettyjson.render(params)}\n==========\n`);
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${paramsRender(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
   const results = tinker(makeGame(params), iterations, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
