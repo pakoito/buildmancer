@@ -38,7 +38,7 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
         return oldPlay;
       }
       let newPlay = oldPlay;
-      if (rand.d6() === 6) {
+      while (rand.d6() === 6 || (previousState(newPlay).enemies[previousState(newPlay).target]?.stats.hp ?? 0) <= 0) {
         newPlay = setSelected(newPlay, rand.natural({ min: 0, max: previousState(newPlay).enemies.length - 1 }) as MonsterTarget);
       }
       const latest = previousState(newPlay);
