@@ -2,10 +2,7 @@ import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
 import { Player, Enemies, Enemy } from "../types";
-import { enemies } from "../utils/data";
-import Chance from 'chance';
-
-const rng = new Chance();
+import { enemies, randomEnemy } from "../utils/data";
 
 const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies) => void }) => {
   const [encounter, setEncounter] = React.useState<Enemy[]>([]);
@@ -44,7 +41,7 @@ const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies
           <ButtonGroup>
             <Button
               disabled={encounter.length < 0 || encounter.length > 5}
-              onClick={(_) => setEncounter((e) => [...e, enemies[rng.natural({ min: 0, max: enemies.length - 1 })]])}>
+              onClick={(_) => setEncounter((e) => [...e, randomEnemy()])}>
               Add Random
             </Button>
             <Button type="submit" disabled={encounter.length < 1 || encounter.length > 5}>To Battle!</Button>

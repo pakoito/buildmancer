@@ -1,5 +1,6 @@
+import { Chance } from "chance";
 import { actions, Play } from "../playGame";
-import { EffectFun, EffectFunRepo, Enemy, InventoryEffect, Snapshot } from "../types";
+import { Build, EffectFun, EffectFunRepo, Enemy, InventoryEffect, Player, PlayerStats, Snapshot } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -8,6 +9,35 @@ export const chain = (...funs: Array<EffectFun>): EffectFun =>
   // TODO check direction of the fold
   funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
 
+export const randomEnemy = (): Enemy => new Chance().pickone(enemies);
+
+export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build): Player => {
+  const rng = new Chance();
+  return {
+    id: rng.string(),
+    lore: {
+      name: randomName(),
+      age: rng.age(),
+    },
+    stats: {
+      hp: 25,
+      stamina: 8,
+      staminaPerTurn: 2,
+      ...statsOverride,
+    },
+    build: {
+      basic: rng.pickone(build.basic),
+      class: rng.pickone(build.class),
+      armor: rng.pickone(build.armor),
+      weapon: rng.pickone(build.weapon),
+      offhand: rng.pickone(build.offhand),
+      footwear: rng.pickone(build.footwear),
+      headwear: rng.pickone(build.headwear),
+      charm: rng.pickone(build.charm),
+      ...buildOverride,
+    }
+  };
+}
 
 export const effectRepository: EffectFunRepo = {
   'Basic:Rest': (_origin, _play, newState) => newState,

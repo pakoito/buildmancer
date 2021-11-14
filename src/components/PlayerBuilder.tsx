@@ -4,8 +4,7 @@ import useScroll from "../hooks/useScroll";
 
 import { Player } from "../types";
 import { build, randomName } from "../utils/data";
-
-const randomAge = () => Math.floor((Math.random() * 50) + 16);
+import Chance from 'chance';
 
 const selects = Object.entries(build).map(([type, options]) => ({
   type,
@@ -27,7 +26,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
   );
   const [lore, setLore] = React.useState({
     name: randomName(),
-    age: randomAge(),
+    age: new Chance().age(),
   });
   const setField = (field: string, value: number) => {
     setForm({
