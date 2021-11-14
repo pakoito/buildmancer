@@ -5,6 +5,11 @@ import { Enemies } from '../types';
 import prettyjson from 'prettyjson';
 import { build, enemies } from '../utils/data';
 import tinker, { gameRender, TinkererOptions } from './tinkerer';
+import PouchDb from 'pouchdb';
+import pouchFind from 'pouchdb-find';
+import hasher from 'object-hash';
+
+PouchDb.plugin(pouchFind);
 
 const makeGame = (gameConfig: GameConfig): Play => play(
   {
@@ -32,7 +37,7 @@ const makeGame = (gameConfig: GameConfig): Play => play(
     }
   }, gameConfig.enemies.map(v => enemies[v]) as Enemies, gameConfig.turns, gameConfig.seed);
 
-type GameConfig = {
+export type GameConfig = {
   enemies: number[],
   basic: number,
   class: number,
@@ -54,7 +59,7 @@ type GameConfig = {
   gameOptions?: Partial<TinkererOptions>,
 }
 
-const paramsRender = (params: GameConfig): string => {
+export const paramsRender = (params: GameConfig): string => {
   const resolve = {
     ...params,
     enemies: params.enemies.map(a => enemies[a].lore.name),
@@ -72,7 +77,7 @@ const paramsRender = (params: GameConfig): string => {
   return prettyjson.render(resolve);
 }
 
-const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
+const start = async ({ json, iterations, seed, output, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${paramsRender(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
@@ -81,6 +86,20 @@ const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
   if (output != null) {
     console.log(`Writing to ${output}...`);
     writeFileSync(output, JSON.stringify(results, null, 2));
+  }
+  if (db != null) {
+    console.log(`Storing in ${db}...`);
+    const pouch = new PouchDb(db);
+    await pouch.createIndex({
+      index: { fields: ['score'] }
+    });
+    for (const r of results) {
+      const hash = hasher(r);
+      const res = await pouch.get(hash).catch(() => null);
+      if (res == null) {
+        await pouch.put({ _id: hash, ...r }).catch((e) => { });
+      }
+    }
   }
 }
 

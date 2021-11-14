@@ -11,6 +11,9 @@
     "@types/jest": "^26.0.15",
     "@types/minimist": "^1.2.2",
     "@types/node": "^12.0.0",
+    "@types/object-hash": "^2.2.1",
+    "@types/pouchdb": "^6.4.0",
+    "@types/pouchdb-find": "^6.3.7",
     "@types/prettyjson": "^0.0.30",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
@@ -22,6 +25,9 @@
     "immutable": "^4.0.0",
     "localforage": "^1.10.0",
     "minimist": "^1.2.5",
+    "object-hash": "^2.2.0",
+    "pouchdb": "^7.2.2",
+    "pouchdb-find": "^7.2.2",
     "prettyjson": "^1.2.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.0",
@@ -57,7 +63,8 @@
     "wsm": "powershell.exe /c 'start https://statecharts.io/inspect?server=localhost:8888' && SMD=1 ts-node src/menuStateMachine.mjs",
     "smoke": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=5 --seed=paco",
     "tinker": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=$BM_ITER --seed=$BM_SEED",
-    "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json'"
+    "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json'",
+    "analyse": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/dataAnalysisCLI.ts --json='src/tinkerer/sampleGame.json'"
   },
   "eslintConfig": {
     "extends": [
