@@ -26,7 +26,8 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo }: 
   const monsterHealth = enemies.reduce((acc, m) => m.stats.hp + acc, 0);
   const isPlayerAlive = player.stats.hp > 0;
   const areMonstersAlive = monsterHealth > 0;
-  const canAct = isPlayerAlive && areMonstersAlive;
+  const endGame = game.states.length <= game.turns;
+  const canAct = isPlayerAlive && areMonstersAlive && endGame;
 
   const pressed = usePressedKeys((key) => {
     if (!canAct) return;
