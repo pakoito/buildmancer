@@ -7,6 +7,8 @@ export type PlayHistory = [Snapshot, ...Snapshot[]];
 
 export type Play = {
   states: PlayHistory;
+  rng: (turn: number) => (min: number, max: number) => number;
+  turns: number;
 };
 
 const clamp = (num: number, min: number, max: number) =>
@@ -73,7 +75,7 @@ export const actions = {
   }),
 };
 
-export default function play(player: Player, enemies: Enemies): Play {
+export default function play(player: Player, enemies: Enemies, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   return {
     states: [{
       player,
@@ -81,14 +83,16 @@ export default function play(player: Player, enemies: Enemies): Play {
       target: 0,
       lastAttacks: []
     }],
+    rng: turnDeterministicRng(turns, randPerTurn, seed),
+    turns,
   };
 }
 
-export const handlePlayerEffect = (play: Play, index: number, select: (turn: number) => (min: number, max: number) => number): Play => {
+export const handlePlayerEffect = (play: Play, index: number): Play => {
   const { enemies, player } = previousState(play);
   const playerSkills = playerActions(player);
   const usedSkill = playerSkills[index];
-  const rand = select(play.states.length - 1);
+  const rand = play.rng(play.states.length - 1);
   const functions = Seq(enemies)
     .map((e, idx) =>
       [idx as Target, e.effects[
@@ -112,6 +116,7 @@ export const handlePlayerEffect = (play: Play, index: number, select: (turn: num
 export const setSelected = (play: Play, target: MonsterTarget): Play => {
   play.states[play.states.length - 1].target = target;
   return {
+    ...play,
     states: [...play.states],
   };
 }

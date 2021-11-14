@@ -1,42 +1,36 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
-import { Play } from '../playGame';
+import play, { Play } from '../playGame';
 import { Enemies } from '../types';
 import prettyjson from 'prettyjson';
 import { build, enemies } from '../utils/data';
-import tinker, { gameRender } from './tinkerer';
+import tinker, { gameRender, TinkererOptions } from './tinkerer';
 
-const makeGame = (gameConfig: GameConfig): Play => ({
-  states: [{
-    player: {
-      id: "1",
-      lore: {
-        name: "XXX",
-        age: 123,
-      },
-      stats: {
-        hp: gameConfig.player.hp,
-        stamina: gameConfig.player.stamina,
-        staminaPerTurn: gameConfig.player.staminaPerTurn,
-      },
-      build: {
-        basic: build.basic[gameConfig.basic],
-        class: build.class[gameConfig.class],
-        weapon: build.weapon[gameConfig.weapon],
-        skill: build.skill[gameConfig.skill],
-        offhand: build.offhand[gameConfig.offhand],
-        consumable: build.consumable[gameConfig.consumable],
-        armor: build.armor[gameConfig.armor],
-        headgear: build.headgear[gameConfig.headgear],
-        footwear: build.footwear[gameConfig.footwear],
-        charm: build.charm[gameConfig.charm],
-      }
+const makeGame = (gameConfig: GameConfig): Play => play(
+  {
+    id: "1",
+    lore: {
+      name: "XXX",
+      age: 123,
     },
-    enemies: gameConfig.enemies.map(v => enemies[v]) as Enemies,
-    target: 0,
-    lastAttacks: [],
-  }]
-});
+    stats: {
+      hp: gameConfig.player.hp,
+      stamina: gameConfig.player.stamina,
+      staminaPerTurn: gameConfig.player.staminaPerTurn,
+    },
+    build: {
+      basic: build.basic[gameConfig.basic],
+      class: build.class[gameConfig.class],
+      weapon: build.weapon[gameConfig.weapon],
+      skill: build.skill[gameConfig.skill],
+      offhand: build.offhand[gameConfig.offhand],
+      consumable: build.consumable[gameConfig.consumable],
+      armor: build.armor[gameConfig.armor],
+      headgear: build.headgear[gameConfig.headgear],
+      footwear: build.footwear[gameConfig.footwear],
+      charm: build.charm[gameConfig.charm],
+    }
+  }, gameConfig.enemies.map(v => enemies[v]) as Enemies, gameConfig.turns, gameConfig.seed);
 
 type GameConfig = {
   enemies: number[],
@@ -54,15 +48,17 @@ type GameConfig = {
     hp: number,
     stamina: number,
     staminaPerTurn: number,
-  }
-  gameOptions?: any,
+  },
+  turns: number,
+  seed: string | number,
+  gameOptions?: Partial<TinkererOptions>,
 }
 
 const start = ({ json, iterations, seed, output }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${prettyjson.render(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
-  const results = tinker(makeGame(params), iterations, seed, gameOptions);
+  const results = tinker(makeGame(params), iterations, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
   if (output != null) {
     console.log(`Writing to ${output}...`);

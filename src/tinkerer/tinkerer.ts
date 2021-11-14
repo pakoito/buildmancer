@@ -1,5 +1,5 @@
 import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
-import { handlePlayerEffect, Play, playerActions, turnDeterministicRng, setSelected } from '../playGame';
+import { handlePlayerEffect, Play, playerActions, setSelected } from '../playGame';
 import Chance from 'chance';
 import { MonsterTarget } from '../types';
 import { previousState } from '../utils/data';
@@ -10,10 +10,8 @@ export type TinkererOptions = typeof defaultTinkererOptions;
 
 export const defaultTinkererOptions = {
   playerSeed: "Miau",
-  turns: 50,
   weights: { monster: 0.8, player: 0.15, turn: 0.05 },
   debug: false,
-  randPerTurn: 10
 };
 
 export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
@@ -27,8 +25,8 @@ export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
     ]);
 }
 
-export default function tinkerer(play: Play, iter: number, monsterSeed: any, options_?: TinkererOptions): ScoredPhenotype<Play>[] {
-  const options = { ...defaultTinkererOptions, ...options_ };
+export default function tinkerer(play: Play, iter: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Play>[] {
+  const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
   const config: GeneticAlgorithmConfig<Play> = {
@@ -48,8 +46,7 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
       const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stats.stamina).map(([_, idx]) => idx);
       newPlay = handlePlayerEffect(
         newPlay,
-        rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable }),
-        turnDeterministicRng(options.turns, options.randPerTurn, monsterSeed)
+        rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable })
       );
       return newPlay;
     },
@@ -62,7 +59,7 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
 
       const monsterKillingFitness = ((startMonsterHealth - monsterHealth) / startMonsterHealth);
       const playerAlivenessFitness = (playerHealth / startPlayerHealth);
-      const killSpeedFitness = (options.turns - play.states.length) / options.turns;
+      const killSpeedFitness = (play.turns - play.states.length) / play.turns;
 
       const fitness = (monsterKillingFitness * options.weights.monster) + (playerAlivenessFitness * options.weights.player) + (killSpeedFitness * options.weights.turn);
       if (options.debug) {
@@ -75,7 +72,7 @@ export default function tinkerer(play: Play, iter: number, monsterSeed: any, opt
   }
 
   let gen = new GeneticAlgorithmConstructor<Play>(config);
-  for (let i = 0; i < options.turns; i++) {
+  for (let i = 0; i < play.turns; i++) {
     gen = gen.evolve();
   }
   return gen.scoredPopulation();
