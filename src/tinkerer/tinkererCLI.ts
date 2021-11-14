@@ -1,9 +1,9 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
-import play, { Play, PlayHistory } from '../playGame';
+import play, { Play } from '../playGame';
 import { Enemies } from '../types';
 import prettyjson from 'prettyjson';
-import { build, enemies, previousState } from '../utils/data';
+import { build, enemies } from '../utils/data';
 import tinker, { gameRender, TinkererOptions } from './tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
