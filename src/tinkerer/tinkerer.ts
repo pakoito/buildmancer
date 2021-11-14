@@ -6,7 +6,7 @@ import { previousState } from '../utils/data';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';
 
-export type TinkererOptions = typeof defaultTinkererOptions;
+export type TinkererOptions = typeof defaultTinkererOptions & { turns?: number };
 
 export const defaultTinkererOptions = {
   playerSeed: "Miau",
@@ -74,8 +74,9 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
     populationSize: iter,
   }
 
+  const turns = optionsOverride?.turns ? optionsOverride?.turns : play.turns;
   let gen = new GeneticAlgorithmConstructor<Play>(config);
-  for (let i = 0; i < play.turns; i++) {
+  for (let i = 0; i < turns; i++) {
     gen = gen.evolve();
   }
   return gen.scoredPopulation();

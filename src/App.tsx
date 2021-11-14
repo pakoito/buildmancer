@@ -7,8 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, Play, turnDeterministicRng, setSelected } from "./playGame";
-import tinkerer, { defaultTinkererOptions } from "./tinkerer/tinkerer";
+import play, { handlePlayerEffect, Play, setSelected } from "./playGame";
+import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
 import { previousState } from "./utils/data";
 
@@ -33,7 +33,7 @@ function App() {
   }
 
   if (!game && player && encounter) {
-    const game = play(player, encounter);
+    const game = play(player, encounter, 50, 'PACC');
     setGame(game);
   }
 
@@ -62,8 +62,8 @@ function App() {
             setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
           }}
           setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
-          handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx, turnDeterministicRng(50, 10, 'SEED'))); }}
-          solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, 'SEED', { ...defaultTinkererOptions, turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
+          handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
+          solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: 50 - game.states.length })).maxBy(a => a.score)!!.phenotype)}
         />
       ) : null}
     </div>
