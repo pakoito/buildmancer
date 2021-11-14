@@ -3,6 +3,7 @@ import { Seq } from "immutable";
 import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
 import { Opaque } from "type-fest";
+import hasher from 'object-hash';
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];
 
@@ -12,6 +13,7 @@ export type Play = Readonly<{
   states: PlayHistory;
   rng: RNG;
   turns: number;
+  id: string;
 }>;
 
 const clamp = (num: number, min: number, max: number) =>
@@ -90,6 +92,7 @@ export default function play(player: Player, enemies: Enemies, turns: number, se
     }],
     rng: turnDeterministicRng(turns, randPerTurn, seed),
     turns,
+    id: hasher(play),
   };
 }
 

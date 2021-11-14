@@ -3,21 +3,28 @@ import { readFileSync } from 'fs';
 import prettyjson from 'prettyjson';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
-import { GameConfig } from './tinkererCLI';
 import { assert } from 'console';
+import hasher from 'object-hash';
+import { GameConfig, makeGame } from './tinkererTools';
 
 PouchDb.plugin(pouchFind);
 
 const start = async ({ json, db }: minimist.ParsedArgs) => {
   assert(db, 'Plase specify a db');
-  const params = JSON.parse(readFileSync(json).toString()) as Partial<GameConfig>;
+  const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(params)}\n==========\n`);
   const pouch = new PouchDb(db);
+  const game = makeGame(params);
   const q1 = await pouch.query('game_analysis/victory', {
-    key: 'VICTORY',
-    include_docs: true,
+    key: `${game.id}-VICTORY`
   });
-  console.log(`Victory: ${q1.rows.length / q1.total_rows * 100}%`);
+  const q2 = await pouch.query('game_analysis/victory', {
+    key: `${game.id}-LOSS`
+  });
+  const q3 = await pouch.query('game_analysis/victory');
+  console.log(`Victory: ${(q1.rows.length / q1.total_rows * 100).toFixed(2)}%`);
+  console.log(`Loss: ${(q2.rows.length / q1.total_rows * 100).toFixed(2)}%`);
+  console.log(`Count: ${q3.rows.length}`);
 }
 
 start(minimist(process.argv.slice(2)));

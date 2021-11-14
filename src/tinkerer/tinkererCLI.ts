@@ -1,64 +1,16 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
-import play, { Play } from '../playGame';
-import { Enemies } from '../types';
+import { Play } from '../playGame';
 import prettyjson from 'prettyjson';
 import { build, enemies } from '../utils/data';
-import tinker, { gameRender, TinkererOptions } from './tinkerer';
+import tinker, { gameRender } from './tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import hasher from 'object-hash';
 import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
+import { GameConfig, makeGame } from './tinkererTools';
 
 PouchDb.plugin(pouchFind);
-
-const makeGame = (gameConfig: GameConfig): Play => play(
-  {
-    id: "1",
-    lore: {
-      name: "XXX",
-      age: 123,
-    },
-    stats: {
-      hp: gameConfig.player.hp,
-      stamina: gameConfig.player.stamina,
-      staminaPerTurn: gameConfig.player.staminaPerTurn,
-    },
-    build: {
-      basic: build.basic[gameConfig.basic],
-      class: build.class[gameConfig.class],
-      weapon: build.weapon[gameConfig.weapon],
-      skill: build.skill[gameConfig.skill],
-      offhand: build.offhand[gameConfig.offhand],
-      consumable: build.consumable[gameConfig.consumable],
-      armor: build.armor[gameConfig.armor],
-      headgear: build.headgear[gameConfig.headgear],
-      footwear: build.footwear[gameConfig.footwear],
-      charm: build.charm[gameConfig.charm],
-    }
-  }, gameConfig.enemies.map(v => enemies[v]) as Enemies, gameConfig.turns, gameConfig.seed);
-
-export type GameConfig = {
-  enemies: number[],
-  basic: number,
-  class: number,
-  weapon: number,
-  skill: number,
-  offhand: number,
-  consumable: number,
-  armor: number,
-  headgear: number,
-  footwear: number,
-  charm: number,
-  player: {
-    hp: number,
-    stamina: number,
-    staminaPerTurn: number,
-  },
-  turns: number,
-  seed: string | number,
-  gameOptions?: Partial<TinkererOptions>,
-}
 
 export const paramsRender = (params: GameConfig): string => {
   const resolve = {
@@ -83,7 +35,7 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   await pouch.createIndex({
     index: { fields: ['score'] }
   });
-  await pouch.get('_design/game_analysis').then((c) => pouch.remove(c)).catch((e) => { });
+  await pouch.get('_design/game_analysis').then((c) => pouch.remove(c)).catch((e) => e.name !== 'not_found' ? console.log(JSON.stringify(e)) : void 0);
   const designDoc = {
     _id: '_design/game_analysis',
     views: {
@@ -93,9 +45,9 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
           const playerHp = lastState.player.stats.hp;
           const monsterHp = lastState.enemies.reduce((acc, m) => m.stats.hp + acc, 0);
           // @ts-ignore
-          emit(playerHp > 0 && monsterHp <= 0 ? 'VICTORY' : 'LOSS');
+          emit(`${doc.phenotype.id}-${playerHp > 0 && monsterHp <= 0 ? 'VICTORY' : 'LOSS'}`, [playerHp, monsterHp]);
         }).toString(),
-      },
+      }
     }
   }
   await pouch.put(designDoc);
