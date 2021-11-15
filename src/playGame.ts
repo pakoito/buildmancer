@@ -3,7 +3,8 @@ import { Seq } from "immutable";
 import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
 import { Opaque } from "type-fest";
-import hasher from 'object-hash';
+// @ts-ignore fails on scripts despite having a d.ts file
+import { toIndexableString } from 'pouchdb-collate';
 
 export type PlayHistory = [Snapshot, ...Snapshot[]];
 
@@ -14,6 +15,7 @@ export type Play = Readonly<{
   rng: RNG;
   turns: number;
   id: string;
+  seed: string | number;
 }>;
 
 const clamp = (num: number, min: number, max: number) =>
@@ -92,7 +94,8 @@ export default function play(player: Player, enemies: Enemies, turns: number, se
     }],
     rng: turnDeterministicRng(turns, randPerTurn, seed),
     turns,
-    id: hasher(play),
+    id: toIndexableString([player, enemies, turns, seed]),
+    seed,
   };
 }
 
