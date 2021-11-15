@@ -25,7 +25,7 @@ const start = async ({ json, db }: minimist.ParsedArgs) => {
   const q3 = await pouch.query('game_analysis/victory');
   console.log(`Victory: ${(q1.rows.length / q1.total_rows * 100).toFixed(2)}%`);
   console.log(`Loss: ${(q2.rows.length / q1.total_rows * 100).toFixed(2)}%`);
-  console.log(`Count: ${q3.rows.filter(a => a.key.includes(toIndexableString([game.states]))).length}`);
+  console.log(`Count: ${q3.rows.filter(a => a.key.includes(toIndexableString([game.states[0].player]))).length}`);
 }
 
 start(minimist(process.argv.slice(2)));
