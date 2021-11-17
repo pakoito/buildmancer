@@ -1,24 +1,9 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Nel } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG } from "./types";
 import { Seq } from "immutable";
 import { effectDead, effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
-import { Opaque } from "type-fest";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
-
-export type PlayHistory = Nel<Snapshot>;
-
-type RNG = Opaque<number[][], 'RNG'>;
-
-export type Play = Readonly<{
-  states: PlayHistory;
-  player: Player;
-  enemies: Enemies,
-  rng: RNG;
-  turns: number;
-  id: string;
-  seed: string | number;
-}>;
 
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);

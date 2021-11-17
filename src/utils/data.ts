@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { actions, Play } from "../playGame";
-import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
+import { actions } from "../playGame";
+import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -58,7 +58,15 @@ export const effectRepository: EffectFunRepo = {
   'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
   'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
   'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
+  'BootsOfFlight:BOT': (_, _p, currentState) => currentState.enemies.reduce((s, m, idx) => actions.changeDistance(s, idx as MonsterTarget, 2), currentState),
+  'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
 };
+
+export const statsRepository: StatsFunRepo = {
+  'Charm:ofHealth': (player, enemies) => [{ ...player, hp: player.hp + 10 }, enemies],
+  'Charm:ofHaste': (player, enemies) => [{ ...player, staminaPerTurn: player.staminaPerTurn + 1 }, enemies],
+  'Charm:ofResilience': (player, enemies) => [{ ...player, stamina: player.stamina + 10 }, enemies],
+}
 
 export const build: Record<
   string,
@@ -171,7 +179,9 @@ export const build: Record<
   ],
   footwear: [
     {
-      display: "Boots",
+      display: "Boots of Flight",
+      bot: ["BootsOfFlight:BOT"],
+      eot: ["BootsOfFlight:EOT"],
       effects: [],
     },
   ],
@@ -179,6 +189,17 @@ export const build: Record<
     {
       display: "of Health",
       effects: [],
+      passive: "Charm:ofHealth",
+    },
+    {
+      display: "of Haste",
+      effects: [],
+      passive: "Charm:ofHaste",
+    },
+    {
+      display: "of Resilience",
+      effects: [],
+      passive: "Charm:ofResilience",
     },
   ],
 };

@@ -1,4 +1,4 @@
-import { Play } from "./playGame";
+import { Opaque } from "type-fest";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -49,17 +49,37 @@ export type Snapshot = {
   target: MonsterTarget;
   lastAttacks: (readonly [Target, string])[];
 };
-export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
+
+export type PlayHistory = Nel<Snapshot>;
+
+export type RNG = Opaque<number[][], 'RNG'>;
+
+export type Play = Readonly<{
+  states: PlayHistory;
+  player: Player;
+  enemies: Enemies,
+  rng: RNG;
+  turns: number;
+  id: string;
+  seed: string | number;
+}>;
 
 type ItemOrMonster = string /* TODO all items */ | 'Monster';
-export type EffectFunIndex = `${ItemOrMonster}:${string}`;
-export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
+export type FunIndex = `${ItemOrMonster}:${string}`;
+
+export type EffectFunIndex = FunIndex;
+export type EffectFunRepo = { [key: FunIndex]: EffectFun; }
+export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
+
+export type StatsFunIndex = FunIndex;
+export type StatsFunRepo = { [key: FunIndex]: StatsFun; }
+export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerStats, EnemiesStats];
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
 export type Effect = {
   display: string;
-  effect: EffectFunIndex;
+  effect: FunIndex;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
@@ -78,6 +98,7 @@ export type Build = Record<
 
 export type Item = {
   display: string;
+  passive?: StatsFunIndex;
   bot?: Nel<EffectFunIndex>;
   eot?: Nel<EffectFunIndex>;
   effects: InventoryEffect[];

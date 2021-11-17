@@ -1,6 +1,5 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
-import { Play } from '../playGame';
 import prettyjson from 'prettyjson';
 import { build, enemies } from '../utils/data';
 import tinker, { gameRender } from './tinkerer';
@@ -9,6 +8,7 @@ import pouchFind from 'pouchdb-find';
 import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
+import { Play } from 'src/types';
 
 PouchDb.plugin(pouchFind);
 
