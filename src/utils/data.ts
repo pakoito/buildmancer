@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { actions, Play } from "../playGame";
-import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
+import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -62,11 +62,7 @@ export const effectRepository: EffectFunRepo = {
 
 export const build: Record<
   string,
-  {
-    display: string;
-    effects: InventoryEffect[];
-    [key: string]: any;
-  }[]
+  Item[]
 > = {
   basic: [
     {

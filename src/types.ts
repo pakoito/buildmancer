@@ -3,6 +3,8 @@ import { Play } from "./playGame";
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
 
+export type Nel<T> = [T, ...T[]];
+
 type Length<T extends any[]> =
   T extends { length: infer L } ? L : never;
 type BuildTuple<L extends number, T extends any[] = []> =
@@ -71,12 +73,16 @@ export type Target = MonsterTarget | 'Player';
 
 export type Build = Record<
   string,
-  {
-    display: string;
-    effects: InventoryEffect[];
-    [key: string]: any;
-  }
+  Item
 >;
+
+export type Item = {
+  display: string;
+  bot?: Nel<EffectFunIndex>;
+  eot?: Nel<EffectFunIndex>;
+  effects: InventoryEffect[];
+  [key: string]: any;
+};
 
 export type Player = {
   id: string;

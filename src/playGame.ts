@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Nel } from "./types";
 import { Seq } from "immutable";
 import { effectDead, effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
@@ -6,7 +6,7 @@ import { Opaque } from "type-fest";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 
-export type PlayHistory = [Snapshot, ...Snapshot[]];
+export type PlayHistory = Nel<Snapshot>;
 
 type RNG = Opaque<number[][], 'RNG'>;
 
