@@ -20,8 +20,8 @@ export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
   return `BEST BY ${best.score} in ${best.phenotype.states.length - 1} turns\n` +
     prettyjson.render([
       lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${best.phenotype.enemies[target]!!.lore.name}`, id]),
-      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${best.phenotype.enemies[idx].lore.name}`, a.stats]),
-      lastState.player.stats
+      Seq(best.phenotype.enemies).zip(Seq(lastState.enemies)).flatMap(([enemy, stats], idx) => [`[${idx}] ${enemy.lore.name}`, stats]).toArray(),
+      lastState.player,
     ]);
 }
 
