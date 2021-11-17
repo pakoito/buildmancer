@@ -22,7 +22,7 @@ const PlayerCard: React.FC<{
     {canAct && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
         {Object.values(player.build)
-          .flatMap((a) => a.effects)
+          .flatMap((a) => a.effects ?? [])
           .map((e, idx) => (<div>
             <Button
               key={e.display}
