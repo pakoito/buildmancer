@@ -8,7 +8,7 @@ import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
-import { Chance } from "chance";
+import hasher from 'object-hash';
 
 PouchDb.plugin(pouchFind);
 
@@ -35,26 +35,14 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   await pouch.createIndex({
     index: { fields: ['score'] }
   });
-  await pouch.get('_design/game_analysis').then((c) => pouch.remove(c)).catch((e) => e.name !== 'not_found' ? console.log(JSON.stringify(e)) : void 0);
-  const designDoc = {
-    _id: '_design/game_analysis',
-    views: {
-      victory: {
-        map: ((doc: ScoredPhenotype<Play>) => {
-          const lastState = doc.phenotype.states[doc.phenotype.states.length - 1];
-          const playerHp = lastState.player.stats.hp;
-          const monsterHp = lastState.enemies.reduce((acc, m) => m.stats.hp + acc, 0);
-          // @ts-ignore emit is injected by the db
-          emit(`${doc.phenotype.id}-${playerHp > 0 && monsterHp <= 0 ? 'VICTORY' : 'LOSS'}`, [playerHp, monsterHp]);
-        }).toString(),
-      }
-    }
-  }
-  await pouch.put(designDoc);
   const docs = await Promise.all(results.flatMap(async (r) => {
+    const lastState = r.phenotype.states[r.phenotype.states.length - 1];
+    const playerHp = lastState.player.stats.hp;
+    const monsterHp = lastState.enemies.reduce((acc, m) => m.stats.hp + acc, 0);
+    const outcome = playerHp > 0 && monsterHp <= 0 ? 'W' : 'L';
     const res = await pouch.get(r.phenotype.id).catch(() => null);
     return (res == null)
-      ? { _id: `${new Chance().guid()}||${r.phenotype.id}`, ...r }
+      ? { _id: `##${r.phenotype.id}##${outcome}##${hasher(r.phenotype.states)}##`, ...r }
       : [];
   }));
   await pouch.bulkDocs(docs).catch(e => console.log(JSON.stringify(e)));

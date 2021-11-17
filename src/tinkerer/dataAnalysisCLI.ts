@@ -16,16 +16,18 @@ const start = async ({ json, db }: minimist.ParsedArgs) => {
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(params)}\n==========\n`);
   const pouch = new PouchDb(db);
   const game = makeGame(params);
-  const q1 = await pouch.query('game_analysis/victory', {
-    key: `${game.id}-VICTORY`
+  const w = await pouch.find({
+    selector: {
+      _id: { $regex: `##${game.id}##W##` }
+    }
   });
-  const q2 = await pouch.query('game_analysis/victory', {
-    key: `${game.id}-LOSS`
+  const l = await pouch.find({
+    selector: {
+      _id: { $regex: `##${game.id}##L##` }
+    },
   });
-  const q3 = await pouch.query('game_analysis/victory');
-  console.log(`Victory: ${(q1.rows.length / q1.total_rows * 100).toFixed(2)}%`);
-  console.log(`Loss: ${(q2.rows.length / q1.total_rows * 100).toFixed(2)}%`);
-  console.log(`Count: ${q3.rows.filter(a => a.key.includes(toIndexableString([game.states[0].player]))).length}`);
+  console.log(`Victory ${(100 * w.docs.length / (w.docs.length + l.docs.length)).toFixed(2)}%`);
+  console.log(`Totals ${w.docs.length} of ${l.docs.length} [${(w.docs.length / l.docs.length).toFixed(2)}%]`);
 }
 
 start(minimist(process.argv.slice(2)));
