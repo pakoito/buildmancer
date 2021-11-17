@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { actions, Play } from "../playGame";
-import { Build, Distances, EffectFun, EffectFunRepo, Enemy, EnemyStats, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
+import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -43,7 +43,9 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new 
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
+export const effectDead: Effect = { display: "DEAD", priority: 4, effect: "Monster:Dead", range: makeRange() };
 export const effectRepository: EffectFunRepo = {
+  'Monster:Dead': (_origin, _play, newState) => newState,
   'Basic:Rest': (_origin, _play, newState) => newState,
   'Basic:Advance': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
   'Basic:Retreat': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),

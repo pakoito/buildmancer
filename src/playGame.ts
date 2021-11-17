@@ -1,6 +1,6 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats } from "./types";
 import { Seq } from "immutable";
-import { effectRepository, previousState } from "./utils/data";
+import { effectDead, effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
 import { Opaque } from "type-fest";
 // @ts-ignore fails on scripts despite having a d.ts file
@@ -107,10 +107,9 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const rand = turnRng(play, play.states.length - 1);
   const functions = Seq(play.enemies).zip(Seq(enemies))
     .map(([e, stats], idx) =>
-      [idx as Target, e.effects[
-        e.rolls[stats.distance - 1]
-        [rand(0, e.rolls[stats.distance - 1].length)]
-      ]] as const)
+      [idx as Target, stats.hp < 1
+        ? e.effects[e.rolls[stats.distance - 1][rand(0, e.rolls[stats.distance - 1].length)]]
+        : effectDead] as const)
     .concat([['Player' as Target, usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 

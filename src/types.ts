@@ -49,7 +49,8 @@ export type Snapshot = {
 };
 export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
-export type EffectFunIndex = string;
+type ItemOrMonster = string /* TODO all items */ | 'Monster';
+export type EffectFunIndex = `${ItemOrMonster}:${string}`;
 export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
