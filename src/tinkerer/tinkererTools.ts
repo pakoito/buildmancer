@@ -1,5 +1,5 @@
 import play, { Play } from "../playGame";
-import { Enemies } from "../types";
+import { Enemies, EnemiesStats } from "../types";
 import { build, enemies } from "../utils/data";
 import { TinkererOptions } from "./tinkerer";
 
@@ -9,11 +9,6 @@ export const makeGame = (gameConfig: GameConfig): Play => play(
     lore: {
       name: "XXX",
       age: 123,
-    },
-    stats: {
-      hp: gameConfig.player.hp,
-      stamina: gameConfig.player.stamina,
-      staminaPerTurn: gameConfig.player.staminaPerTurn,
     },
     build: {
       basic: build.basic[gameConfig.basic],
@@ -27,7 +22,15 @@ export const makeGame = (gameConfig: GameConfig): Play => play(
       footwear: build.footwear[gameConfig.footwear],
       charm: build.charm[gameConfig.charm],
     }
-  }, gameConfig.enemies.map(v => enemies[v]) as Enemies, gameConfig.turns, gameConfig.seed);
+  },
+  {
+    hp: gameConfig.player.hp,
+    stamina: gameConfig.player.stamina,
+    staminaPerTurn: gameConfig.player.staminaPerTurn,
+  },
+  gameConfig.enemies.map(v => enemies[v][0]) as Enemies,
+  gameConfig.enemies.map(v => enemies[v][1]) as EnemiesStats,
+  gameConfig.turns, gameConfig.seed);
 
 export type GameConfig = {
   enemies: number[],

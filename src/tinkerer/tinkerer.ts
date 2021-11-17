@@ -19,8 +19,8 @@ export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
   const lastState = previousState(best.phenotype);
   return `BEST BY ${best.score} in ${best.phenotype.states.length - 1} turns\n` +
     prettyjson.render([
-      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${lastState.enemies[target]!!.lore.name}`, id]),
-      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${a.lore.name}`, a.stats]),
+      lastState.lastAttacks.flatMap(([target, id]) => [target === 'Player' ? 'Player' : `[${target}] ${best.phenotype.enemies[target]!!.lore.name}`, id]),
+      lastState.enemies.flatMap((a, idx) => [`[${idx}] ${best.phenotype.enemies[idx].lore.name}`, a.stats]),
       lastState.player.stats
     ]);
 }
@@ -29,21 +29,21 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
   const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
   const range = [...Array(iter).keys()];
   const rand = new Chance(options.playerSeed);
+  const actions = playerActions(play.player);
   const config: GeneticAlgorithmConfig<Play> = {
     mutationFunction: (oldPlay) => {
       const latestState = previousState(oldPlay);
-      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
-      const playerHealth = latestState.player.stats.hp;
+      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp, 0);
+      const playerHealth = latestState.player.hp;
       if (playerHealth === 0 || monsterHealth === 0) {
         return oldPlay;
       }
       let newPlay = oldPlay;
-      while (rand.d6() === 6 || (previousState(newPlay).enemies[previousState(newPlay).target]?.stats.hp ?? 0) <= 0) {
+      while (rand.d6() === 6 || (previousState(newPlay).enemies[previousState(newPlay).target]?.hp ?? 0) <= 0) {
         newPlay = setSelected(newPlay, rand.natural({ min: 0, max: previousState(newPlay).enemies.length - 1 }) as MonsterTarget);
       }
       const latest = previousState(newPlay);
-      const actions = playerActions(latest.player);
-      const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stats.stamina).map(([_, idx]) => idx);
+      const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stamina).map(([_, idx]) => idx);
       newPlay = handlePlayerEffect(
         newPlay,
         rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable })
@@ -52,12 +52,12 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
     },
     fitnessFunction: (play) => {
       const latestState = previousState(play);
-      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
-      const playerHealth = latestState.player.stats.hp;
-      const playerStamina = latestState.player.stats.stamina;
-      const startPlayerHealth = play.states[0].player.stats.hp;
-      const startPlayerStamina = play.states[0].player.stats.hp;
-      const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.stats.hp, 0);
+      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp, 0);
+      const playerHealth = latestState.player.hp;
+      const playerStamina = latestState.player.stamina;
+      const startPlayerHealth = play.states[0].player.hp;
+      const startPlayerStamina = play.states[0].player.hp;
+      const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.hp, 0);
 
       const monsterKillingFitness = ((startMonsterHealth - monsterHealth) / startMonsterHealth);
       const playerAlivenessFitness = (playerHealth / startPlayerHealth);

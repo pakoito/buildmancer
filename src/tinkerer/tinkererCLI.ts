@@ -15,7 +15,7 @@ PouchDb.plugin(pouchFind);
 export const paramsRender = (params: GameConfig): string => {
   const resolve = {
     ...params,
-    enemies: params.enemies.map(a => enemies[a].lore.name),
+    enemies: params.enemies.map(a => enemies[a][0].lore.name),
     basic: build.basic[params.basic].display,
     class: build.class[params.class].display,
     weapon: build.weapon[params.weapon].display,
