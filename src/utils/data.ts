@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { actions, Play } from "../playGame";
-import { Build, Distances, EffectFun, EffectFunRepo, Enemy, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
+import { Build, Distances, EffectFun, EffectFunRepo, Enemy, EnemyStats, InventoryEffect, Player, PlayerStats, Ranges, Snapshot, UpTo } from "../types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -10,21 +10,15 @@ export const chain = (...funs: Array<EffectFun>): EffectFun =>
   // TODO check direction of the fold
   funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
 
-export const randomEnemy = (): Enemy => new Chance().pickone(enemies);
+export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
-export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build): Player => {
+export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build): [Player, PlayerStats] => {
   const rng = new Chance();
-  return {
+  return [{
     id: rng.string(),
     lore: {
       name: randomName(),
       age: rng.age(),
-    },
-    stats: {
-      hp: 25,
-      stamina: 8,
-      staminaPerTurn: 2,
-      ...statsOverride,
     },
     build: {
       basic: rng.pickone(build.basic),
@@ -37,7 +31,12 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
       charm: rng.pickone(build.charm),
       ...buildOverride,
     }
-  };
+  }, {
+    hp: 25,
+    stamina: 8,
+    staminaPerTurn: 2,
+    ...statsOverride,
+  }];
 }
 
 export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new Set(number)] as Ranges;
@@ -188,15 +187,10 @@ export const build: Record<
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 
-export const enemies: Enemy[] = [
-  {
+export const enemies: [Enemy, EnemyStats][] = [
+  [{
     lore: {
       name: "Sacapuntas",
-    },
-    stats: {
-      hp: 25,
-      rage: 0,
-      distance: 4,
     },
     rolls: [
       [0, 1, 2, 1, 0],
@@ -210,16 +204,15 @@ export const enemies: Enemy[] = [
       { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
       { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
-  },
-  {
+  }, {
+    hp: 25,
+    rage: 0,
+    distance: 4,
+  }],
+  [{
     lore: {
       name: "Cacahue",
     },
-    stats: {
-      hp: 30,
-      rage: 0,
-      distance: 4,
-    },
     effects: [
       { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
       { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
@@ -232,16 +225,15 @@ export const enemies: Enemy[] = [
       [0, 0, 0, 0, 0],
       [0, 0, 2, 0, 0],
     ]
-  },
-  {
+  }, {
+    hp: 30,
+    rage: 0,
+    distance: 4,
+  }],
+  [{
     lore: {
       name: "Toro",
     },
-    stats: {
-      hp: 22,
-      rage: 0,
-      distance: 4,
-    },
     effects: [
       { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
       { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
@@ -254,7 +246,11 @@ export const enemies: Enemy[] = [
       [0, 0, 0, 0, 0],
       [0, 0, 2, 0, 0],
     ]
-  },
+  }, {
+    hp: 22,
+    rage: 0,
+    distance: 4,
+  }],
 ];
 
 const names = [

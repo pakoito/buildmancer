@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats } from "./types";
 import { Seq } from "immutable";
 import { effectRepository, previousState } from "./utils/data";
 import { Chance } from "chance";
@@ -12,6 +12,8 @@ type RNG = Opaque<number[][], 'RNG'>;
 
 export type Play = Readonly<{
   states: PlayHistory;
+  player: Player;
+  enemies: Enemies,
   rng: RNG;
   turns: number;
   id: string;
@@ -38,11 +40,11 @@ export const turnRng = (play: Play, turn: number) => (min: number, max: number):
   return Math.floor(((max - min) * turnRng.pop()!!) + min);
 }
 
-const updateMonster = (enemies: Enemies, target: Target, override: (stats: EnemyStats) => object): Enemies =>
+const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => object): EnemiesStats =>
   enemies.map((m, idx) =>
     (idx === target)
-      ? { ...m, stats: { ...m.stats, ...override(m.stats) } }
-      : m) as Enemies;
+      ? { ...m, ...override(m) }
+      : m) as EnemiesStats;
 
 export const playerActions = (player: Player): InventoryEffect[] =>
   Object.values(player.build).flatMap((s) => s.effects);
@@ -51,7 +53,7 @@ export const actions = {
   attackMonster: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, curr.target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.stats.hp) })),
+    enemies: updateMonster(curr.enemies, curr.target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[curr.target]!!/* enforced by UI */.hp) })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
@@ -64,7 +66,7 @@ export const actions = {
     ...curr,
     player: {
       ...curr.player,
-      stats: { ...curr.player.stats, hp: clamp(curr.player.stats.hp - amount, 0, start.player.stats.hp) },
+      hp: clamp(curr.player.hp - amount, 0, start.player.hp)
     },
   }),
   modifyPlayerStamina: (
@@ -76,19 +78,18 @@ export const actions = {
     ...curr,
     player: {
       ...curr.player,
-      stats: {
-        ...curr.player.stats,
-        stamina: clamp(curr.player.stats.stamina + amount, 0, start.player.stats.stamina),
-      },
+      stamina: clamp(curr.player.stamina + amount, 0, start.player.stamina),
     },
   }),
 };
 
-export default function play(player: Player, enemies: Enemies, turns: number, seed: number | string, randPerTurn: number = 20): Play {
+export default function play(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   return {
+    player,
+    enemies,
     states: [{
-      player,
-      enemies,
+      player: playerStats,
+      enemies: enemiesStats,
       target: 0,
       lastAttacks: []
     }],
@@ -101,26 +102,26 @@ export default function play(player: Player, enemies: Enemies, turns: number, se
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
   const { enemies, player } = previousState(play);
-  const playerSkills = playerActions(player);
+  const playerSkills = playerActions(play.player);
   const usedSkill = playerSkills[index];
   const rand = turnRng(play, play.states.length - 1);
-  const functions = Seq(enemies)
-    .map((e, idx) =>
+  const functions = Seq(play.enemies).zip(Seq(enemies))
+    .map(([e, stats], idx) =>
       [idx as Target, e.effects[
-        e.rolls[e.stats.distance - 1]
-        [rand(0, e.rolls[e.stats.distance - 1].length)]
+        e.rolls[stats.distance - 1]
+        [rand(0, e.rolls[stats.distance - 1].length)]
       ]] as const)
     .concat([['Player' as Target, usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 
   const latestState: Snapshot =
-    actions.modifyPlayerStamina(play.states[0], previousState(play), player.stats.staminaPerTurn - usedSkill.stamina);
+    actions.modifyPlayerStamina(play.states[0], previousState(play), player.staminaPerTurn - usedSkill.stamina);
   const [newState, lastAttacks] =
     functions.reduce((acc, value) => {
       const [origin, effect] = value;
       const [oldState, lastAttacks] = acc;
       const target = origin === 'Player' ? latestState.target : origin;
-      const isInRange = new Set([...effect.range]).has(latestState.enemies[target]?.stats.distance!!);
+      const isInRange = new Set([...effect.range]).has(latestState.enemies[target]?.distance!!);
       return isInRange
         ? [effectRepository[effect.effect](origin, play, oldState), [...lastAttacks, [origin, effect.display] as [Target, string]]]
         : [oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]];

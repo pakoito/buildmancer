@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
-import { Enemy, Effect } from "../types";
+import { Enemy, Effect, EnemyStats } from "../types";
 import { Seq } from "immutable";
 
 const skillPercents = (effects: Effect[]) =>
@@ -11,20 +11,21 @@ const skillPercents = (effects: Effect[]) =>
 
 const EnemyCard: React.FC<{
   enemy: Enemy;
+  enemyStats: EnemyStats;
   latestAttack: string | undefined;
   isSelected?: boolean;
   onSelect: () => void;
   canAct: boolean;
-}> = ({ enemy, isSelected, onSelect, latestAttack, canAct }) => (
+}> = ({ enemy, enemyStats, isSelected, onSelect, latestAttack, canAct }) => (
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
-      <Card.Title>{enemy.lore.name} {enemy.stats.hp > 0 ? "" : (<b>💀DEAD💀</b>)}</Card.Title>
-      <Card.Text>❤:{enemy.stats.hp} 🏹:{enemy.stats.distance}</Card.Text>
+      <Card.Title>{enemy.lore.name} {enemyStats.hp > 0 ? "" : (<b>💀DEAD💀</b>)}</Card.Title>
+      <Card.Text>❤:{enemyStats.hp} 🏹:{enemyStats.distance}</Card.Text>
       {latestAttack && (<Card.Text>Latest attack: {latestAttack}</Card.Text>)}
       <Card.Text>
         Next attack prediction:
         <br />
-        {skillPercents(enemy.rolls[enemy.stats.distance - 1].map((idx) => enemy.effects[idx]))}
+        {skillPercents(enemy.rolls[enemyStats.distance - 1].map((idx) => enemy.effects[idx]))}
         <br />
       </Card.Text>
       {canAct && (<Button disabled={isSelected} onClick={onSelect}>Select</Button>)}

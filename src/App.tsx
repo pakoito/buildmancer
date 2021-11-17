@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Enemies, Player, Snapshot } from "./types";
+import { Enemies, EnemiesStats, Player, PlayerStats, Snapshot } from "./types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
@@ -16,24 +16,26 @@ type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
 
 function App() {
   const [status, setStatus] = React.useState<AppStatus>("buildPlayer");
-  const [player, setPlayerBuild] = React.useState<
-    Player | undefined
+  const [playerBuild, setPlayerBuild] = React.useState<
+    [Player, PlayerStats] | undefined
   >();
-  const [encounter, setEncounter] = React.useState<Enemies>();
+  const [encounterBuild, setEncounter] = React.useState<[Enemies, EnemiesStats]>();
   const [game, setGame] = React.useState<Play | undefined>();
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
-  const handleSavePlayer = (player: Player) => {
-    setPlayerBuild(player);
+  const handleSavePlayer = (player: Player, playerStats: PlayerStats) => {
+    setPlayerBuild([player, playerStats]);
     setStatus("buildEncounter");
   };
-  const handleSaveEncounter = (encounter: Enemies) => {
-    setEncounter(encounter);
+  const handleSaveEncounter = (encounter: Enemies, encounterStats: EnemiesStats) => {
+    setEncounter([encounter, encounterStats]);
     setStatus("game");
   }
 
-  if (!game && player && encounter) {
-    const game = play(player, encounter, 50, 'PACC');
+  if (!game && playerBuild && encounterBuild) {
+    const [player, playerStats] = playerBuild;
+    const [encounter, encounterStats] = encounterBuild;
+    const game = play(player, playerStats, encounter, encounterStats, 50, 'PACC');
     setGame(game);
   }
 
@@ -42,9 +44,9 @@ function App() {
       {status === "buildPlayer" ? (
         <PlayerBuilder onSave={handleSavePlayer} />
       ) : null}
-      {status === "buildEncounter" && player ? (
+      {status === "buildEncounter" && playerBuild ? (
         <EncounterBuilder
-          player={player}
+          player={playerBuild[0]}
           onSave={handleSaveEncounter}
         />
       ) : null}

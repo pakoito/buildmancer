@@ -21,11 +21,12 @@ export type GameProps = {
 };
 
 const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
-  const { player, enemies, target, lastAttacks } = previousState(game);
+  const { player, enemies } = game;
+  const { player: playerStats, enemies: enemiesStats, target, lastAttacks } = previousState(game);
 
   const playerSkills = playerActions(player);
-  const monsterHealth = enemies.reduce((acc, m) => m.stats.hp + acc, 0);
-  const isPlayerAlive = player.stats.hp > 0;
+  const monsterHealth = enemiesStats.reduce((acc, m) => m.hp + acc, 0);
+  const isPlayerAlive = playerStats.hp > 0;
   const areMonstersAlive = monsterHealth > 0;
   const endGame = game.states.length <= game.turns;
   const canAct = isPlayerAlive && areMonstersAlive && endGame;
@@ -34,7 +35,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
     if (!canAct) return;
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= playerSkills.length) {
-      const hasStamina = playerSkills[valNum - 1].stamina <= player.stats.stamina;
+      const hasStamina = playerSkills[valNum - 1].stamina <= playerStats.stamina;
       if (!hasStamina) return;
       handlePlayerEffect(valNum - 1);
     }
@@ -62,6 +63,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
             <Col>
               <PlayerCard
                 player={player}
+                playerStats={playerStats}
                 onClickEffect={handlePlayerEffect}
                 selectedButtons={selectedButtons}
                 lastAction={(lastAttacks.find(a => a[0] === 'Player') ?? [undefined, undefined])[1]}
@@ -69,10 +71,11 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
             </Col>
           </Row>
           <Row className="mt-2 g-2">
-            {enemies.map((enemy, idx) => (
+            {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
               <Col key={idx} xs={6} md={4}>
                 <EnemyCard
                   key={idx}
+                  enemyStats={stats}
                   enemy={enemy}
                   canAct={canAct}
                   latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}

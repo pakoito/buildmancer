@@ -41,7 +41,12 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 5;
 
-export type Snapshot = { player: Player; enemies: Enemies, target: MonsterTarget, lastAttacks: (readonly [Target, string])[] };
+export type Snapshot = {
+  player: PlayerStats;
+  enemies: EnemiesStats;
+  target: MonsterTarget;
+  lastAttacks: (readonly [Target, string])[];
+};
 export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
 export type EffectFunIndex = string;
@@ -75,15 +80,14 @@ export type Build = Record<
 export type Player = {
   id: string;
   lore: Record<string, string | number>;
-  stats: PlayerStats;
   build: Build;
 };
 
 export type Enemy = {
   lore: Record<string, string | number>;
-  stats: EnemyStats;
   effects: Effect[];
   rolls: Tuple<number[], Distances>;
 }
 
 export type Enemies = TupleUpTo<Enemy, MonsterCount>;
+export type EnemiesStats = TupleUpTo<EnemyStats, MonsterCount>;

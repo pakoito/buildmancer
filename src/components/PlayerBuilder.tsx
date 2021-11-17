@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstrap";
 import useScroll from "../hooks/useScroll";
 
-import { Player } from "../types";
+import { Player, PlayerStats } from "../types";
 import { build, randomName } from "../utils/data";
 import Chance from 'chance';
 
@@ -14,7 +14,7 @@ const selects = Object.entries(build).map(([type, options]) => ({
   })),
 }));
 
-const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
+const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: PlayerStats) => void }) => {
   const [form, setForm] = React.useState<Record<string, number>>(
     selects.reduce(
       (acc, { type, options }) => ({
@@ -39,17 +39,16 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player) => void }) => {
     onSave({
       id: "p-1",
       lore,
-      stats: {
-        hp: 25,
-        stamina: 8,
-        staminaPerTurn: 2,
-      },
       build: Object.entries(form).reduce((acc, [type, value]) => {
         return {
           ...acc,
           [type]: build[type][value]
         }
       }, { basic: build.basic[0] }),
+    }, {
+      hp: 25,
+      stamina: 8,
+      staminaPerTurn: 2,
     });
   };
   const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;

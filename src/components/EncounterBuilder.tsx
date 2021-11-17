@@ -1,15 +1,17 @@
 import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
-import { Player, Enemies, Enemy } from "../types";
+import { Player, Enemies, Enemy, EnemiesStats, EnemyStats } from "../types";
 import { enemies, randomEnemy } from "../utils/data";
 
-const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies) => void }) => {
-  const [encounter, setEncounter] = React.useState<Enemy[]>([]);
+const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void }) => {
+  const [encounter, setEncounter] = React.useState<[Enemy, EnemyStats][]>([]);
   const onFormSubmit = (e: any) => {
     e.preventDefault();
+    const enemies = encounter.map(a => a[0]);
+    const enemiesStats = encounter.map(a => a[1]);
     // Size enforced by UI
-    onSave([...encounter] as Enemies);
+    onSave(enemies as Enemies, enemiesStats as EnemiesStats);
   };
   const displayType = (type: string) => <b>{player.build[type].display}</b>;
   return (
@@ -18,10 +20,10 @@ const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies
         <ButtonGroup size="lg" className="mb-2">
           {enemies.map((enemy) =>
             <Button
-              key={enemy.lore.name}
+              key={enemy[0].lore.name}
               disabled={encounter.length > 4}
               onClick={() => setEncounter((e) => [...e, enemy])}
-            >{enemy.lore.name}</Button>
+            >{enemy[0].lore.name}</Button>
           )}
         </ButtonGroup>
       </Container >
@@ -30,7 +32,7 @@ const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies
         <Navbar fixed="bottom" bg="dark" variant="dark" style={{ marginBottom: '100px' }}>
           <Container fluid>
             <ButtonGroup size="sm" className="mb-2">
-              {encounter.map((enemy, idx) => <Button key={`${enemy.lore.name}-${idx}`} onClick={() => setEncounter((e) => { let found = false; return e.filter((m) => (found || m.lore.name !== enemy.lore.name) || !(found = true)); })}>{enemy.lore.name}</Button>)}
+              {encounter.map((enemy, idx) => <Button key={`${enemy[0].lore.name}-${idx}`} onClick={() => setEncounter((e) => { let found = false; return e.filter((m) => (found || m[0].lore.name !== enemy[0].lore.name) || !(found = true)); })}>{enemy[0].lore.name}</Button>)}
             </ButtonGroup>
           </Container>
         </ Navbar>
