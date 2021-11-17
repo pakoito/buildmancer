@@ -58,7 +58,6 @@ export const effectRepository: EffectFunRepo = {
   'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
   'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
   'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
-  'BootsOfFlight:BOT': (_, _p, currentState) => currentState.enemies.reduce((s, m, idx) => actions.changeDistance(s, idx as MonsterTarget, 2), currentState),
   'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
 };
 
@@ -103,25 +102,20 @@ export const build: Record<
   class: [
     {
       display: "Warrior",
-      effects: [],
     },
     {
       display: "Mage",
-      effects: [],
     },
     {
       display: "Rogue",
-      effects: [],
     },
   ],
   skill: [
     {
       display: "Sturdy",
-      effects: [],
     },
     {
       display: "Nimble",
-      effects: [],
     },
   ],
   weapon: [
@@ -162,43 +156,35 @@ export const build: Record<
   consumable: [
     {
       display: "Potion",
-      effects: [],
     },
   ],
   armor: [
     {
       display: "Heavy",
-      effects: [],
     },
   ],
   headgear: [
     {
       display: "Helm",
-      effects: [],
     },
   ],
   footwear: [
     {
       display: "Boots of Flight",
-      bot: ["BootsOfFlight:BOT"],
       eot: ["BootsOfFlight:EOT"],
-      effects: [],
     },
   ],
   charm: [
     {
       display: "of Health",
-      effects: [],
       passive: "Charm:ofHealth",
     },
     {
       display: "of Haste",
-      effects: [],
       passive: "Charm:ofHaste",
     },
     {
       display: "of Resilience",
-      effects: [],
       passive: "Charm:ofResilience",
     },
   ],

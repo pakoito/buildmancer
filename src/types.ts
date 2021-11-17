@@ -101,7 +101,7 @@ export type Item = {
   passive?: StatsFunIndex;
   bot?: Nel<EffectFunIndex>;
   eot?: Nel<EffectFunIndex>;
-  effects: InventoryEffect[];
+  effects?: Nel<InventoryEffect>;
   [key: string]: any;
 };
 
