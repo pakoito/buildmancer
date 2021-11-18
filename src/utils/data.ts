@@ -69,7 +69,7 @@ export const effectRepository: EffectFunRepo = {
   'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
   'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
   'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
-  'Monster:Summon': (origin, _, currentState) => actions.addEotEffect(currentState, { effect: 'Monster:Summon', origin, parameters: { enemy: 0 } }),
+  'Monster:SummonToro': (origin, _, currentState) => actions.addEotEffect(currentState, { effect: 'Monster:Summon', origin, parameters: { enemy: 1 } }),
   'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
 };
 
@@ -226,7 +226,7 @@ export const enemies: [Enemy, EnemyStats][] = [
     ],
     effects: [
       { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
-      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
+      { display: "Roar", priority: 1, effect: "Monster:Roar", range: allRanges },
       { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
   }, {
@@ -236,46 +236,45 @@ export const enemies: [Enemy, EnemyStats][] = [
   }],
   [{
     lore: {
-      name: "Cacahue",
-    },
-    effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
-      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
-      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
-    ],
-    rolls: [
-      [0, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 2, 0, 0],
-    ]
-  }, {
-    hp: 30,
-    rage: 0,
-    distance: 4,
-  }],
-  [{
-    lore: {
       name: "Toro",
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
-      { display: "Roar", priority: 1, effect: "Monster:Roar", range: makeRange(0, 1, 2, 3, 4) },
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: allRanges },
       { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
     ],
     rolls: [
-      [0, 0, 0, 1, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 2, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 0, 0],
+      [1, 1, 1, 1, 0],
     ]
   }, {
     hp: 22,
     rage: 0,
     distance: 4,
   }],
+  [{
+    lore: {
+      name: "Summoner",
+    },
+    effects: [
+      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
+      { display: "Jump", priority: 3, effect: "Monster:Jump", range: allRanges },
+      { display: "Summon Toro", priority: 4, effect: "Monster:SummonToro", range: makeRange(2, 3, 4) },
+    ],
+    rolls: [
+      [0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 1, 2, 0, 0],
+      [1, 1, 2, 0, 0],
+      [1, 2, 2, 0, 0],
+    ]
+  }, {
+    hp: 30,
+    rage: 0,
+    distance: 4,
+  }]
 ];
 
 const names = [
