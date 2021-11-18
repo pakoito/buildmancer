@@ -30,7 +30,8 @@ export const makeGame = (gameConfig: GameConfig): Play => play(
   },
   gameConfig.enemies.map(v => enemies[v][0]) as Enemies,
   gameConfig.enemies.map(v => enemies[v][1]) as EnemiesStats,
-  gameConfig.turns, gameConfig.seed);
+  gameConfig.turns,
+  gameConfig.seed);
 
 export type GameConfig = {
   enemies: number[],

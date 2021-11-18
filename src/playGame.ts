@@ -1,6 +1,6 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, EffectFun } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, EffectFun, StatsFun } from "./types";
 import { Seq } from "immutable";
-import { effectDead, effectRepository, previousState } from "./utils/data";
+import { effectDead, effectRepository, previousState, statsRepository } from "./utils/data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
@@ -30,6 +30,9 @@ const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: 
     (idx === target)
       ? { ...m, ...override(m) }
       : m) as EnemiesStats;
+
+export const playerPassives = (player: Player): StatsFun[] =>
+  Object.values(player.build).flatMap((s) => s.passive ?? []).map(i => statsRepository[i]);
 
 export const playerActions = (player: Player): InventoryEffect[] =>
   Object.values(player.build).flatMap((s) => s.effects ?? []);
@@ -75,12 +78,13 @@ export const actions = {
 };
 
 export default function play(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
+  const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
   return {
     player,
     enemies,
     states: [{
-      player: playerStats,
-      enemies: enemiesStats,
+      player: playerGameStats,
+      enemies: enemyGameStats,
       target: 0,
       lastAttacks: []
     }],
