@@ -146,12 +146,8 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const playerBot = playerBotEffects(play.player);
   const preBotState: Snapshot =
     actions.modifyPlayerStamina(play.states[0], previousState(play), player.staminaPerTurn - usedSkill.stamina);
-  const [postBotState, postBotPlay] =
-    bot != null
-      ? reduceMultiTurnFuns(bot, play, preBotState)
-      : [preBotState, play];
-  const postPlayerBotState =
-    reducePlayerFuns(postBotPlay, playerBot, postBotState);
+  const [postBotState, postBotPlay] = reduceMultiTurnFuns(bot ?? [], play, preBotState);
+  const postPlayerBotState = reducePlayerFuns(postBotPlay, playerBot, postBotState);
 
   // Turn
   const rand = turnRng(play, play.states.length - 1);
@@ -179,10 +175,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const preEotState = { ...newState, lastAttacks };
   const playerEot = playerEotEffects(play.player);
   const postPlayerEotState = reducePlayerFuns(postBotPlay, playerEot, preEotState);
-  const [postEotState, postEotPlay] =
-    eot != null
-      ? reduceMultiTurnFuns(eot, postBotPlay, preBotState)
-      : [postPlayerEotState, postBotPlay];
+  const [postEotState, postEotPlay] = reduceMultiTurnFuns(eot ?? [], postBotPlay, postPlayerEotState);
 
   return {
     ...postEotPlay,
