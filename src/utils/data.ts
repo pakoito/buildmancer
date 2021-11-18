@@ -58,7 +58,7 @@ export const effectRepository: EffectFunRepo = {
   'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
   'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
   'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
-  'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
+  'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
 };
 
 export const statsRepository: StatsFunRepo = {
