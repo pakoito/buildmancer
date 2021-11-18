@@ -1,11 +1,11 @@
 import { Container, Row, Col, Card } from "react-bootstrap";
 
-import { MonsterTarget, Play } from "../types";
+import { MonsterTarget, Play } from "../utils/types";
 
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
-import { playerActions } from "../playGame";
+import { playerActions } from "../utils/playGame";
 import { Seq } from "immutable";
 import { previousState } from "../utils/data";
 import { Button } from "react-bootstrap";

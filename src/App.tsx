@@ -1,13 +1,13 @@
 import React from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Enemies, EnemiesStats, Player, PlayerStats, Snapshot, Play } from "./types";
+import { Enemies, EnemiesStats, Player, PlayerStats, Snapshot, Play } from "./utils/types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, setSelected } from "./playGame";
+import play, { handlePlayerEffect, setSelected } from "./utils/playGame";
 import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
 import { previousState } from "./utils/data";

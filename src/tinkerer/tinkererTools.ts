@@ -1,5 +1,5 @@
-import play from "../playGame";
-import { Enemies, EnemiesStats, Play } from "../types";
+import play from "../utils/playGame";
+import { Enemies, EnemiesStats, Play } from "../utils/types";
 import { build, enemies } from "../utils/data";
 import { TinkererOptions } from "./tinkerer";
 

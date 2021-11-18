@@ -1,6 +1,6 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, EffectFun, StatsFun } from "./types";
 import { Seq } from "immutable";
-import { effectDead, effectRepository, previousState, statsRepository } from "./utils/data";
+import { effectDead, effectRepository, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';

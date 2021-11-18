@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstrap";
 import useScroll from "../hooks/useScroll";
 
-import { Player, PlayerStats } from "../types";
+import { Player, PlayerStats } from "../utils/types";
 import { build, randomName } from "../utils/data";
 import Chance from 'chance';
 

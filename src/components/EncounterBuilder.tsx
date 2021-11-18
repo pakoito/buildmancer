@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
-import { Player, Enemies, Enemy, EnemiesStats, EnemyStats } from "../types";
+import { Player, Enemies, Enemy, EnemiesStats, EnemyStats } from "../utils/types";
 import { enemies, randomEnemy } from "../utils/data";
 
 const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void }) => {

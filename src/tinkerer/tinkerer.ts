@@ -1,7 +1,7 @@
 import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
-import { handlePlayerEffect, playerActions, setSelected } from '../playGame';
+import { handlePlayerEffect, playerActions, setSelected } from '../utils/playGame';
 import Chance from 'chance';
-import { MonsterTarget, Play } from '../types';
+import { MonsterTarget, Play } from '../utils/types';
 import { previousState } from '../utils/data';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';

@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, Stack } from "react-bootstrap";
-import { Player, PlayerStats } from "../types";
+import { Player, PlayerStats } from "../utils/types";
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,

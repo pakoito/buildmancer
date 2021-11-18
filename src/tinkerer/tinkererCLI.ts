@@ -8,7 +8,7 @@ import pouchFind from 'pouchdb-find';
 import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
-import { Play } from 'src/types';
+import { Play } from 'src/utils/types';
 
 PouchDb.plugin(pouchFind);
 
