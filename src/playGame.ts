@@ -107,7 +107,8 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const rand = turnRng(play, play.states.length - 1);
   const functions = Seq(play.enemies).zip(Seq(enemies))
     .map(([e, stats], idx) =>
-      [idx as Target, stats.hp < 1
+      [idx as Target,
+      stats.hp > 0
         ? e.effects[e.rolls[stats.distance - 1][rand(0, e.rolls[stats.distance - 1].length)]]
         : effectDead] as const)
     .concat([['Player' as Target, usedSkill] as const])
