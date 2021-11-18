@@ -43,11 +43,19 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 5;
 
+export type MultiTurnEffect = {
+  effect: MultiTurnEffectFunIndex;
+  origin: Target;
+  parameters: object;
+}
+
 export type Snapshot = {
   player: PlayerStats;
   enemies: EnemiesStats;
   target: MonsterTarget;
   lastAttacks: (readonly [Target, string])[];
+  bot?: Nel<MultiTurnEffect>;
+  eot?: Nel<MultiTurnEffect>;
 };
 
 export type PlayHistory = Nel<Snapshot>;
@@ -67,12 +75,16 @@ export type Play = Readonly<{
 type ItemOrMonster = string /* TODO all items */ | 'Monster';
 export type FunIndex = `${ItemOrMonster}:${string}`;
 
+export type MultiTurnEffectFunIndex = FunIndex;
+export type MultiTurnEffectFunRepo = { [key: MultiTurnEffectFunIndex]: MultiTurnEffectFun; }
+export type MultiTurnEffectFun = (params: any) => (origin: Target, play: Play, newState: Snapshot) => [Snapshot, Play];
+
 export type EffectFunIndex = FunIndex;
-export type EffectFunRepo = { [key: FunIndex]: EffectFun; }
+export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
 export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
 export type StatsFunIndex = FunIndex;
-export type StatsFunRepo = { [key: FunIndex]: StatsFun; }
+export type StatsFunRepo = { [key: StatsFunIndex]: StatsFun; }
 export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerStats, EnemiesStats];
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];

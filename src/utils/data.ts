@@ -1,7 +1,8 @@
 import { Chance } from "chance";
+import { paramsRender } from "src/tinkerer/tinkererCLI";
 import { Subtract } from "type-fest/source/internal";
 import { actions } from "./playGame";
-import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play } from "./types";
+import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, MultiTurnEffectFunRepo, MultiTurnEffectFun } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -9,6 +10,13 @@ export const previousState = (play: Play): Snapshot => play.states[play.states.l
 export const chain = (...funs: Array<EffectFun>): EffectFun =>
   // TODO check direction of the fold
   funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
+
+export const chain2 = (...funs: Array<MultiTurnEffectFun>): MultiTurnEffectFun =>
+  // TODO check direction of the fold
+  funs.reduce((acc, value) => (params) => (origin, play, oldState) => {
+    const [newState, newPlay] = acc(params)(origin, play, oldState);
+    return value(params)(origin, newPlay, newState);
+  });
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
@@ -49,16 +57,28 @@ export const effectRepository: EffectFunRepo = {
   'Basic:Rest': (_origin, _play, newState) => newState,
   'Basic:Advance': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
   'Basic:Retreat': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
-  'Axe:Chop': (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
-  'Axe:Cut': (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+  'Axe:Chop': (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
+  'Axe:Cut': chain(
+    (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
+    (origin, _p, currentState) => actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { lifespan: 3, target: currentState.target } })
+  ),
   'Hook:GetHere': chain(
-    (_, play, currentState) => actions.attackMonster(startState(play), currentState, 3),
+    (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
     (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
   ),
   'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
   'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
   'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
+  'Monster:Summon': (origin, _, currentState) => actions.addEotEffect(currentState, { effect: 'Monster:Summon', origin, parameters: { enemy: 0 } }),
   'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
+};
+
+export const multiTurnEffectRepository: MultiTurnEffectFunRepo = {
+  'Target:Bleed': chain2(
+    ({ target }) => (origin, play, currentState) => [target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3), play],
+    ({ lifespan }) => (origin, play, currentState) => [lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...paramsRender, lifespan: lifespan - 1 } }) : currentState, play],
+  ),
+  'Monster:Summon': ({ enemy }) => (_, play, currentState) => actions.addEnemy(currentState, play, enemies[enemy][0], enemies[enemy][1]),
 };
 
 export const statsRepository: StatsFunRepo = {
