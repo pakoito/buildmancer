@@ -5,10 +5,10 @@ import { build, enemies } from '../utils/data';
 import tinker, { gameRender } from './tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
-import { ScoredPhenotype } from 'src/geneticalgorithm/geneticalgorithm';
+import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
-import { Play } from 'src/utils/types';
+import { Play } from '../utils/types';
 
 PouchDb.plugin(pouchFind);
 

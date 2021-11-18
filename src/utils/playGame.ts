@@ -92,21 +92,20 @@ export const actions = {
   }),
 
   addEnemy: (
-    curr: Snapshot,
     play: Play,
+    curr: Snapshot,
     enemy: Enemy,
     enemyStats: EnemyStats,
-  ): [Snapshot, Play] => {
+  ): [Play, Snapshot] => {
     return play.enemies.length < 5
       ? [{
-        ...curr,
-        enemies: [...curr.enemies, enemyStats] as EnemiesStats
-      },
-      {
         ...play,
         enemies: [...play.enemies, enemy] as Enemies,
+      }, {
+        ...curr,
+        enemies: [...curr.enemies, enemyStats] as EnemiesStats
       }]
-      : [curr, play];
+      : [play, curr];
   }
 };
 
@@ -131,11 +130,11 @@ export default function play(player: Player, playerStats: PlayerStats, enemies: 
 const reducePlayerFuns = (play: Play, funs: EffectFun[], s: Snapshot): Snapshot =>
   funs.reduce((acc, f) => f('Player', play, acc), s);
 
-const reduceMultiTurnFuns = (funs: MultiTurnEffect[], p: Play, s: Snapshot): [Snapshot, Play] =>
+const reduceMultiTurnFuns = (funs: MultiTurnEffect[], p: Play, s: Snapshot): [Play, Snapshot] =>
   funs.reduce(
-    ([snap, play], { effect, origin, parameters }) =>
+    ([play, snap], { effect, origin, parameters }) =>
       multiTurnEffectRepository[effect](parameters)(origin, play, snap),
-    [s, p]);
+    [p, s]);
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
   const { enemies, player, bot, eot } = previousState(play);
@@ -146,7 +145,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const playerBot = playerBotEffects(play.player);
   const preBotState: Snapshot =
     actions.modifyPlayerStamina(play.states[0], previousState(play), player.staminaPerTurn - usedSkill.stamina);
-  const [postBotState, postBotPlay] = reduceMultiTurnFuns(bot ?? [], play, preBotState);
+  const [postBotPlay, postBotState] = reduceMultiTurnFuns(bot ?? [], play, preBotState);
   const postPlayerBotState = reducePlayerFuns(postBotPlay, playerBot, postBotState);
 
   // Turn
@@ -175,7 +174,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const preEotState = { ...newState, lastAttacks };
   const playerEot = playerEotEffects(play.player);
   const postPlayerEotState = reducePlayerFuns(postBotPlay, playerEot, preEotState);
-  const [postEotState, postEotPlay] = reduceMultiTurnFuns(eot ?? [], postBotPlay, postPlayerEotState);
+  const [postEotPlay, postEotState] = reduceMultiTurnFuns(eot ?? [], postBotPlay, postPlayerEotState);
 
   return {
     ...postEotPlay,

@@ -1,5 +1,5 @@
 import { Chance } from "chance";
-import { paramsRender } from "src/tinkerer/tinkererCLI";
+import { paramsRender } from "../tinkerer/tinkererCLI";
 import { Subtract } from "type-fest/source/internal";
 import { actions } from "./playGame";
 import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, MultiTurnEffectFunRepo, MultiTurnEffectFun } from "./types";
@@ -14,7 +14,7 @@ export const chain = (...funs: Array<EffectFun>): EffectFun =>
 export const chain2 = (...funs: Array<MultiTurnEffectFun>): MultiTurnEffectFun =>
   // TODO check direction of the fold
   funs.reduce((acc, value) => (params) => (origin, play, oldState) => {
-    const [newState, newPlay] = acc(params)(origin, play, oldState);
+    const [newPlay, newState] = acc(params)(origin, play, oldState);
     return value(params)(origin, newPlay, newState);
   });
 
@@ -75,10 +75,10 @@ export const effectRepository: EffectFunRepo = {
 
 export const multiTurnEffectRepository: MultiTurnEffectFunRepo = {
   'Target:Bleed': chain2(
-    ({ target }) => (origin, play, currentState) => [target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3), play],
-    ({ lifespan }) => (origin, play, currentState) => [lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...paramsRender, lifespan: lifespan - 1 } }) : currentState, play],
+    ({ target }) => (origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
+    ({ lifespan }) => (origin, play, currentState) => [play, lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...paramsRender, lifespan: lifespan - 1 } }) : currentState],
   ),
-  'Monster:Summon': ({ enemy }) => (_, play, currentState) => actions.addEnemy(currentState, play, enemies[enemy][0], enemies[enemy][1]),
+  'Monster:Summon': ({ enemy }) => (_, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1]),
 };
 
 export const statsRepository: StatsFunRepo = {

@@ -77,7 +77,7 @@ export type FunIndex = `${ItemOrMonster}:${string}`;
 
 export type MultiTurnEffectFunIndex = FunIndex;
 export type MultiTurnEffectFunRepo = { [key: MultiTurnEffectFunIndex]: MultiTurnEffectFun; }
-export type MultiTurnEffectFun = (params: any) => (origin: Target, play: Play, newState: Snapshot) => [Snapshot, Play];
+export type MultiTurnEffectFun = (params: any) => (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
 
 export type EffectFunIndex = FunIndex;
 export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
