@@ -1,12 +1,10 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, EnemyStats, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, EffectFun, StatsFun, MultiTurnEffect, Enemy } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect } from "./types";
 import { Seq } from "immutable";
-import { effectDead, effectRepository, multiTurnEffectRepository, previousState, statsRepository } from "./data";
+import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
-
-const clamp = (num: number, min: number, max: number) =>
-  Math.min(Math.max(num, min), max);
+import { extractFunction } from "./effectFunctions";
 
 /**
  * @returns min inclusive, max exclusive rand
@@ -25,89 +23,17 @@ export const turnRng = (play: Play, turn: number) => (min: number, max: number):
   return Math.floor(((max - min) * turnRng.pop()!!) + min);
 }
 
-const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => object): EnemiesStats =>
-  enemies.map((m, idx) =>
-    (idx === target)
-      ? { ...m, ...override(m) }
-      : m) as EnemiesStats;
-
 export const playerPassives = (player: Player): StatsFun[] =>
   Object.values(player.build).flatMap((s) => s.passive ?? []).map(i => statsRepository[i]);
 
 export const playerActions = (player: Player): InventoryEffect[] =>
   Object.values(player.build).flatMap((s) => s.effects ?? []);
 
-export const playerBotEffects = (player: Player): EffectFun[] =>
-  Object.values(player.build).flatMap((s) => s.bot ?? []).map((i) => effectRepository[i]);
+export const playerBotEffects = (player: Player): Effect[] =>
+  Object.values(player.build).flatMap((s) => s.bot ?? []);
 
-export const playerEotEffects = (player: Player): EffectFun[] =>
-  Object.values(player.build).flatMap((s) => s.eot ?? []).map((i) => effectRepository[i]);
-
-export const actions = {
-  attackMonster: (start: Snapshot, curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
-  ({
-    ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[target]!!/* enforced by UI */.hp) })),
-  }),
-  changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
-  ({
-    ...curr,
-    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 1, 5) })),
-  }),
-
-  attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-  ({
-    ...curr,
-    player: {
-      ...curr.player,
-      hp: clamp(curr.player.hp - amount, 0, start.player.hp)
-    },
-  }),
-  modifyPlayerStamina: (
-    start: Snapshot,
-    curr: Snapshot,
-    amount: number,
-  ): Snapshot =>
-  ({
-    ...curr,
-    player: {
-      ...curr.player,
-      stamina: clamp(curr.player.stamina + amount, 0, start.player.stamina),
-    },
-  }),
-
-  addEotEffect: (
-    curr: Snapshot,
-    effect: MultiTurnEffect,
-  ): Snapshot => ({
-    ...curr,
-    eot: [...(curr.eot ?? []), effect],
-  }),
-  addBotEffect: (
-    curr: Snapshot,
-    effect: MultiTurnEffect,
-  ): Snapshot => ({
-    ...curr,
-    bot: [...(curr.eot ?? []), effect],
-  }),
-
-  addEnemy: (
-    play: Play,
-    curr: Snapshot,
-    enemy: Enemy,
-    enemyStats: EnemyStats,
-  ): [Play, Snapshot] => {
-    return play.enemies.length < 5
-      ? [{
-        ...play,
-        enemies: [...play.enemies, enemy] as Enemies,
-      }, {
-        ...curr,
-        enemies: [...curr.enemies, enemyStats] as EnemiesStats
-      }]
-      : [play, curr];
-  }
-};
+export const playerEotEffects = (player: Player): Effect[] =>
+  Object.values(player.build).flatMap((s) => s.eot ?? []);
 
 export default function play(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
@@ -127,26 +53,29 @@ export default function play(player: Player, playerStats: PlayerStats, enemies: 
   };
 }
 
-const reducePlayerFuns = (play: Play, funs: EffectFun[], s: Snapshot): Snapshot =>
-  funs.reduce((acc, f) => f('Player', play, acc), s);
+const reduceFuns = (funs: Effect[], p: Play, s: Snapshot): [Play, Snapshot] =>
+  Seq(funs)
+    .sortBy(a => a.priority)
+    .reduce(([play, snap], { effect, parameters }) =>
+      extractFunction(effect, parameters)('Player' /* FIXME */, play, snap),
+      [p, s],
+    );
 
-const reduceMultiTurnFuns = (funs: MultiTurnEffect[], p: Play, s: Snapshot): [Play, Snapshot] =>
-  funs.reduce(
-    ([play, snap], { effect, origin, parameters }) =>
-      multiTurnEffectRepository[effect](parameters)(origin, play, snap),
-    [p, s]);
+const applyEffectStamina = (amount: number): Effect =>
+  ({ display: "Stamina use", effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
-  const { enemies, player, bot, eot } = previousState(play);
+  const currState = previousState(play);
+  const { enemies, bot, eot } = currState;
   const playerSkills = playerActions(play.player);
   const usedSkill = playerSkills[index];
 
   // BOT
   const playerBot = playerBotEffects(play.player);
-  const preBotState: Snapshot =
-    actions.modifyPlayerStamina(play.states[0], previousState(play), player.staminaPerTurn - usedSkill.stamina);
-  const [postBotPlay, postBotState] = reduceMultiTurnFuns(bot ?? [], play, preBotState);
-  const postPlayerBotState = reducePlayerFuns(postBotPlay, playerBot, postBotState);
+  const [preBotPlay, preBotState] =
+    reduceFuns([applyEffectStamina(currState.player.staminaPerTurn - usedSkill.stamina)], play, currState);
+  const [postBotPlay, postBotState] = reduceFuns(bot ?? [], preBotPlay, preBotState);
+  const [postPlayerBotPlay, postPlayerBotState] = reduceFuns(playerBot, postBotPlay, postBotState);
 
   // Turn
   const rand = turnRng(play, play.states.length - 1);
@@ -159,22 +88,25 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .concat([['Player' as Target, usedSkill] as const])
     .sortBy(([_origin, effect]) => effect.priority);
 
-  const [newState, lastAttacks] =
+  const [newPlay, newState, lastAttacks] =
     functions.reduce((acc, value) => {
       const [origin, effect] = value;
-      const [oldState, lastAttacks] = acc;
+      const [oldPlay, oldState, lastAttacks] = acc;
       const target = origin === 'Player' ? postPlayerBotState.target : origin;
       const isInRange = new Set([...effect.range]).has(postPlayerBotState.enemies[target]?.distance!!);
-      return isInRange
-        ? [effectRepository[effect.effect](origin, postBotPlay, oldState), [...lastAttacks, [origin, effect.display] as [Target, string]]]
-        : [oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]];
-    }, [postPlayerBotState, [] as [Target, string][]]);
+      if (isInRange) {
+        const [newPlay, newState] = extractFunction(effect.effect, effect.parameters)(origin, postPlayerBotPlay, oldState);
+        return [newPlay, newState, [...lastAttacks, [origin, effect.display] as [Target, string]]]
+      } else {
+        return [oldPlay, oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]]
+      }
+    }, [postPlayerBotPlay, postPlayerBotState, [] as [Target, string][]]);
 
   // EOT
   const preEotState = { ...newState, lastAttacks };
-  const playerEot = playerEotEffects(play.player);
-  const postPlayerEotState = reducePlayerFuns(postBotPlay, playerEot, preEotState);
-  const [postEotPlay, postEotState] = reduceMultiTurnFuns(eot ?? [], postBotPlay, postPlayerEotState);
+  const playerEot = playerEotEffects(newPlay.player);
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(playerEot, newPlay, preEotState);
+  const [postEotPlay, postEotState] = reduceFuns(eot ?? [], postPlayerEotPlay, postPlayerEotState);
 
   return {
     ...postEotPlay,

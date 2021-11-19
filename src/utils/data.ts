@@ -1,21 +1,9 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { actions } from "./playGame";
-import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, MultiTurnEffectFunRepo, MultiTurnEffectFun } from "./types";
+import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effect, inventoryEffect } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
-
-export const chain = (...funs: Array<EffectFun>): EffectFun =>
-  // TODO check direction of the fold
-  funs.reduce((acc, value) => (origin, play, newState) => value(origin, play, acc(origin, play, newState)));
-
-export const chain2 = (...funs: Array<MultiTurnEffectFun>): MultiTurnEffectFun =>
-  // TODO check direction of the fold
-  funs.reduce((acc, value) => (params) => (origin, play, oldState) => {
-    const [newPlay, newState] = acc(params)(origin, play, oldState);
-    return value(params)(origin, newPlay, newState);
-  });
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
@@ -50,35 +38,8 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new 
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
-export const effectDead: Effect = { display: "DEAD", priority: 4, effect: "Monster:Dead", range: makeRange() };
-export const effectRepository: EffectFunRepo = {
-  'Monster:Dead': (_origin, _play, newState) => newState,
-  'Basic:Rest': (_origin, _play, newState) => newState,
-  'Basic:Advance': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, -2),
-  'Basic:Retreat': (_origin, _play, newState) => actions.changeDistance(newState, newState.target, 2),
-  'Axe:Chop': (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
-  'Axe:Cut': chain(
-    (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
-    (origin, _p, currentState) => actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { lifespan: 3, target: currentState.target } })
-  ),
-  'Hook:GetHere': chain(
-    (_, play, currentState) => actions.attackMonster(startState(play), currentState, currentState.target, 3),
-    (_origin, _play, currentState) => actions.changeDistance(currentState, currentState.target, -1),
-  ),
-  'Monster:Swipe': (_, play, currentState) => actions.attackPlayer(startState(play), currentState, 2),
-  'Monster:Roar': (_, play, currentState) => actions.modifyPlayerStamina(startState(play), currentState, -5),
-  'Monster:Jump': (origin, _, currentState) => actions.changeDistance(currentState, origin, -2),
-  'Monster:SummonToro': (origin, _, currentState) => actions.addEotEffect(currentState, { effect: 'Monster:Summon', origin, parameters: { enemy: 1 } }),
-  'BootsOfFlight:EOT': (_, _p, currentState) => currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState),
-};
-
-export const multiTurnEffectRepository: MultiTurnEffectFunRepo = {
-  'Target:Bleed': chain2(
-    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
-    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...params, lifespan: params.lifespan - 1 } }) : currentState],
-  ),
-  'Monster:Summon': ({ enemy }) => (_, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1]),
-};
+export const effectDead: Effect =
+  effect({ display: "DEAD", priority: 4, effect: "Monster:Dead", range: makeRange() });
 
 export const statsRepository: StatsFunRepo = {
   'Charm:ofHealth': (player, enemies) => [{ ...player, hp: player.hp + 10 }, enemies],
@@ -94,27 +55,27 @@ export const build: Record<
     {
       display: "Basic",
       effects: [
-        {
+        inventoryEffect({
           display: "Rest",
           effect: "Basic:Rest",
           priority: 4,
           stamina: 0,
           range: selfRange,
-        },
-        {
+        }),
+        inventoryEffect({
           display: "Advance",
           effect: "Basic:Advance",
           priority: 4,
           stamina: 1,
           range: selfRange,
-        },
-        {
+        }),
+        inventoryEffect({
           display: "Retreat",
           effect: "Basic:Retreat",
           priority: 4,
           stamina: 1,
           range: selfRange,
-        }
+        }),
       ]
     }
   ],
@@ -141,20 +102,20 @@ export const build: Record<
     {
       display: "Axe",
       effects: [
-        {
+        inventoryEffect({
           display: "Chop",
           effect: "Axe:Chop",
           priority: 2,
           stamina: 2,
           range: makeRange(0, 1),
-        },
-        {
+        }),
+        inventoryEffect({
           display: "Cut",
           effect: "Axe:Cut",
           priority: 3,
           stamina: 2,
           range: makeRange(0),
-        },
+        }),
       ],
     },
   ],
@@ -162,13 +123,13 @@ export const build: Record<
     {
       display: "Hook",
       effects: [
-        {
+        inventoryEffect({
           display: "Get over here!",
           effect: "Hook:GetHere",
           priority: 4,
           stamina: 3,
           range: makeRange(2, 3, 4),
-        },
+        }),
       ],
     },
   ],
@@ -190,7 +151,12 @@ export const build: Record<
   footwear: [
     {
       display: "Boots of Flight",
-      eot: ["BootsOfFlight:EOT"],
+      eot: [effect({
+        display: "Flight!",
+        priority: 0,
+        range: allRanges,
+        effect: 'BootsOfFlight:EOT'
+      })],
     },
   ],
   charm: [
@@ -224,9 +190,9 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
-      { display: "Roar", priority: 1, effect: "Monster:Roar", range: allRanges },
-      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
+      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) }),
+      effect({ display: "Roar", priority: 1, effect: "Monster:Roar", range: allRanges }),
+      effect({ display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) }),
     ],
   }, {
     hp: 25,
@@ -238,8 +204,8 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Toro",
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: allRanges },
-      { display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) },
+      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: allRanges }),
+      effect({ display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) }),
     ],
     rolls: [
       [0, 0, 0, 0, 0],
@@ -258,9 +224,9 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Summoner",
     },
     effects: [
-      { display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) },
-      { display: "Jump", priority: 3, effect: "Monster:Jump", range: allRanges },
-      { display: "Summon Toro", priority: 4, effect: "Monster:SummonToro", range: makeRange(2, 3, 4) },
+      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) }),
+      effect({ display: "Jump", priority: 3, effect: "Monster:Jump", range: allRanges }),
+      effect({ display: "Summon Toro", priority: 4, effect: "Monster:Summon", parameters: { enemy: 1 }, range: makeRange(2, 3, 4) }),
     ],
     rolls: [
       [0, 0, 0, 0, 0],

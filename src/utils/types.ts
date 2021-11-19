@@ -1,4 +1,5 @@
 import { Opaque } from "type-fest";
+import { EffectFunParams, EffectFunRepoIndex } from "./effectFunctions";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -43,45 +44,29 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 5;
 
-export type MultiTurnEffect = {
-  effect: MultiTurnEffectFunIndex;
-  origin: Target;
-  parameters: object;
-}
-
 export type Snapshot = {
   player: PlayerStats;
   enemies: EnemiesStats;
   target: MonsterTarget;
   lastAttacks: (readonly [Target, string])[];
-  bot?: Nel<MultiTurnEffect>;
-  eot?: Nel<MultiTurnEffect>;
+  bot?: Nel<Effect>;
+  eot?: Nel<Effect>;
 };
-
-export type PlayHistory = Nel<Snapshot>;
 
 export type RNG = Opaque<number[][], 'RNG'>;
 
-export type Play = Readonly<{
-  states: PlayHistory;
+export type Play = {
+  states: Nel<Snapshot>;
   player: Player;
   enemies: Enemies,
   rng: RNG;
   turns: number;
   id: string;
   seed: string | number;
-}>;
+};
 
 type ItemOrMonster = string /* TODO all items */ | 'Monster';
 export type FunIndex = `${ItemOrMonster}:${string}`;
-
-export type MultiTurnEffectFunIndex = FunIndex;
-export type MultiTurnEffectFunRepo = { [key: MultiTurnEffectFunIndex]: MultiTurnEffectFun; }
-export type MultiTurnEffectFun = (params: any) => (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
-
-export type EffectFunIndex = FunIndex;
-export type EffectFunRepo = { [key: EffectFunIndex]: EffectFun; }
-export type EffectFun = (origin: Target, play: Play, newState: Snapshot) => Snapshot;
 
 export type StatsFunIndex = FunIndex;
 export type StatsFunRepo = { [key: StatsFunIndex]: StatsFun; }
@@ -89,16 +74,61 @@ export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerSt
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
-export type Effect = {
+type EffectT = {
   display: string;
-  effect: FunIndex;
+  effect: string;
+  parameters: any;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
+export type Effect = EffectT;
+export const effect =
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
+    display: string;
+    effect: T;
+    priority: UpTo<Subtract<Priorities, 1>>;
+    range: Ranges;
+    parameters?: undefined;
+  } : {
+    display: string;
+    effect: T;
+    priority: UpTo<Subtract<Priorities, 1>>;
+    range: Ranges;
+    parameters: EffectFunParams<T>
+  })): Effect => ({
+    display: o.display,
+    effect: o.effect,
+    parameters: o.parameters,
+    priority: o.priority,
+    range: o.range,
+  } as Effect);
 
-export type InventoryEffect = Effect & {
+export type InventoryEffect = Opaque<Effect & {
   stamina: UpTo<Subtract<Staminas, 1>>;
-};
+}>;
+export const inventoryEffect =
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
+    display: string;
+    effect: T;
+    priority: UpTo<Subtract<Priorities, 1>>;
+    range: Ranges;
+    stamina: number;
+    parameters?: undefined;
+  } : {
+    display: string;
+    effect: T;
+    priority: UpTo<Subtract<Priorities, 1>>;
+    range: Ranges;
+    stamina: number;
+    parameters: EffectFunParams<T>
+  })): InventoryEffect => ({
+    display: o.display,
+    effect: o.effect,
+    parameters: o.parameters,
+    priority: o.priority,
+    range: o.range,
+    stamina: o.stamina,
+  } as InventoryEffect);
 
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type Target = MonsterTarget | 'Player';
@@ -111,8 +141,8 @@ export type Build = Record<
 export type Item = {
   display: string;
   passive?: StatsFunIndex;
-  bot?: Nel<EffectFunIndex>;
-  eot?: Nel<EffectFunIndex>;
+  bot?: Nel<Effect>;
+  eot?: Nel<Effect>;
   effects?: Nel<InventoryEffect>;
   [key: string]: any;
 };
