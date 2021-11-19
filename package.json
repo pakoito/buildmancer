@@ -38,6 +38,7 @@
     "ts-node": "^10.4.0",
     "type-fest": "^2.5.3",
     "typescript": "^4.0.3",
+    "typescript-is": "^0.19.0",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.3",
     "workbox-broadcast-update": "^5.1.3",
@@ -54,6 +55,7 @@
     "xstate": "^4.26.0"
   },
   "scripts": {
+    "prepare": "ts-patch install -s",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
@@ -87,6 +89,7 @@
   },
   "devDependencies": {
     "@types/chance": "^1.1.3",
+    "ts-patch": "^2.0.1",
     "tsconfig-paths": "^3.11.0"
   }
 }
