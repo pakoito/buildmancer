@@ -1,5 +1,4 @@
 import { Chance } from "chance";
-import { paramsRender } from "../tinkerer/tinkererCLI";
 import { Subtract } from "type-fest/source/internal";
 import { actions } from "./playGame";
 import { Build, Distances, Effect, EffectFun, EffectFunRepo, Enemy, EnemyStats, Item, MonsterTarget, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, MultiTurnEffectFunRepo, MultiTurnEffectFun } from "./types";
@@ -75,8 +74,8 @@ export const effectRepository: EffectFunRepo = {
 
 export const multiTurnEffectRepository: MultiTurnEffectFunRepo = {
   'Target:Bleed': chain2(
-    ({ target }) => (origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
-    ({ lifespan }) => (origin, play, currentState) => [play, lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...paramsRender, lifespan: lifespan - 1 } }) : currentState],
+    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
+    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...params, lifespan: params.lifespan - 1 } }) : currentState],
   ),
   'Monster:Summon': ({ enemy }) => (_, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1]),
 };

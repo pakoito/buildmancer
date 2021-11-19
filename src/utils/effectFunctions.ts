@@ -20,7 +20,7 @@ export const chain = <T>(...funs: Array<ParametrizedFun<T>>): EffectFun<T> =>
 export const EffectRepository = {
   'Target:Bleed': chain<{ target: Target; lifespan: number }>(
     ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
-    ({ lifespan }) => (origin, play, currentState) => [play, lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...paramsRender, lifespan: lifespan - 1 } }) : currentState],
+    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, { effect: 'Target:Bleed', origin, parameters: { ...params, lifespan: params.lifespan - 1 } }) : currentState],
   ),
   'Monster:Summon': chain<{ enemy: MonsterTarget }>(
     ({ enemy }) => (_, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
