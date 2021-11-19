@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/buildmancer/static/css/main.cc5c7ef2.chunk.css",
-    "main.js": "/buildmancer/static/js/main.82cef967.chunk.js",
-    "main.js.map": "/buildmancer/static/js/main.82cef967.chunk.js.map",
+    "main.js": "/buildmancer/static/js/main.ccc48a85.chunk.js",
+    "main.js.map": "/buildmancer/static/js/main.ccc48a85.chunk.js.map",
     "runtime-main.js": "/buildmancer/static/js/runtime-main.1a5fe1c7.js",
     "runtime-main.js.map": "/buildmancer/static/js/runtime-main.1a5fe1c7.js.map",
     "static/css/2.0a9ec390.chunk.css": "/buildmancer/static/css/2.0a9ec390.chunk.css",
-    "static/js/2.58916632.chunk.js": "/buildmancer/static/js/2.58916632.chunk.js",
-    "static/js/2.58916632.chunk.js.map": "/buildmancer/static/js/2.58916632.chunk.js.map",
+    "static/js/2.b260ba2d.chunk.js": "/buildmancer/static/js/2.b260ba2d.chunk.js",
+    "static/js/2.b260ba2d.chunk.js.map": "/buildmancer/static/js/2.b260ba2d.chunk.js.map",
     "static/js/3.32acc358.chunk.js": "/buildmancer/static/js/3.32acc358.chunk.js",
     "static/js/3.32acc358.chunk.js.map": "/buildmancer/static/js/3.32acc358.chunk.js.map",
     "index.html": "/buildmancer/index.html",
@@ -15,13 +15,13 @@
     "service-worker.js.map": "/buildmancer/service-worker.js.map",
     "static/css/2.0a9ec390.chunk.css.map": "/buildmancer/static/css/2.0a9ec390.chunk.css.map",
     "static/css/main.cc5c7ef2.chunk.css.map": "/buildmancer/static/css/main.cc5c7ef2.chunk.css.map",
-    "static/js/2.58916632.chunk.js.LICENSE.txt": "/buildmancer/static/js/2.58916632.chunk.js.LICENSE.txt"
+    "static/js/2.b260ba2d.chunk.js.LICENSE.txt": "/buildmancer/static/js/2.b260ba2d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.1a5fe1c7.js",
     "static/css/2.0a9ec390.chunk.css",
-    "static/js/2.58916632.chunk.js",
+    "static/js/2.b260ba2d.chunk.js",
     "static/css/main.cc5c7ef2.chunk.css",
-    "static/js/main.82cef967.chunk.js"
+    "static/js/main.ccc48a85.chunk.js"
   ]
 }
