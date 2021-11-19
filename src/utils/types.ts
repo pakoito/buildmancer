@@ -142,8 +142,8 @@ export type Build = Record<
 export type Item = {
   display: string;
   passive?: StatsFunIndex;
-  bot?: Nel<[PlayerTarget, Effect]>;
-  eot?: Nel<[PlayerTarget, Effect]>;
+  bot?: Nel<Effect>;
+  eot?: Nel<Effect>;
   effects?: Nel<InventoryEffect>;
   [key: string]: any;
 };
