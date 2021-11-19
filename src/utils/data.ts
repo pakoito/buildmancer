@@ -155,7 +155,7 @@ export const build: Record<
         display: "Flight!",
         priority: 0,
         range: allRanges,
-        effect: 'BootsOfFlight:EOT'
+        effect: 'BootsOfFlight:EOT',
       })]],
     },
   ],

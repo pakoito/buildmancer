@@ -17,7 +17,7 @@ const EffectFunctionRepository = {
   ),
   'Target:Bleed': effectFun<{ target: Target; lifespan: number }>(
     ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
-    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } }) : currentState],
+    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } } as Effect) : currentState],
   ),
   'Monster:Summon': effectFun<{ enemy: number }>(
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
@@ -39,7 +39,7 @@ const EffectFunctionRepository = {
   ),
   'Axe:Cut': effectFun<undefined>(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
-    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: {} })]
+    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: {} } as Effect)]
   ),
   'Hook:GetHere': effectFun<undefined>(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],

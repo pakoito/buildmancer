@@ -81,7 +81,7 @@ type EffectT = {
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
-export type Effect = EffectT;
+export type Effect = Opaque<EffectT, EffectT>;
 export const effect =
   <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
     display: string;
