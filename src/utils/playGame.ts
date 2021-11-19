@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget } from "./types";
 import { Seq } from "immutable";
 import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
@@ -29,10 +29,10 @@ export const playerPassives = (player: Player): StatsFun[] =>
 export const playerActions = (player: Player): InventoryEffect[] =>
   Object.values(player.build).flatMap((s) => s.effects ?? []);
 
-export const playerBotEffects = (player: Player): Effect[] =>
+export const playerBotEffects = (player: Player): [PlayerTarget, Effect][] =>
   Object.values(player.build).flatMap((s) => s.bot ?? []);
 
-export const playerEotEffects = (player: Player): Effect[] =>
+export const playerEotEffects = (player: Player): [PlayerTarget, Effect][] =>
   Object.values(player.build).flatMap((s) => s.eot ?? []);
 
 export default function play(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
@@ -53,13 +53,21 @@ export default function play(player: Player, playerStats: PlayerStats, enemies: 
   };
 }
 
-const reduceFuns = (funs: Effect[], p: Play, s: Snapshot): [Play, Snapshot] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot): [Play, Snapshot, [Target, string][]] =>
   Seq(funs)
-    .sortBy(a => a.priority)
-    .reduce(([play, snap], { effect, parameters }) =>
-      extractFunction(effect, parameters)('Player' /* FIXME */, play, snap),
-      [p, s],
-    );
+    .sortBy(([_t, a]) => a.priority)
+    .reduce((acc, value) => {
+      const [origin, effect] = value;
+      const [oldPlay, oldState, lastAttacks] = acc;
+      const target = origin === 'Player' ? oldState.target : origin;
+      const isInRange = new Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
+      if (isInRange) {
+        const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
+        return [newPlay, newState, [...lastAttacks, [origin, effect.display] as [Target, string]]]
+      } else {
+        return [oldPlay, oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]]
+      }
+    }, [p, s, [] as [Target, string][]]);
 
 const applyEffectStamina = (amount: number): Effect =>
   ({ display: "Stamina use", effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
@@ -73,34 +81,25 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   // BOT
   const playerBot = playerBotEffects(play.player);
   const [preBotPlay, preBotState] =
-    reduceFuns([applyEffectStamina(currState.player.staminaPerTurn - usedSkill.stamina)], play, currState);
+    reduceFuns([['Player', applyEffectStamina(currState.player.staminaPerTurn - usedSkill.stamina)]], play, currState);
   const [postBotPlay, postBotState] = reduceFuns(bot ?? [], preBotPlay, preBotState);
   const [postPlayerBotPlay, postPlayerBotState] = reduceFuns(playerBot, postBotPlay, postBotState);
 
   // Turn
   const rand = turnRng(play, play.states.length - 1);
-  const functions = Seq(play.enemies).zip(Seq(enemies))
+  const turnFunctions: [Target, Effect][] = Seq(play.enemies).zip(Seq(enemies))
     .map(([e, stats], idx) =>
       [idx as Target,
       stats.hp > 0
         ? e.effects[e.rolls[stats.distance - 1][rand(0, e.rolls[stats.distance - 1].length)]]
         : effectDead] as const)
-    .concat([['Player' as Target, usedSkill] as const])
-    .sortBy(([_origin, effect]) => effect.priority);
+    .concat([['Player' as Target, usedSkill as Effect] as const])
+    .toArray()
+    // Sure, typescript
+    .map(a => [...a]);
 
   const [newPlay, newState, lastAttacks] =
-    functions.reduce((acc, value) => {
-      const [origin, effect] = value;
-      const [oldPlay, oldState, lastAttacks] = acc;
-      const target = origin === 'Player' ? postPlayerBotState.target : origin;
-      const isInRange = new Set([...effect.range]).has(postPlayerBotState.enemies[target]?.distance!!);
-      if (isInRange) {
-        const [newPlay, newState] = extractFunction(effect.effect, effect.parameters)(origin, postPlayerBotPlay, oldState);
-        return [newPlay, newState, [...lastAttacks, [origin, effect.display] as [Target, string]]]
-      } else {
-        return [oldPlay, oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]]
-      }
-    }, [postPlayerBotPlay, postPlayerBotState, [] as [Target, string][]]);
+    reduceFuns(turnFunctions, postPlayerBotPlay, postPlayerBotState);
 
   // EOT
   const preEotState = { ...newState, lastAttacks };

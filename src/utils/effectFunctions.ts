@@ -1,6 +1,6 @@
 // import { createIs, is } from 'typescript-is';
 import { Opaque } from "type-fest";
-import { FunIndex, Nel, Play, Snapshot, Target } from "./types";
+import { Effect, FunIndex, Play, Snapshot, Target } from "./types";
 import EffectRepository from './effectRepository';
 import effectRepository from './effectRepository';
 
@@ -12,10 +12,10 @@ export type EffectFunRepoIndex = keyof EffectFunRepo & FunIndex;
 export type EffectFunRepo = typeof EffectRepository;
 export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
 
-export function extractFunction(idx: string, value: EffectFunParams<EffectFunRepoIndex>): ReduceFun {
+export function extractFunction({ effect, parameters }: Effect): ReduceFun {
   //if (isAnyEffectFunParams(idx, value)) {
   // @ts-ignore: where the magic happens
-  return effectRepository[idx](value);
+  return effectRepository[effect](parameters);
   //}
   //throw new Error('ValidationException');
 }

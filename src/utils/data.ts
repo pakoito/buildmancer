@@ -151,12 +151,12 @@ export const build: Record<
   footwear: [
     {
       display: "Boots of Flight",
-      eot: [effect({
+      eot: [['Player', effect({
         display: "Flight!",
         priority: 0,
         range: allRanges,
         effect: 'BootsOfFlight:EOT'
-      })],
+      })]],
     },
   ],
   charm: [

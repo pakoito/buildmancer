@@ -49,8 +49,8 @@ export type Snapshot = {
   enemies: EnemiesStats;
   target: MonsterTarget;
   lastAttacks: (readonly [Target, string])[];
-  bot?: Nel<Effect>;
-  eot?: Nel<Effect>;
+  bot?: Nel<[Target, Effect]>;
+  eot?: Nel<[Target, Effect]>;
 };
 
 export type RNG = Opaque<number[][], 'RNG'>;
@@ -131,7 +131,8 @@ export const inventoryEffect =
   } as InventoryEffect);
 
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
-export type Target = MonsterTarget | 'Player';
+export type PlayerTarget = 'Player';
+export type Target = MonsterTarget | PlayerTarget;
 
 export type Build = Record<
   string,
@@ -141,8 +142,8 @@ export type Build = Record<
 export type Item = {
   display: string;
   passive?: StatsFunIndex;
-  bot?: Nel<Effect>;
-  eot?: Nel<Effect>;
+  bot?: Nel<[PlayerTarget, Effect]>;
+  eot?: Nel<[PlayerTarget, Effect]>;
   effects?: Nel<InventoryEffect>;
   [key: string]: any;
 };
