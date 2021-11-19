@@ -1,24 +1,24 @@
 import { Opaque } from "type-fest";
 import { enemies, startState } from "./data";
 import { actions } from "./playGame";
-import { MonsterTarget, Play, Snapshot, Target } from "./types";
+import { MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
 
 export type ParametrizedFun<T> = (params: T) => (play: Play, newState: Snapshot) => [Play, Snapshot];
 export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
+export const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
+  // TODO check direction of the fold
+  (funs.length > 1
+    ? funs.reduce((acc, value) => (params) => (play, oldState) => {
+      const [newPlay, newState] = acc(params)(play, oldState);
+      return value(params)(newPlay, newState);
+    }) : funs[0]) as EffectFun<T>;
 
 type ItemOrMonster = string /* TODO all items */ | 'Monster';
 export type FunIndex = `${ItemOrMonster}:${string}`;
 
 export type EffectFunRepoIndex = keyof typeof EffectRepository & FunIndex;
-export type EffectFunValue<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
 export type EffectFunRepo = typeof EffectRepository;
-
-export const effectFun = <T>(...funs: Array<ParametrizedFun<T>>): EffectFun<T> =>
-  // TODO check direction of the fold
-  funs.reduce((acc, value) => (params) => (play, oldState) => {
-    const [newPlay, newState] = acc(params)(play, oldState);
-    return value(params)(newPlay, newState);
-  }) as EffectFun<T>;
+export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
 
 export const EffectRepository = {
   'Target:Bleed': effectFun<{ target: Target; lifespan: number; origin: Target }>(
@@ -36,7 +36,7 @@ const main = () => {
 
   //}
 
-  const someParameters: EffectFunValue<'Target:Bleed'> = {
+  const someParameters: EffectFunParams<'Target:Bleed'> = {
     lifespan: 1,
     target: 1,
     origin: 0,
