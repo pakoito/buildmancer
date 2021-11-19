@@ -6,7 +6,10 @@ import { MonsterTarget, Play, Snapshot, Target } from "./types";
 export type ParametrizedFun<T> = (params: T) => (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
 export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
 
-export type EffectFunRepoIndex = keyof EffectFunRepo;
+type ItemOrMonster = string /* TODO all items */ | 'Monster';
+export type FunIndex = `${ItemOrMonster}:${string}`;
+
+export type EffectFunRepoIndex = keyof typeof EffectRepository & FunIndex;
 export type EffectFunValue<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>;
 export type EffectFunRepo = typeof EffectRepository;
 
