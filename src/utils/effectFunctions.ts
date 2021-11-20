@@ -28,29 +28,31 @@ const assignObject = <T extends EffectFunRepoIndex>(idx: T, obj: object, value: 
 }
 
 // Uses all the tricks in the book for runtime validation
-const validators = !isNode ? {} as { [k: string]: any } : Object.keys(effectRepository)
-  .reduce((obj, idx) => {
-    if (!is<EffectFunRepoIndex>(idx)) {
-      return obj;
-    }
-    switch (idx) {
-      case 'Player:SapStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Target:Bleed': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Monster:Summon': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Monster:Dead': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Basic:Rest': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Basic:Advance': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Basic:Retreat': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Axe:Chop': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Axe:Cut': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Hook:GetHere': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Monster:Swipe': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Monster:Roar': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'Monster:Jump': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-      case 'BootsOfFlight:EOT': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-    }
-    throw new Error(`Missing runtime validation for ${idx}`);
-  }, {}) as Validators;
+const validators = !isNode
+  ? {} as { [k: string]: any }
+  : Object.keys(effectRepository)
+    .reduce((obj, idx) => {
+      if (!is<EffectFunRepoIndex>(idx)) {
+        return obj;
+      }
+      switch (idx) {
+        case 'Player:SapStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Target:Bleed': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Summon': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Dead': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Basic:Rest': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Basic:Advance': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Basic:Retreat': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Axe:Chop': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Axe:Cut': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Hook:GetHere': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Swipe': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Roar': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Jump': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'BootsOfFlight:EOT': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+      }
+      throw new Error(`Missing runtime validation for ${idx}`);
+    }, {}) as Validators;
 type Validators = { [k in EffectFunRepoIndex]: [(object: any) => object is k, (object: any) => object is EffectFunParams<k>] };
 
 export function isAnyEffectFunParams(idx: any, value: any): value is EffectFunParams<EffectFunRepoIndex> {
