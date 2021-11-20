@@ -1,7 +1,24 @@
-/* eslint-disable no-empty-pattern */
 import { allRanges, enemies, startState } from "./data";
-import { EffectFun, ParametrizedFun } from "./effectFunctions";
+import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
 import { Effect, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
+
+export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
+export type EffectFunctionT = {
+  'Player:SapStamina': { amount: number };
+  'Target:Bleed': { target: Target; lifespan: number };
+  'Monster:Summon': { enemy: number };
+  'Monster:Dead': null;
+  'Basic:Rest': null;
+  'Basic:Advance': null;
+  'Basic:Retreat': null;
+  'Axe:Chop': null;
+  'Axe:Cut': null;
+  'Hook:GetHere': null;
+  'Monster:Swipe': null;
+  'Monster:Roar': null;
+  'Monster:Jump': null;
+  'BootsOfFlight:EOT': null;
+}
 
 const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
   // TODO check direction of the fold
@@ -11,50 +28,50 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
       return value(params)(origin, newPlay, newState);
     }) : funs[0]) as EffectFun<T>;
 
-const EffectFunctionRepository = {
-  'Player:SapStamina': effectFun<{ amount: number }>(
+const repo: EffectFunctionRepository = {
+  'Player:SapStamina': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(play.states[0], currentState, amount)],
   ),
-  'Target:Bleed': effectFun<{ target: Target; lifespan: number }>(
+  'Target:Bleed': effectFun(
     ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
     (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } } as Effect) : currentState],
   ),
-  'Monster:Summon': effectFun<{ enemy: number }>(
+  'Monster:Summon': effectFun(
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
   ),
-  'Monster:Dead': effectFun<undefined>(
+  'Monster:Dead': effectFun(
     () => (_origin, play, newState) => [play, newState]
   ),
-  'Basic:Rest': effectFun<undefined>(
+  'Basic:Rest': effectFun(
     () => (_origin, play, newState) => [play, newState]
   ),
-  'Basic:Advance': effectFun<undefined>(
+  'Basic:Advance': effectFun(
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, -2)]
   ),
-  'Basic:Retreat': effectFun<undefined>(
+  'Basic:Retreat': effectFun(
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
   ),
-  'Axe:Chop': effectFun<undefined>(
+  'Axe:Chop': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)]
   ),
-  'Axe:Cut': effectFun<undefined>(
+  'Axe:Cut': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
     () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: {} } as Effect)]
   ),
-  'Hook:GetHere': effectFun<undefined>(
+  'Hook:GetHere': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
     () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -1)]
   ),
-  'Monster:Swipe': effectFun<undefined>(
+  'Monster:Swipe': effectFun(
     () => (_, play, currentState) => [play, actions.attackPlayer(startState(play), currentState, 2)]
   ),
-  'Monster:Roar': effectFun<undefined>(
+  'Monster:Roar': effectFun(
     () => (_, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, -5)]
   ),
-  'Monster:Jump': effectFun<undefined>(
+  'Monster:Jump': effectFun(
     () => (origin, play, currentState) => [play, actions.changeDistance(currentState, origin, -2)]
   ),
-  'BootsOfFlight:EOT': effectFun<undefined>(
+  'BootsOfFlight:EOT': effectFun(
     () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState)]
   ),
 };
@@ -136,4 +153,4 @@ const actions = {
   }
 };
 
-export default EffectFunctionRepository;
+export default repo;

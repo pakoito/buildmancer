@@ -76,19 +76,19 @@ export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
 type EffectT = {
   display: string;
-  effect: string;
-  parameters: any;
+  effect: EffectFunRepoIndex;
+  parameters: EffectFunParams<EffectFunRepoIndex>;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
 export type Effect = Opaque<EffectT, EffectT>;
 export const effect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends null ? {
     display: string;
     effect: T;
     priority: UpTo<Subtract<Priorities, 1>>;
     range: Ranges;
-    parameters?: undefined;
+    parameters?: null;
   } : {
     display: string;
     effect: T;
@@ -107,13 +107,13 @@ export type InventoryEffect = Opaque<Effect & {
   stamina: UpTo<Subtract<Staminas, 1>>;
 }>;
 export const inventoryEffect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends null ? {
     display: string;
     effect: T;
     priority: UpTo<Subtract<Priorities, 1>>;
     range: Ranges;
     stamina: number;
-    parameters?: undefined;
+    parameters?: null;
   } : {
     display: string;
     effect: T;
