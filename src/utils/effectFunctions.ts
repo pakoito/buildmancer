@@ -70,6 +70,7 @@ export function isEffectFunParams<T extends EffectFunRepoIndex>(expected: T, idx
 }
 
 // Jest doesn't work so this should do
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const test = () => {
   const assertF = (a: any, b: any) => a === b ? void 0 : console.log(`Failed ${a.toString()} compared to ${b.toString()} ${new Error().stack?.split('\n')[2].trim()}`);
   const [idx1, value1] = JSON.parse(JSON.stringify(['Monster:Summon', { enemy: 1 }]));
