@@ -7,17 +7,17 @@ export type EffectFunctionT = {
   'Player:SapStamina': { amount: number };
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
-  'Monster:Dead': null;
-  'Basic:Rest': null;
-  'Basic:Advance': null;
-  'Basic:Retreat': null;
-  'Axe:Chop': null;
-  'Axe:Cut': null;
-  'Hook:GetHere': null;
-  'Monster:Swipe': null;
-  'Monster:Roar': null;
-  'Monster:Jump': null;
-  'BootsOfFlight:EOT': null;
+  'Monster:Dead': undefined;
+  'Basic:Rest': undefined;
+  'Basic:Advance': undefined;
+  'Basic:Retreat': undefined;
+  'Axe:Chop': undefined;
+  'Axe:Cut': undefined;
+  'Hook:GetHere': undefined;
+  'Monster:Swipe': undefined;
+  'Monster:Roar': undefined;
+  'Monster:Jump': undefined;
+  'BootsOfFlight:EOT': undefined;
 }
 
 const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>

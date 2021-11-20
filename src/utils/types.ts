@@ -83,12 +83,12 @@ type EffectT = {
 };
 export type Effect = Opaque<EffectT, EffectT>;
 export const effect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends null ? {
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
     display: string;
     effect: T;
     priority: UpTo<Subtract<Priorities, 1>>;
     range: Ranges;
-    parameters?: null;
+    parameters?: undefined;
   } : {
     display: string;
     effect: T;
@@ -107,13 +107,13 @@ export type InventoryEffect = Opaque<Effect & {
   stamina: UpTo<Subtract<Staminas, 1>>;
 }>;
 export const inventoryEffect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends null ? {
+  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
     display: string;
     effect: T;
     priority: UpTo<Subtract<Priorities, 1>>;
     range: Ranges;
     stamina: number;
-    parameters?: null;
+    parameters?: undefined;
   } : {
     display: string;
     effect: T;

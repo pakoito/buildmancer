@@ -16,7 +16,7 @@ export function extractFunction({ effect, parameters }: Effect): ReduceFun {
     // @ts-ignore: where the magic happens
     return effectRepository[effect](parameters);
   }
-  throw new Error('ValidationException');
+  throw new Error(`ValidationException: ${effect} with ${JSON.stringify(parameters)}`);
 }
 
 const assignObject = <T extends EffectFunRepoIndex>(idx: T, obj: object, value: any): object => {
@@ -84,15 +84,15 @@ const test = () => {
   assertF(false, isAnyEffectFunParams(idx3, value3));
 
   const [idx4, value4] = JSON.parse(JSON.stringify(['Monster:Swipe']));
-  assertF(false, isAnyEffectFunParams(idx4, value4));
-  assertF(true, isAnyEffectFunParams(idx4, value4 ?? null));
-  assertF(false, isAnyEffectFunParams(idx4, value4 ?? undefined));
+  assertF(true, isAnyEffectFunParams(idx4, value4));
+  assertF(false, isAnyEffectFunParams(idx4, value4 ?? null));
+  assertF(true, isAnyEffectFunParams(idx4, value4 ?? undefined));
 
   const [idx5, value5] = JSON.parse(JSON.stringify(['Monster:Swipe', undefined]));
-  assertF(true, isAnyEffectFunParams(idx5, value5));
-  assertF(true, isAnyEffectFunParams(idx5, value5 ?? null));
+  assertF(false, isAnyEffectFunParams(idx5, value5));
+  assertF(false, isAnyEffectFunParams(idx5, value5 ?? null));
   assertF(true, isAnyEffectFunParams(idx5, value5 ?? undefined));
 }
 
 // node --experimental-specifier-resolution=node --loader ts-node/esm src/utils/effectFunctions.ts 
-test();
+// test();
