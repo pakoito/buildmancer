@@ -11,8 +11,10 @@ export type EffectFunRepo = EffectFunctionRepository;
 export type EffectFunRepoIndex = keyof EffectFunctionT & FunIndex;
 export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
 
+const isNode = typeof process === 'undefined';
+
 export function extractFunction({ effect, parameters }: Effect): ReduceFun {
-  if (isAnyEffectFunParams(effect, parameters)) {
+  if (!isNode || isAnyEffectFunParams(effect, parameters)) {
     // @ts-ignore: where the magic happens
     return effectRepository[effect](parameters);
   }
@@ -26,7 +28,7 @@ const assignObject = <T extends EffectFunRepoIndex>(idx: T, obj: object, value: 
 }
 
 // Uses all the tricks in the book for runtime validation
-const validators = Object.keys(effectRepository)
+const validators = !isNode ? {} as { [k: string]: any } : Object.keys(effectRepository)
   .reduce((obj, idx) => {
     if (!is<EffectFunRepoIndex>(idx)) {
       return obj;
