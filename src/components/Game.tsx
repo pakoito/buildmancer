@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col, Card, Modal } from "react-bootstrap";
 
 import { MonsterTarget, Play } from "../utils/types";
 
@@ -9,6 +9,8 @@ import { playerActions } from "../utils/playGame";
 import { Seq } from "immutable";
 import { previousState } from "../utils/data";
 import { Button } from "react-bootstrap";
+import saveAs from 'file-saver';
+import { useCallback, useState } from "react";
 
 export type GameProps = {
   game: Play;
@@ -23,6 +25,10 @@ export type GameProps = {
 const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks } = previousState(game);
+  const [show, setShowLog] = useState(false);
+
+  const handleCloseLog = () => setShowLog(false);
+  const handleShowLog = () => setShowLog(true);
 
   const playerSkills = playerActions(player);
   const monsterHealth = enemiesStats.reduce((acc, m) => m.hp + acc, 0);
@@ -50,51 +56,81 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
     }
   }));
 
+  const save = useCallback(() => {
+    const blob = new Blob([JSON.stringify(game)], { type: "application/json;charset=utf-8" });
+    saveAs(blob, `buildmancer-${Date.now()}.json`);
+  }, [game]);
+
   return (
-    <Container fluid>
-      <Row className="justify-content-center align-items-flex-start">
-        <Col sm={12} md={8}>
-          <Row>
-            <Card.Title>
-              Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
-            </Card.Title>
-          </Row>
-          <Row>
-            <Col>
-              <PlayerCard
-                player={player}
-                playerStats={playerStats}
-                onClickEffect={handlePlayerEffect}
-                selectedButtons={selectedButtons}
-                lastAction={(lastAttacks.find(a => a[0] === 'Player') ?? [undefined, undefined])[1]}
-                canAct={canAct} />
-            </Col>
-          </Row>
-          <Row className="mt-2 g-2">
-            {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
-              <Col key={idx} xs={6} md={4}>
-                <EnemyCard
-                  key={idx}
-                  enemyStats={stats}
-                  enemy={enemy}
-                  canAct={canAct}
-                  latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}
-                  isSelected={idx === target}
-                  onSelect={() => setSelected(idx as MonsterTarget)}
-                />
+    <>
+      <Container fluid>
+        <Row className="justify-content-center align-items-flex-start">
+          <Col sm={12} md={8}>
+            <Row>
+              <Card.Title>
+                Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
+              </Card.Title>
+            </Row>
+            <Row>
+              <Col>
+                <PlayerCard
+                  player={player}
+                  playerStats={playerStats}
+                  onClickEffect={handlePlayerEffect}
+                  selectedButtons={selectedButtons}
+                  lastAction={(lastAttacks.find(a => a[0] === 'Player') ?? [undefined, undefined])[1]}
+                  canAct={canAct} />
               </Col>
-            ))}
-          </Row>
-          <Row>
-            {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
-            {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
-            <Button onClick={(_) => hint(100)}>Hint</Button>
-            <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
-            <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
+            </Row>
+            <Row className="mt-2 g-2">
+              {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
+                <Col key={idx} xs={6} md={4}>
+                  <EnemyCard
+                    key={idx}
+                    enemyStats={stats}
+                    enemy={enemy}
+                    canAct={canAct}
+                    latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}
+                    isSelected={idx === target}
+                    onSelect={() => setSelected(idx as MonsterTarget)}
+                  />
+                </Col>
+              ))}
+            </Row>
+            <Row>
+              {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
+              {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
+              <Button onClick={(_) => hint(100)}>Hint</Button>
+              <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
+              <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
+              <Button onClick={save}>Dump to file 📂</Button>
+              <Button onClick={handleShowLog}>Log</Button>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+      <Modal show={show} onHide={handleCloseLog} scrollable={true} centered={true}>
+        <Modal.Header closeButton>
+          <Modal.Title>Game Log</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {game.states.map((s, idx) => (
+            <>
+              <b>Turn {idx + 1}</b><br />
+              Player: {JSON.stringify(s.player, null, 2)}<br />
+              Enemies: {JSON.stringify(s.enemies, null, 2)}<br />
+              Target [{s.target}] Previous: {JSON.stringify(s.lastAttacks)}<br />
+              Eot? Bot?: {JSON.stringify({ bot: s.bot, eot: s.eot })}<br />
+            </>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseLog}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
