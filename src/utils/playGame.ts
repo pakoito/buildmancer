@@ -85,14 +85,16 @@ const applyEffectStamina = (amount: number): Effect =>
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   const usedSkill = playerActions(play.player)[index];
+  const bot = previousState(play).bot ?? [];
+  const eot = previousState(play).eot ?? [];
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [] });
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined });
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState] = reduceFuns(preBotState.bot ?? [], preBotPlay, preBotState);
+  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState);
   // Player & Monster effects
   const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player), ...enemiesBotEffects(postBotPlay.enemies)];
   const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState);
@@ -118,7 +120,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const entitiesEot = [...playerEotEffects(newPlay.player), ...enemiesEotEffects(newPlay.enemies)];
   const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState);
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns(postPlayerEotState.eot ?? [], postPlayerEotPlay, postPlayerEotState);
+  const [postEotPlay, postEotState] = reduceFuns([...eot, ...(postPlayerEotState.eot ?? [])], postPlayerEotPlay, postPlayerEotState);
 
   return {
     ...postEotPlay,
