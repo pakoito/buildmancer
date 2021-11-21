@@ -82,53 +82,9 @@ type EffectT = {
   range: Ranges;
 };
 export type Effect = Opaque<EffectT, EffectT>;
-export const effect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    parameters?: undefined;
-  } : {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    parameters: EffectFunParams<T>
-  })): Effect => ({
-    display: o.display,
-    effect: o.effect,
-    parameters: o.parameters,
-    priority: o.priority,
-    range: o.range,
-  } as Effect);
-
 export type InventoryEffect = Opaque<Effect & {
   stamina: UpTo<Subtract<Staminas, 1>>;
 }>;
-export const inventoryEffect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    stamina: number;
-    parameters?: undefined;
-  } : {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    stamina: number;
-    parameters: EffectFunParams<T>
-  })): InventoryEffect => ({
-    display: o.display,
-    effect: o.effect,
-    parameters: o.parameters,
-    priority: o.priority,
-    range: o.range,
-    stamina: o.stamina,
-  } as InventoryEffect);
 
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type PlayerTarget = 'Player';
@@ -154,10 +110,14 @@ export type Player = {
   build: Build;
 };
 
+// Place in the array for now
+type EffectIdentity = number;
 export type Enemy = {
   lore: Record<string, string | number>;
-  effects: Effect[];
-  rolls: Tuple<number[], Distances>;
+  effects: Nel<Effect>;
+  rolls: Tuple<EffectIdentity[], Distances>;
+  bot?: Nel<Effect>;
+  eot?: Nel<Effect>;
 }
 
 export type Enemies = TupleUpTo<Enemy, MonsterCount>;
