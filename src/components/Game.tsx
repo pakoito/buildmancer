@@ -66,40 +66,35 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
       <Container fluid>
         <Row className="justify-content-center align-items-flex-start">
           <Col sm={12} md={8}>
-            <Row>
-              <Card.Title>
-                Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
-              </Card.Title>
-            </Row>
-            <Row>
-              <Col>
-                <PlayerCard
-                  player={player}
-                  playerStats={playerStats}
-                  onClickEffect={handlePlayerEffect}
-                  selectedButtons={selectedButtons}
-                  lastAction={(lastAttacks.find(a => a[0] === 'Player') ?? [undefined, undefined])[1]}
-                  canAct={canAct} />
-              </Col>
-            </Row>
-            <Row className="mt-2 g-2">
-              {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
-                <Col key={idx} xs={6} md={4}>
-                  <EnemyCard
-                    key={idx}
-                    enemyStats={stats}
-                    enemy={enemy}
-                    canAct={canAct}
-                    latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).first()}
-                    isSelected={idx === target}
-                    onSelect={() => setSelected(idx as MonsterTarget)}
-                  />
-                </Col>
-              ))}
-            </Row>
+
+            <Card.Title>
+              Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
+            </Card.Title>
             <Row>
               {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
               {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
+            </Row>
+            <PlayerCard
+              player={player}
+              playerStats={playerStats}
+              onClickEffect={handlePlayerEffect}
+              selectedButtons={selectedButtons}
+              lastAction={lastAttacks.filter(a => a[0] === 'Player').map(a => a[1]).join(" -> ") ?? undefined}
+              canAct={canAct} />
+            {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
+              <Col key={idx} xs={6} md={4}>
+                <EnemyCard
+                  key={idx}
+                  enemyStats={stats}
+                  enemy={enemy}
+                  canAct={canAct}
+                  latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).join(" -> ") ?? undefined}
+                  isSelected={idx === target}
+                  onSelect={() => setSelected(idx as MonsterTarget)}
+                />
+              </Col>
+            ))}
+            <Row>
               <Button onClick={(_) => hint(100)}>Hint</Button>
               <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
               <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>

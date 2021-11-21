@@ -1,6 +1,6 @@
 import { allRanges, enemies, startState } from "./data";
 import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
-import { Effect, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
+import { effect, Effect, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
 
 export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
 export type EffectFunctionT = {
@@ -33,8 +33,8 @@ const repo: EffectFunctionRepository = {
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(play.states[0], currentState, amount)],
   ),
   'Target:Bleed': effectFun(
-    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 3)],
-    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } } as Effect) : currentState],
+    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 1)],
+    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, effect({ display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } })) : currentState],
   ),
   'Monster:Summon': effectFun(
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
@@ -56,7 +56,7 @@ const repo: EffectFunctionRepository = {
   ),
   'Axe:Cut': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
-    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, { display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: {} } as Effect)]
+    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, effect({ display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { target: currentState.target, lifespan: 2 } }))]
   ),
   'Hook:GetHere': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
@@ -94,7 +94,7 @@ const actions = {
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 1, 5) })),
+    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 0, 4) })),
   }),
 
   attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>

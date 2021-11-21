@@ -32,7 +32,7 @@ const PlayerCard: React.FC<{
             >
               [<i>{idx + 1}</i>] <b>{e.display}</b>
             </Button>
-            <Card.Text>💪:{e.stamina} ⏱:{e.priority}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(",")}</Card.Text>
+            <Card.Text>💪:{e.stamina} ⏱:{e.priority}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(", ")}</Card.Text>
           </div>
           ))}
       </Stack>

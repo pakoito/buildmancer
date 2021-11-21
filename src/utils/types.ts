@@ -48,7 +48,7 @@ export type Snapshot = {
   player: PlayerStats;
   enemies: EnemiesStats;
   target: MonsterTarget;
-  lastAttacks: (readonly [Target, string])[];
+  lastAttacks: [Target, string][];
   bot?: Nel<[Target, Effect]>;
   eot?: Nel<[Target, Effect]>;
 };

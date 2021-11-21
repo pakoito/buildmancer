@@ -63,21 +63,21 @@ export default function play(player: Player, playerStats: PlayerStats, enemies: 
   };
 }
 
-const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, su: [Target, string][]): [Play, Snapshot, [Target, string][]] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([_t, a]) => a.priority)
     .reduce((acc, value) => {
       const [origin, effect] = value;
-      const [oldPlay, oldState, lastAttacks] = acc;
+      const [oldPlay, oldState] = acc;
       const target = origin === 'Player' ? oldState.target : origin;
       const isInRange = new Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
       if (isInRange) {
         const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
-        return [newPlay, newState, [...lastAttacks, [origin, effect.display] as [Target, string]]]
+        return [newPlay, { ...newState, lastAttacks: [...newState.lastAttacks, [origin, effect.display]] }]
       } else {
-        return [oldPlay, oldState, [...lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`] as [Target, string]]]
+        return [oldPlay, { ...oldState, lastAttacks: [...oldState.lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`]] }]
       }
-    }, [p, s, su]);
+    }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
   effect({ display: "Stamina use", effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
@@ -87,15 +87,15 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const usedSkill = playerActions(play.player)[index];
 
   // Stamina
-  const [preBotPlay, preBotState, preBotSummary] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, previousState(play), []);
+  const [preBotPlay, preBotState] =
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [] });
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState, postBotSummary] = reduceFuns(preBotState.bot ?? [], preBotPlay, preBotState, preBotSummary);
+  const [postBotPlay, postBotState] = reduceFuns(preBotState.bot ?? [], preBotPlay, preBotState);
   // Player & Monster effects
   const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player), ...enemiesBotEffects(postBotPlay.enemies)];
-  const [postEntitiesBotPlay, postEntitiesBotState, postEntitiesBotSummary] = reduceFuns(entitiesBot, postBotPlay, postBotState, postBotSummary);
+  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState);
 
   // Turn
   const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length - 1);
@@ -103,22 +103,22 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .map(([e, stats], idx) =>
       [idx as Target,
       stats.hp > 0
-        ? e.effects[e.rolls[stats.distance - 1][rand(0, e.rolls[stats.distance - 1].length)]]
+        ? e.effects[e.rolls[stats.distance][rand(0, e.rolls[stats.distance].length)]]
         : effectDead] as const)
     .concat([['Player' as Target, usedSkill] as const])
     .toArray()
     // Sure, typescript
     .map(a => [...a]);
 
-  const [newPlay, newState, lastAttacks] =
-    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, postEntitiesBotSummary);
+  const [newPlay, newState] =
+    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState);
 
   // EOT
   // Player & Monster effects
   const entitiesEot = [...playerEotEffects(newPlay.player), ...enemiesEotEffects(newPlay.enemies)];
-  const [postPlayerEotPlay, postPlayerEotState, postPlayerEotSummary] = reduceFuns(entitiesEot, newPlay, newState, lastAttacks);
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState);
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns(postPlayerEotState.eot ?? [], postPlayerEotPlay, postPlayerEotState, postPlayerEotSummary);
+  const [postEotPlay, postEotState] = reduceFuns(postPlayerEotState.eot ?? [], postPlayerEotPlay, postPlayerEotState);
 
   return {
     ...postEotPlay,
