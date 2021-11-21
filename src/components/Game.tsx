@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card, Modal } from "react-bootstrap";
+import { Container, Row, Col, Card, Modal, ButtonGroup } from "react-bootstrap";
 
 import { MonsterTarget, Play } from "../utils/types";
 
@@ -66,14 +66,9 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
       <Container fluid>
         <Row className="justify-content-center align-items-flex-start">
           <Col sm={12} md={8}>
-
             <Card.Title>
               Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
             </Card.Title>
-            <Row>
-              {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
-              {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
-            </Row>
             <PlayerCard
               player={player}
               playerStats={playerStats}
@@ -81,25 +76,49 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
               selectedButtons={selectedButtons}
               lastAction={lastAttacks.filter(a => a[0] === 'Player').map(a => a[1]).join(" -> ") ?? undefined}
               canAct={canAct} />
-            {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
-              <Col key={idx} xs={6} md={4}>
-                <EnemyCard
-                  key={idx}
-                  enemyStats={stats}
-                  enemy={enemy}
-                  canAct={canAct}
-                  latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).join(" -> ") ?? undefined}
-                  isSelected={idx === target}
-                  onSelect={() => setSelected(idx as MonsterTarget)}
-                />
-              </Col>
-            ))}
             <Row>
-              <Button onClick={(_) => hint(100)}>Hint</Button>
-              <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
-              <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
-              <Button onClick={save}>Dump to file 📂</Button>
-              <Button onClick={handleShowLog}>Log</Button>
+              <ButtonGroup>
+                {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
+                {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
+              </ButtonGroup>
+            </Row>
+            <Row>
+              <ButtonGroup>
+                <Button onClick={(_) => hint(100)}>Hint</Button>
+              </ButtonGroup>
+            </Row>
+            <Row>
+              {Seq(enemies).zip(Seq(enemiesStats)).map(([enemy, stats], idx) => (
+                <Col key={idx} xs={6} md={4}>
+                  <EnemyCard
+                    key={idx}
+                    enemyStats={stats}
+                    enemy={enemy}
+                    canAct={canAct}
+                    latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).join(" -> ") ?? undefined}
+                    isSelected={idx === target}
+                    onSelect={() => setSelected(idx as MonsterTarget)}
+                  />
+                </Col>
+              ))}
+            </Row>
+            <Card.Title>
+              Cheats
+            </Card.Title>
+            <Row>
+              <ButtonGroup>
+                <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
+                <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
+              </ButtonGroup>
+            </Row>
+            <Card.Title>
+              Debug
+            </Card.Title>
+            <Row>
+              <ButtonGroup>
+                <Button onClick={handleShowLog}>Log</Button>
+                <Button onClick={save}>Dump to file 📂</Button>
+              </ButtonGroup>
             </Row>
           </Col>
         </Row>

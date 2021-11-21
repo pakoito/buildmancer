@@ -45,7 +45,7 @@ export const playerBotEffects = (player: Player): [PlayerTarget, Effect][] =>
 export const playerEotEffects = (player: Player): [PlayerTarget, Effect][] =>
   Object.values(player.build).flatMap((s) => s.eot ?? []).map(a => ['Player', a]);
 
-export default function play(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
+export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
   return {
     player,

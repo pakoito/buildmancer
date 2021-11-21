@@ -8,6 +8,7 @@ export type EffectFunctionT = {
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
+  'Monster:Remove': { target: MonsterTarget };
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -40,7 +41,10 @@ const repo: EffectFunctionRepository = {
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
   ),
   'Monster:Dead': effectFun(
-    () => (_origin, play, newState) => [play, newState]
+    () => (origin, play, currentState) => [play, origin !== 'Player' ? actions.addBotEffect(currentState, origin, effect({ display: "Monster Cleanup", range: allRanges, priority: 0, effect: 'Monster:Remove', parameters: { target: origin } })) : currentState]
+  ),
+  'Monster:Remove': effectFun(
+    ({ target }) => (_origin, play, currentState) => actions.removeMonster(play, currentState, target)
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, newState) => [play, newState]
@@ -96,6 +100,11 @@ const actions = {
     ...curr,
     enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 0, 4) })),
   }),
+  removeMonster: (currPlay: Play, currSnap: Snapshot, target: MonsterTarget): [Play, Snapshot] =>
+    [
+      { ...currPlay, enemies: currPlay.enemies.filter((_, idx) => idx === target) as Enemies },
+      { ...currSnap, target: 0, enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats }
+    ],
 
   attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
   ({
