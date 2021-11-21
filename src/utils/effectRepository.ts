@@ -35,7 +35,7 @@ const repo: EffectFunctionRepository = {
   ),
   'Target:Bleed': effectFun(
     ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 1)],
-    (params) => (origin, play, currentState) => [play, params.lifespan > 0 ? actions.addEotEffect(currentState, origin, effect({ display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } })) : currentState],
+    (params) => (origin, play, currentState) => [play, (params.target !== 'Player' && currentState.enemies[params.target]!!.hp > 0) && (params.lifespan > 0) ? actions.addEotEffect(currentState, origin, effect({ display: `Bleed ${params.target}`, range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } })) : currentState],
   ),
   'Monster:Summon': effectFun(
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
