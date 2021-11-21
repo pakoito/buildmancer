@@ -103,21 +103,21 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
               ))}
             </Row>
             <Card.Title>
-              Cheats
-            </Card.Title>
-            <Row>
-              <ButtonGroup>
-                <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
-                <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
-              </ButtonGroup>
-            </Row>
-            <Card.Title>
               Debug
             </Card.Title>
             <Row>
               <ButtonGroup>
                 <Button onClick={handleShowLog}>Log</Button>
                 <Button onClick={save}>Dump to file 📂</Button>
+              </ButtonGroup>
+            </Row>
+            <Card.Title>
+              Cheats
+            </Card.Title>
+            <Row>
+              <ButtonGroup>
+                <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
+                <Button onClick={(_) => solveGame(1000)}>Solve thoroughly ⌛⌛⌛</Button>
               </ButtonGroup>
             </Row>
           </Col>
