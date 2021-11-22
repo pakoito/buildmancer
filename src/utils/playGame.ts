@@ -18,9 +18,9 @@ function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: s
   return monsterRng as RNG;
 }
 
-export const turnRng = (play: Play, turn: number) => (min: number, max: number): number => {
+export const turnRng = (play: Play, turn: number): ((min: number, max: number) => number) => {
   const turnRng = [...play.rng[turn]];
-  return Math.floor(((max - min) * turnRng.pop()!!) + min);
+  return (min: number, max: number) => Math.floor(((max - min) * turnRng.pop()!!) + min);
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
@@ -69,7 +69,6 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     .reduce((acc, value) => {
       const [origin, effect] = value;
       const [oldPlay, oldState] = acc;
-      console.log(`Running ${effect.display} by ${origin}`);
       const target = origin === 'Player' ? oldState.target : origin;
       const isInRange = new Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
       if (isInRange) {
@@ -101,7 +100,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, 'BOT');
 
   // Turn
-  const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length - 1);
+  const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length);
   const turnFunctions: [Target, Effect][] = Seq(postEntitiesBotPlay.enemies).zip(Seq(postEntitiesBotState.enemies))
     .map(([e, stats], idx) =>
       [idx as Target,
