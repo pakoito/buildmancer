@@ -49,8 +49,8 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
       }, { basic: build.basic[0] }),
     }, {
       hp: 25,
-      stamina: 8,
-      staminaPerTurn: 2,
+      stamina: 6,
+      staminaPerTurn: 1,
     });
   };
   const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;

@@ -14,8 +14,8 @@
   "charm": 0,
   "player": {
     "hp": 25,
-    "stamina": 8,
-    "staminaPerTurn": 2
+    "stamina": 5,
+    "staminaPerTurn": 1
   },
   "turns": 50,
   "seed": "paco",
