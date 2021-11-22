@@ -6,6 +6,8 @@ import { Player, PlayerStats } from "../utils/types";
 import { build, randomName } from "../utils/data";
 import Chance from 'chance';
 
+const version = 'dev';
+
 const selects = Object.entries(build).map(([type, options]) => ({
   type,
   options: options.map(({ display }, value) => ({
@@ -54,6 +56,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
   const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;
   return (
     <Form onSubmit={onFormSubmit}>
+      Build: {version}
       <Container fluid style={{ marginBottom: '105px' }}>
         <Row className="g-2">
           {selects.map(({ type, options }) =>
