@@ -91,7 +91,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined }, 'MAIN');
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined }, 'STAMINA');
 
   // BOT
   // Lingering effects
