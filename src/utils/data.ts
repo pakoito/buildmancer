@@ -39,7 +39,7 @@ export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
 export const effectDead: Effect =
-  effect({ display: "DEAD", priority: 4, effect: "Monster:Dead", range: makeRange() });
+  effect({ display: "⚰", priority: 4, effect: "Monster:Dead", range: allRanges });
 
 export const statsRepository: StatsFunRepo = {
   'Charm:ofHealth': (player, enemies) => [{ ...player, hp: player.hp + 10 }, enemies],
@@ -241,7 +241,46 @@ export const enemies: [Enemy, EnemyStats][] = [
     hp: 30,
     rage: 0,
     distance: 4,
-  }]
+  }],
+  [{
+    lore: {
+      name: "Body",
+    },
+    effects: [
+      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange() }),
+    ],
+    rolls: [
+      [0],
+      [0],
+      [0],
+      [0],
+      [0],
+    ]
+  }, {
+    hp: 300,
+    rage: 0,
+    distance: 0,
+  }],
+
+  [{
+    lore: {
+      name: "Smol",
+    },
+    effects: [
+      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange() }),
+    ],
+    rolls: [
+      [0],
+      [0],
+      [0],
+      [0],
+      [0],
+    ]
+  }, {
+    hp: 5,
+    rage: 0,
+    distance: 0,
+  }],
 ];
 
 const names = [

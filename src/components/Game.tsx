@@ -74,7 +74,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
               playerStats={playerStats}
               onClickEffect={handlePlayerEffect}
               selectedButtons={selectedButtons}
-              lastAction={lastAttacks.filter(a => a[0] === 'Player').map(a => a[1]).join(" -> ") ?? undefined}
+              lastAction={lastAttacks.filter(a => a.origin === 'Player').map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
               canAct={canAct} />
             <Row>
               <ButtonGroup>
@@ -95,7 +95,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
                     enemyStats={stats}
                     enemy={enemy}
                     canAct={canAct}
-                    latestAttack={Seq(lastAttacks).filter(([target, _]) => target === idx).map(v => v[1]).join(" -> ") ?? undefined}
+                    latestAttack={Seq(lastAttacks).filter(({ origin }) => origin === idx).map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
                     isSelected={idx === target}
                     onSelect={() => setSelected(idx as MonsterTarget)}
                   />

@@ -44,11 +44,17 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 5;
 
+export type EffectSummary = {
+  origin: Target;
+  display: string;
+  phase: string;
+}
+
 export type Snapshot = {
   player: PlayerStats;
   enemies: EnemiesStats;
   target: MonsterTarget;
-  lastAttacks: [Target, string][];
+  lastAttacks: EffectSummary[];
   bot?: Nel<[Target, Effect]>;
   eot?: Nel<[Target, Effect]>;
 };

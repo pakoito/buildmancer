@@ -8,7 +8,6 @@ export type EffectFunctionT = {
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
-  'Monster:Remove': { target: MonsterTarget };
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -45,10 +44,7 @@ const repo: EffectFunctionRepository = {
     ({ enemy }) => (_origin, play, currentState) => actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
   ),
   'Monster:Dead': effectFun(
-    () => (origin, play, currentState) => [play, origin !== 'Player' ? actions.addBotEffect(currentState, origin, effect({ display: "Monster Cleanup", range: allRanges, priority: 0, effect: 'Monster:Remove', parameters: { target: origin } })) : currentState]
-  ),
-  'Monster:Remove': effectFun(
-    ({ target }) => (_origin, play, currentState) => actions.removeMonster(play, currentState, target)
+    () => (_origin, play, currentState) => [play, currentState]
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, newState) => [play, newState]
@@ -64,7 +60,7 @@ const repo: EffectFunctionRepository = {
   ),
   'Axe:Cut': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
-    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, effect({ display: "Bleed", range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { target: currentState.target, lifespan: 2 } }))]
+    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, effect({ display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { target: currentState.target, lifespan: 2 } }))]
   ),
   'Hook:GetHere': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],

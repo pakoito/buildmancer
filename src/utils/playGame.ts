@@ -63,24 +63,25 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
   };
 }
 
-const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot): [Play, Snapshot] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: string): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([_t, a]) => a.priority)
     .reduce((acc, value) => {
       const [origin, effect] = value;
       const [oldPlay, oldState] = acc;
+      console.log(`Running ${effect.display} by ${origin}`);
       const target = origin === 'Player' ? oldState.target : origin;
       const isInRange = new Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
       if (isInRange) {
         const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
-        return [newPlay, { ...newState, lastAttacks: [...newState.lastAttacks, [origin, effect.display]] }]
+        return [newPlay, { ...newState, lastAttacks: [...newState.lastAttacks, { origin, display: effect.display, phase }] }]
       } else {
-        return [oldPlay, { ...oldState, lastAttacks: [...oldState.lastAttacks, [origin, `${effect.display} ❌❌WHIFF❌❌`]] }]
+        return [oldPlay, { ...oldState, lastAttacks: [...oldState.lastAttacks, { origin, display: `${effect.display} ❌❌WHIFF❌❌`, phase }] }]
       }
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  effect({ display: "Stamina use", effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
+  effect({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
@@ -90,14 +91,14 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined });
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined }, 'MAIN');
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState);
+  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, 'BOT');
   // Player & Monster effects
   const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player), ...enemiesBotEffects(postBotPlay.enemies)];
-  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState);
+  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, 'BOT');
 
   // Turn
   const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length - 1);
@@ -113,14 +114,14 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .map(a => [...a]);
 
   const [newPlay, newState] =
-    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState);
+    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, 'MAIN');
 
   // EOT
   // Player & Monster effects
   const entitiesEot = [...playerEotEffects(newPlay.player), ...enemiesEotEffects(newPlay.enemies)];
-  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState);
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns([...eot, ...(postPlayerEotState.eot ?? [])], postPlayerEotPlay, postPlayerEotState);
+  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
 
   return {
     ...postEotPlay,
