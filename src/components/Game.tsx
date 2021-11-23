@@ -130,7 +130,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
         <Modal.Body>
           {game.states.map((s, idx) => (
             <>
-              <b>Turn {idx + 1}</b><br />
+              <b>Turn {idx}</b><br />
               Player: {JSON.stringify(s.player, null, 2)}<br />
               Enemies: {JSON.stringify(s.enemies, null, 2)}<br />
               Target [{s.target}] Previous: {JSON.stringify(s.lastAttacks)}<br />
