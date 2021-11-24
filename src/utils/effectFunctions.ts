@@ -13,12 +13,14 @@ export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFun
 
 const isNode = typeof process === 'undefined';
 
-export function extractFunction({ effect, parameters }: Effect): ReduceFun {
-  if (!isNode || isAnyEffectFunParams(effect, parameters)) {
-    // @ts-ignore: where the magic happens
-    return effectRepository[effect](parameters);
+export function extractFunction({ effects }: Effect): ReduceFun {
+  if (!isNode || !effects.map(({ index, parameters }) => isAnyEffectFunParams(index, parameters)).includes(false)) {
+    return (origin, play, startState) => effects.reduce((acc, { index, parameters }) =>
+      // @ts-expect-error: index and parameters are enforced to be compatible at construction and the runtime check above ^^^^
+      effectRepository[index](parameters)
+        (origin, ...acc), [play, startState]);
   }
-  throw new Error(`ValidationException: ${effect} with ${JSON.stringify(parameters)}`);
+  throw new Error(`ValidationException: ${JSON.stringify(effects.filter(({ index, parameters }) => !isAnyEffectFunParams(index, parameters)))}`);
 }
 
 const assignObject = <T extends EffectFunRepoIndex>(idx: T, obj: object, value: any): object => {

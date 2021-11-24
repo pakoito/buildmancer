@@ -1,6 +1,6 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effect, inventoryEffect } from "./types";
+import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -39,7 +39,7 @@ export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
 export const effectDead: Effect =
-  effect({ display: "⚰", priority: 4, effect: "Monster:Dead", range: allRanges });
+  { display: "⚰", priority: 4, effects: [effectFunCall(["Monster:Dead"])], range: allRanges };
 
 export const statsRepository: StatsFunRepo = {
   'Charm:ofHealth': (player, enemies) => [{ ...player, hp: player.hp + 10 }, enemies],
@@ -55,27 +55,27 @@ export const build: Record<
     {
       display: "Basic",
       effects: [
-        inventoryEffect({
+        {
           display: "Rest",
-          effect: "Basic:Rest",
           priority: 4,
           stamina: 0,
           range: selfRange,
-        }),
-        inventoryEffect({
+          effects: [effectFunCall(['Basic:Rest'])]
+        },
+        {
           display: "Advance",
-          effect: "Basic:Advance",
           priority: 4,
           stamina: 1,
           range: selfRange,
-        }),
-        inventoryEffect({
+          effects: [effectFunCall(['Basic:Advance'])]
+        },
+        {
           display: "Retreat",
-          effect: "Basic:Retreat",
+          effects: [effectFunCall(["Basic:Retreat"])],
           priority: 4,
           stamina: 1,
           range: selfRange,
-        }),
+        },
       ]
     }
   ],
@@ -102,20 +102,20 @@ export const build: Record<
     {
       display: "Axe",
       effects: [
-        inventoryEffect({
+        {
           display: "Chop",
-          effect: "Axe:Chop",
+          effects: [effectFunCall(["Axe:Chop"])],
           priority: 2,
           stamina: 2,
           range: makeRange(0, 1),
-        }),
-        inventoryEffect({
+        },
+        {
           display: "Cut",
-          effect: "Axe:Cut",
+          effects: [effectFunCall(["Axe:Cut"])],
           priority: 3,
           stamina: 2,
           range: makeRange(0),
-        }),
+        },
       ],
     },
   ],
@@ -123,13 +123,13 @@ export const build: Record<
     {
       display: "Hook",
       effects: [
-        inventoryEffect({
+        {
           display: "Get over here!",
-          effect: "Hook:GetHere",
+          effects: [effectFunCall(["Hook:GetHere"])],
           priority: 4,
           stamina: 3,
           range: makeRange(2, 3, 4),
-        }),
+        },
       ],
     },
   ],
@@ -153,12 +153,12 @@ export const build: Record<
   },
   {
     display: "Boots of Flight",
-    eot: [effect({
+    eot: [{
       display: "Flight!",
       priority: 0,
       range: allRanges,
-      effect: 'BootsOfFlight:EOT',
-    })],
+      effects: [effectFunCall(['BootsOfFlight:EOT'])],
+    }],
   },
   ],
   charm: [
@@ -192,9 +192,9 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) }),
-      effect({ display: "Roar", priority: 1, effect: "Monster:Roar", range: allRanges }),
-      effect({ display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) }),
+      { display: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange(0, 1) },
+      { display: "Roar", priority: 1, effects: [effectFunCall(["Monster:Roar"])], range: allRanges },
+      { display: "Jump", priority: 2, effects: [effectFunCall(["Monster:Jump"])], range: makeRange(2, 3, 4) },
     ],
   }, {
     hp: 25,
@@ -206,8 +206,8 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Toro",
     },
     effects: [
-      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: allRanges }),
-      effect({ display: "Jump", priority: 2, effect: "Monster:Jump", range: makeRange(2, 3, 4) }),
+      { display: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: allRanges },
+      { display: "Jump", priority: 2, effects: [effectFunCall(["Monster:Jump"])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 0, 0],
@@ -226,9 +226,9 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Summoner",
     },
     effects: [
-      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange(0, 1) }),
-      effect({ display: "Jump", priority: 3, effect: "Monster:Jump", range: allRanges }),
-      effect({ display: "Summon Toro", priority: 4, effect: "Monster:Summon", parameters: { enemy: 1 }, range: makeRange(2, 3, 4) }),
+      { display: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange(0, 1) },
+      { display: "Jump", priority: 3, effects: [effectFunCall(["Monster:Jump"])], range: allRanges },
+      { display: "Summon Toro", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 1 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 0, 0],
@@ -247,7 +247,7 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Body",
     },
     effects: [
-      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange() }),
+      { display: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange() },
     ],
     rolls: [
       [0],
@@ -267,7 +267,7 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Smol",
     },
     effects: [
-      effect({ display: "Swipe", priority: 3, effect: "Monster:Swipe", range: makeRange() }),
+      { display: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange() },
     ],
     rolls: [
       [0],

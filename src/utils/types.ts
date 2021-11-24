@@ -80,60 +80,24 @@ export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerSt
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
+type EffectFunCallT = {
+  index: EffectFunRepoIndex;
+  parameters: EffectFunParams<EffectFunRepoIndex>;
+};
+export type EffectFunCall = Opaque<EffectFunCallT, EffectFunCallT>;
+export const effectFunCall = <T extends EffectFunRepoIndex>(t: EffectFunParams<T> extends undefined ? [T] : [T, EffectFunParams<T>]): EffectFunCall =>
+  ({ index: t[0], parameters: t[1] }) as EffectFunCall;
+
 type EffectT = {
   display: string;
-  effect: EffectFunRepoIndex;
-  parameters: EffectFunParams<EffectFunRepoIndex>;
+  effects: Nel<EffectFunCall>;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
-export type Effect = Opaque<EffectT, EffectT>;
-export type InventoryEffect = Opaque<Effect & {
+export type Effect = EffectT;
+export type InventoryEffect = Effect & {
   stamina: UpTo<Subtract<Staminas, 1>>;
-}>;
-export const effect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    parameters?: undefined;
-  } : {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    parameters: EffectFunParams<T>
-  })): Effect => ({
-    display: o.display,
-    effect: o.effect,
-    parameters: o.parameters,
-    priority: o.priority,
-    range: o.range,
-  } as Effect);
-export const inventoryEffect =
-  <T extends EffectFunRepoIndex>(o: (EffectFunParams<T> extends undefined ? {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    stamina: number;
-    parameters?: undefined;
-  } : {
-    display: string;
-    effect: T;
-    priority: UpTo<Subtract<Priorities, 1>>;
-    range: Ranges;
-    stamina: number;
-    parameters: EffectFunParams<T>
-  })): InventoryEffect => ({
-    display: o.display,
-    effect: o.effect,
-    parameters: o.parameters,
-    priority: o.priority,
-    range: o.range,
-    stamina: o.stamina,
-  } as InventoryEffect);
+};
 
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type PlayerTarget = 'Player';

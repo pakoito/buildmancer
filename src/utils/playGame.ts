@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effect } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall } from "./types";
 import { Seq } from "immutable";
 import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
@@ -80,7 +80,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  effect({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, effect: 'Player:SapStamina', parameters: { amount }, range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, effects: [effectFunCall(['Player:SapStamina', { amount }])], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 

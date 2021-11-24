@@ -1,6 +1,6 @@
 import { allRanges, enemies, startState } from "./data";
 import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
-import { effect, Effect, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
+import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
 
 export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
 export type EffectFunctionT = {
@@ -37,7 +37,7 @@ const repo: EffectFunctionRepository = {
     (params) => (origin, play, currentState) => [play,
       (params.target !== 'Player' && currentState.enemies[params.target]!!.hp > 0)
         && (params.lifespan > 0)
-        ? actions.addEotEffect(currentState, origin, effect({ display: `Bleed ${play.enemies[params.target]!!.lore.name} [${params.target + 1}]`, range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { ...params, lifespan: params.lifespan - 1 } }))
+        ? actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[params.target]!!.lore.name} [${params.target + 1}]`, range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { ...params, lifespan: params.lifespan - 1 }])] })
         : currentState],
   ),
   'Monster:Summon': effectFun(
@@ -60,7 +60,8 @@ const repo: EffectFunctionRepository = {
   ),
   'Axe:Cut': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
-    () => (origin, play, currentState) => [play, actions.addEotEffect(currentState, origin, effect({ display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, range: allRanges, priority: 4, effect: 'Target:Bleed', parameters: { target: currentState.target, lifespan: 2 } }))]
+    () => (origin, play, currentState) => [play,
+      actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { target: currentState.target, lifespan: 2 }])] })]
   ),
   'Hook:GetHere': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
