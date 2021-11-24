@@ -36,8 +36,8 @@ export type TupleUpTo<T, N extends number> =
 export type UpTo<N extends number> =
   EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N
 
-export type PlayerStats = Record<string, number>;
-export type EnemyStats = Record<string, number> & { distance: UpTo<Subtract<Distances, 1>> };
+export type PlayerStats = Record<string, number> & { hp: number, stamina: number, staminaPerTurn: number };
+export type EnemyStats = Record<string, number> & { hp: number, distance: UpTo<Subtract<Distances, 1>> };
 
 export type Priorities = 5;
 export type Distances = 5;

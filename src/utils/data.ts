@@ -111,7 +111,7 @@ export const build: Record<
         },
         {
           display: "Cut",
-          effects: [effectFunCall(["Axe:Cut"])],
+          effects: [effectFunCall(['Monster:Stats', [['+', 'hp', -2]]])],
           priority: 3,
           stamina: 2,
           range: makeRange(0),

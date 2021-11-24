@@ -80,7 +80,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, effects: [effectFunCall(['Player:SapStamina', { amount }])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, effects: [effectFunCall(['Player:Stats', [['+', 'stamina', amount]]])], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 

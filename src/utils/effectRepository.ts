@@ -1,10 +1,13 @@
 import { allRanges, enemies, startState } from "./data";
 import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
-import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, Snapshot, Target } from "./types";
+import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Target } from "./types";
 
 export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
+export type Op = '+' | '*';
+export type StatsFun<T> = [Op, keyof T, T[keyof T]];
 export type EffectFunctionT = {
-  'Player:SapStamina': { amount: number };
+  'Player:Stats': Nel<StatsFun<PlayerStats>>;
+  'Monster:Stats': Nel<StatsFun<EnemyStats>>;
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
@@ -20,6 +23,24 @@ export type EffectFunctionT = {
   'BootsOfFlight:EOT': undefined;
 }
 
+const applyObject = <T extends { [k: string]: number }>(op: Op, obj: T, apply: Partial<T>): T =>
+  Object.entries(apply).reduce((acc, [k, v]) => {
+    if (v == null) {
+      return acc;
+    }
+    return applyKvp(op, acc, k, v);
+  }, obj);
+
+const applyKvp = <T extends { [k: string]: number }>(op: Op, obj: T, k: keyof T, v: T[keyof T]): T => {
+  const copy = { ...obj };
+  op === '+'
+    ? copy[k] = copy[k] + v as T[keyof T]
+    : op === '*'
+      ? copy[k] = copy[k] * v as T[keyof T]
+      : void 0;
+  return copy;
+};
+
 const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
   // TODO check direction of the fold
   (funs.length > 1
@@ -29,8 +50,11 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
     }) : funs[0]) as EffectFun<T>;
 
 const repo: EffectFunctionRepository = {
-  'Player:SapStamina': effectFun(
-    ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(play.states[0], currentState, amount)],
+  'Player:Stats': effectFun(
+    (ops) => (_origin, play, currentState) => [play, { ...currentState, player: ops.reduce((player, [op, k, v]) => applyKvp(op, player, k, v), currentState.player) }],
+  ),
+  'Monster:Stats': effectFun(
+    (ops) => (_origin, play, currentState) => [play, { ...currentState, enemies: currentState.enemies.map((e, idx) => idx === currentState.target ? ops.reduce((enemy, [op, k, v]) => applyKvp(op, enemy, k, v), e) : e) as EnemiesStats }],
   ),
   'Target:Bleed': effectFun(
     ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 1)],

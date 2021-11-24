@@ -33,12 +33,12 @@ const assignObject = <T extends EffectFunRepoIndex>(idx: T, obj: object, value: 
 const validators = !isNode
   ? {} as { [k: string]: any }
   : Object.keys(effectRepository)
+    // eslint-disable-next-line array-callback-return
     .reduce((obj, idx) => {
       if (!is<EffectFunRepoIndex>(idx)) {
         return obj;
       }
       switch (idx) {
-        case 'Player:SapStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Target:Bleed': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Summon': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Dead': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
@@ -52,8 +52,9 @@ const validators = !isNode
         case 'Monster:Roar': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Jump': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'BootsOfFlight:EOT': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Player:Stats': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Monster:Stats': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
       }
-      throw new Error(`Missing runtime validation for ${idx}`);
     }, {}) as Validators;
 type Validators = { [k in EffectFunRepoIndex]: [(object: any) => object is k, (object: any) => object is EffectFunParams<k>] };
 
