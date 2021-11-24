@@ -1,6 +1,6 @@
 import { createIs, is } from 'typescript-is';
 import { Opaque } from "type-fest";
-import { Effect, FunIndex, Play, Snapshot, Target } from "./types";
+import { callEffectFun, Effect, FunIndex, Play, Snapshot, Target } from "./types";
 import effectRepository, { EffectFunctionRepository, EffectFunctionT } from './effectRepository';
 
 export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
@@ -16,8 +16,7 @@ const isNode = typeof process === 'undefined';
 export function extractFunction({ effects }: Effect): ReduceFun {
   if (!isNode || !effects.map(({ index, parameters }) => isAnyEffectFunParams(index, parameters)).includes(false)) {
     return (origin, play, startState) => effects.reduce((acc, { index, parameters }) =>
-      // @ts-expect-error: index and parameters are enforced to be compatible at construction and the runtime check above ^^^^
-      effectRepository[index](parameters)
+      callEffectFun(effectRepository, index, parameters)
         (origin, ...acc), [play, startState]);
   }
   throw new Error(`ValidationException: ${JSON.stringify(effects.filter(({ index, parameters }) => !isAnyEffectFunParams(index, parameters)))}`);
