@@ -16,8 +16,7 @@ const isNode = typeof process === 'undefined';
 export function extractFunction({ effects }: Effect): ReduceFun {
   if (!isNode || !effects.map(({ index, parameters }) => isAnyEffectFunParams(index, parameters)).includes(false)) {
     return (origin, play, startState) => effects.reduce((acc, { index, parameters }) =>
-      callEffectFun(effectRepository, index, parameters)
-        (origin, ...acc), [play, startState]);
+      callEffectFun(effectRepository, index, parameters)(origin, ...acc), [play, startState]);
   }
   throw new Error(`ValidationException: ${JSON.stringify(effects.filter(({ index, parameters }) => !isAnyEffectFunParams(index, parameters)))}`);
 }

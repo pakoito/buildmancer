@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, setSelected } from "./utils/playGame";
+import play, { handlePlayerEffect, setDisabledSkills, setSelected } from "./utils/playGame";
 import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
 import { previousState } from "./utils/data";
@@ -64,6 +64,7 @@ function App() {
             setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
           }}
           setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
+          setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
           handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
           solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
           hint={(iterations) =>

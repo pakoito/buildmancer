@@ -1,6 +1,6 @@
 import { Container, Row, Col, Card, Modal, ButtonGroup } from "react-bootstrap";
 
-import { MonsterTarget, Play } from "../utils/types";
+import { DisabledSkills, MonsterTarget, Play } from "../utils/types";
 
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
@@ -15,7 +15,7 @@ import { useCallback, useState } from "react";
 export type GameProps = {
   game: Play;
   setSelected: (target: MonsterTarget) => void;
-  setDisabledSkills: (disabled: Set<string>) => void;
+  setDisabledSkills: (disabled: DisabledSkills) => void;
   handlePlayerEffect: (index: number) => void,
   solveGame: (iterations: number) => void,
   hint: (iterations: number) => void,
@@ -25,7 +25,7 @@ export type GameProps = {
 
 const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
   const { player, enemies } = game;
-  const { player: playerStats, enemies: enemiesStats, target, lastAttacks } = previousState(game);
+  const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills } = previousState(game);
   const [show, setShowLog] = useState(false);
 
   const handleCloseLog = () => setShowLog(false);
@@ -73,6 +73,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
             <PlayerCard
               player={player}
               playerStats={playerStats}
+              disabledSkills={disabledSkills}
               setDisabledSkills={setDisabledSkills}
               onClickEffect={(idx) => handlePlayerEffect(idx)}
               selectedButtons={selectedButtons}
@@ -109,7 +110,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
             </Card.Title>
             <Row>
               <ButtonGroup>
-                <Button onClick={handleShowLog}>Log</Button>
+                <Button onClick={handleShowLog}>Log 🗒</Button>
                 <Button onClick={save}>Dump to file 📂</Button>
               </ButtonGroup>
             </Row>

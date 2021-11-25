@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
@@ -39,11 +39,11 @@ const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
     // Sure, typescript
     .map(a => [...a])
 
-export const playerBotEffects = (player: Player, d: Set<string>): [PlayerTarget, Effect][] =>
-  Object.entries(player.build).flatMap(([k, s]) => !d.has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
+export const playerBotEffects = (player: Player, d: string[]): [PlayerTarget, Effect][] =>
+  Object.entries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
 
-export const playerEotEffects = (player: Player, d: Set<string>): [PlayerTarget, Effect][] =>
-  Object.entries(player.build).flatMap(([k, s]) => !d.has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
+export const playerEotEffects = (player: Player, d: string[]): [PlayerTarget, Effect][] =>
+  Object.entries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
 
 export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
@@ -55,7 +55,7 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
       enemies: enemyGameStats,
       target: 0,
       lastAttacks: [],
-      disabledSkills: Set([])
+      disabledSkills: []
     }],
     rng: turnDeterministicRng(turns, randPerTurn, seed),
     turns,
@@ -89,7 +89,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const bot = previousState(play).bot ?? [];
   const eot = previousState(play).eot ?? [];
 
-  const initialState = {
+  const initialState: Snapshot = {
     ...previousState(play),
     lastAttacks: [],
     bot: undefined, eot: undefined,
@@ -143,7 +143,7 @@ export const setSelected = (play: Play, target: MonsterTarget): Play => {
   };
 }
 
-export const setDisabledSkills = (play: Play, disabled: Set<string>): Play => {
+export const setDisabledSkills = (play: Play, disabled: DisabledSkills): Play => {
   play.states[play.states.length - 1].disabledSkills = disabled;
   return {
     ...play,

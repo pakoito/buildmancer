@@ -1,6 +1,5 @@
 import { Opaque } from "type-fest";
 import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex } from "./effectFunctions";
-import { Set } from 'immutable';
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -51,6 +50,7 @@ export type EffectSummary = {
   phase: string;
 }
 
+export type DisabledSkills = string[];
 export type Snapshot = {
   player: PlayerStats;
   enemies: EnemiesStats;
@@ -58,7 +58,7 @@ export type Snapshot = {
   lastAttacks: EffectSummary[];
   bot?: Nel<[Target, Effect]>;
   eot?: Nel<[Target, Effect]>;
-  disabledSkills: Set<string>;
+  disabledSkills: DisabledSkills;
 };
 
 export type RNG = Opaque<number[][], 'RNG'>;
@@ -92,7 +92,7 @@ export const effectFunCall = <T extends EffectFunRepoIndex>(t: EffectFunParams<T
 export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo, t: T, p: EffectFunParams<T>) => {
   const f = repo[t];
   // @ts-expect-error: index and parameters are enforced to be compatible at construction and the runtime check above ^^^^
-  return f(...p);
+  return f(p);
 }
 
 type EffectT = {
