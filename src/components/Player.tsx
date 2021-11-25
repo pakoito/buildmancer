@@ -22,7 +22,8 @@ const PlayerCard: React.FC<{
       <Card.Text>{playerStats.hp} ❤ {playerStats.stamina} 💪</Card.Text>
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
-    {canAct && (
+    {canAct && (<>
+      <b>Passives</b>
       <ButtonGroup>
         {Object.entries(player.build)
           .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const)
@@ -41,7 +42,8 @@ const PlayerCard: React.FC<{
               {e.display}
             </ToggleButton>
           ))}
-      </ButtonGroup>)}
+      </ButtonGroup>
+    </>)}
     {canAct && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
         {Object.values(player.build)
