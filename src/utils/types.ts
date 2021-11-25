@@ -1,5 +1,6 @@
 import { Opaque } from "type-fest";
 import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex } from "./effectFunctions";
+import { Set } from 'immutable';
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -57,6 +58,7 @@ export type Snapshot = {
   lastAttacks: EffectSummary[];
   bot?: Nel<[Target, Effect]>;
   eot?: Nel<[Target, Effect]>;
+  disabledSkills: Set<string>;
 };
 
 export type RNG = Opaque<number[][], 'RNG'>;

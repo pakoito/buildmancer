@@ -1,5 +1,5 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall } from "./types";
-import { Seq } from "immutable";
+import { Seq, Set } from "immutable";
 import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
@@ -39,11 +39,11 @@ const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
     // Sure, typescript
     .map(a => [...a])
 
-export const playerBotEffects = (player: Player): [PlayerTarget, Effect][] =>
-  Object.values(player.build).flatMap((s) => s.bot ?? []).map(a => ['Player', a]);
+export const playerBotEffects = (player: Player, d: Set<string>): [PlayerTarget, Effect][] =>
+  Object.entries(player.build).flatMap(([k, s]) => !d.has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
 
-export const playerEotEffects = (player: Player): [PlayerTarget, Effect][] =>
-  Object.values(player.build).flatMap((s) => s.eot ?? []).map(a => ['Player', a]);
+export const playerEotEffects = (player: Player, d: Set<string>): [PlayerTarget, Effect][] =>
+  Object.entries(player.build).flatMap(([k, s]) => !d.has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
 
 export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
@@ -54,7 +54,8 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
       player: playerGameStats,
       enemies: enemyGameStats,
       target: 0,
-      lastAttacks: []
+      lastAttacks: [],
+      disabledSkills: Set([])
     }],
     rng: turnDeterministicRng(turns, randPerTurn, seed),
     turns,
@@ -70,7 +71,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
       const [origin, effect] = value;
       const [oldPlay, oldState] = acc;
       const target = origin === 'Player' ? oldState.target : origin;
-      const isInRange = new Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
+      const isInRange = Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
       if (isInRange) {
         const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
         return [newPlay, { ...newState, lastAttacks: [...newState.lastAttacks, { origin, display: effect.display, phase }] }]
@@ -88,15 +89,21 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const bot = previousState(play).bot ?? [];
   const eot = previousState(play).eot ?? [];
 
+  const initialState = {
+    ...previousState(play),
+    lastAttacks: [],
+    bot: undefined, eot: undefined,
+  };
+
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, { ...previousState(play), lastAttacks: [], bot: undefined, eot: undefined }, 'STAMINA');
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, initialState, 'STAMINA');
 
   // BOT
   // Lingering effects
   const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, 'BOT');
   // Player & Monster effects
-  const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player), ...enemiesBotEffects(postBotPlay.enemies)];
+  const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player, postBotState.disabledSkills), ...enemiesBotEffects(postBotPlay.enemies)];
   const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, 'BOT');
 
   // Turn
@@ -117,7 +124,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // EOT
   // Player & Monster effects
-  const entitiesEot = [...playerEotEffects(newPlay.player), ...enemiesEotEffects(newPlay.enemies)];
+  const entitiesEot = [...playerEotEffects(newPlay.player, newState.disabledSkills), ...enemiesEotEffects(newPlay.enemies)];
   const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
   // Lingering effects
   const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
@@ -130,6 +137,14 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
 export const setSelected = (play: Play, target: MonsterTarget): Play => {
   play.states[play.states.length - 1].target = target;
+  return {
+    ...play,
+    states: [...play.states],
+  };
+}
+
+export const setDisabledSkills = (play: Play, disabled: Set<string>): Play => {
+  play.states[play.states.length - 1].disabledSkills = disabled;
   return {
     ...play,
     states: [...play.states],

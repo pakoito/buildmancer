@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Button, Stack } from "react-bootstrap";
 import { Player, PlayerStats } from "../utils/types";
+import { Set } from 'immutable';
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,
@@ -9,7 +10,8 @@ const PlayerCard: React.FC<{
   canAct: boolean;
   lastAction: string | undefined;
   onClickEffect: (index: number) => void;
-}> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction }) => (
+  setDisabledSkills: (skills: Set<string>) => void;
+}> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction, setDisabledSkills }) => (
   <Card>
     <Card.Body>
       <Card.Title>{player.lore.name}{playerStats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>

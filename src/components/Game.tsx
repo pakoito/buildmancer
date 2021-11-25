@@ -6,7 +6,7 @@ import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
 import { playerActions } from "../utils/playGame";
-import { Seq } from "immutable";
+import { Seq, Set } from "immutable";
 import { previousState } from "../utils/data";
 import { Button } from "react-bootstrap";
 import saveAs from 'file-saver';
@@ -15,6 +15,7 @@ import { useCallback, useState } from "react";
 export type GameProps = {
   game: Play;
   setSelected: (target: MonsterTarget) => void;
+  setDisabledSkills: (disabled: Set<string>) => void;
   handlePlayerEffect: (index: number) => void,
   solveGame: (iterations: number) => void,
   hint: (iterations: number) => void,
@@ -22,7 +23,7 @@ export type GameProps = {
   redo: (() => void) | undefined;
 };
 
-const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
+const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks } = previousState(game);
   const [show, setShowLog] = useState(false);
@@ -47,7 +48,7 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
     }
   });
 
-  const selectedButtons = new Set<string>([...pressed].flatMap((key: string) => {
+  const selectedButtons = Set<string>([...pressed].flatMap((key: string) => {
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= playerSkills.length) {
       return [playerSkills[valNum - 1].display];
@@ -72,7 +73,8 @@ const Game = ({ handlePlayerEffect, setSelected, game, solveGame, undo, redo, hi
             <PlayerCard
               player={player}
               playerStats={playerStats}
-              onClickEffect={handlePlayerEffect}
+              setDisabledSkills={setDisabledSkills}
+              onClickEffect={(idx) => handlePlayerEffect(idx)}
               selectedButtons={selectedButtons}
               lastAction={lastAttacks.filter(a => a.origin === 'Player').map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
               canAct={canAct} />
