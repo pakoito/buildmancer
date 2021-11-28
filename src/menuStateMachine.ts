@@ -154,7 +154,7 @@ const puzzle = {
   states: {
     puzzle: {
       on: {
-        PLAYER: { target: 'puzzle' }
+        PLAYER: { target: 'player' }
       }
     },
     player: {
