@@ -22,6 +22,7 @@ const quick = {
   initial: 'random',
   states: {
     random: {
+      entry: ['resetSingle'],
       on: {
         ACK: { target: 'play' }
       }
@@ -42,6 +43,7 @@ const single = {
   initial: 'player',
   states: {
     player: {
+      entry: ['resetSingle'],
       on: {
         PLAYER: { target: 'encounter' }
       }
@@ -67,7 +69,7 @@ const arcade = {
   initial: 'player',
   states: {
     player: {
-      entry: ['resetContext'],
+      entry: ['resetArcade'],
       on: {
         PLAYER: { target: 'encounter' }
       }
@@ -114,7 +116,7 @@ const survival = {
   initial: 'player',
   states: {
     player: {
-      entry: ['resetContext'],
+      entry: ['resetSurvival'],
       on: {
         PLAYER: { target: 'encounter' }
       }
@@ -177,25 +179,28 @@ const puzzle = {
   ...toMenu,
 };
 
-const gameContext = {
-  seed: Math.random(),
-}
-const arcadeContext = {
+const makeArcadeContext = () => ({
   victories: 0,
   score: 0,
-};
-const survivalContext = {
+  seed: Math.random(),
+});
+const makeSurvivalContext = () => ({
   victories: 0,
-};
+  seed: Math.random(),
+});
+const makeSingleContext = () => ({
+  seed: Math.random(),
+});
+const makeGameContext = () => ({
+  arcadeContext: makeArcadeContext(),
+  survivalContext: makeSurvivalContext(),
+  singleContext: makeSingleContext(),
+});
 
 const gameMenuMachine = createMachine({
   id: 'menus',
   initial: 'main',
-  context: {
-    ...gameContext,
-    ...arcadeContext,
-    ...survivalContext,
-  },
+  context: makeGameContext(),
   states: {
     main: {
       on: {
@@ -228,14 +233,22 @@ const gameMenuMachine = createMachine({
   },
 }, {
   guards: {
-    isFinal: ({ victories }) => victories >= 7,
-    isNotFinal: ({ victories }) => victories < 7,
+    isFinal: ({ arcadeContext: { victories } }) => victories >= 7,
+    isNotFinal: ({ arcadeContext: { victories } }) => victories < 7,
   },
   actions: {
     bumpVictories: assign({
-      victories: ({ victories }, _event) => victories + 1,
+      arcadeContext: ({ arcadeContext }, _event) => ({ ...arcadeContext, victories: arcadeContext.victories + 1 }),
     }),
-    resetContext: assign({ ...survivalContext, ...arcadeContext, seed: Math.random() }),
+    resetSurvival: assign({
+      survivalContext: (c, e) => makeSurvivalContext(),
+    }),
+    resetArcade: assign({
+      arcadeContext: (c, e) => makeArcadeContext(),
+    }),
+    resetSingle: assign({
+      singleContext: (c, e) => makeSingleContext(),
+    }),
   }
 });
 
