@@ -97,6 +97,7 @@ export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo,
 
 type EffectT = {
   display: string;
+  tooltip: string;
   effects: Nel<EffectFunCall>;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;

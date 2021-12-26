@@ -1,12 +1,23 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, OverlayTrigger, Popover } from "react-bootstrap";
 import { Enemy, Effect, EnemyStats } from "../utils/types";
 import { Seq } from "immutable";
 
 const skillPercents = (effects: Effect[]) =>
   Seq(effects).countBy((e) => e.display).toArray().map(([display, v], idx) => {
-    const { range, priority } = effects.find(a => a.display === display)!!;
-    return <div key={idx}>[{(v / effects.length * 100).toFixed(2)}%] {display} ⏱:{priority} 🏹:{range.length === 5 ? 'Any' : range.map(a => a + 1).join(", ")}<br key={idx} /></div>
+    const { range, priority, tooltip } = effects.find(a => a.display === display)!!;
+    return <OverlayTrigger
+      key={idx}
+      placement="right"
+      delay={{ show: 100, hide: 250 }}
+      overlay={<Popover>
+        <Popover.Header as="h3">{display}</Popover.Header>
+        <Popover.Body>
+          {tooltip}<br />⏱:{priority}<br />🏹:{range.length === 5 ? 'Any' : range.length === 0 ? 'None' : range.map(a => a + 1).join(", ")}
+        </Popover.Body>
+      </Popover>}
+    ><div>[{(v / effects.length * 100).toFixed(2)}%] {display}<br key={idx} /></div>
+    </OverlayTrigger>
   });
 
 const EnemyCard: React.FC<{

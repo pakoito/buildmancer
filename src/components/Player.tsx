@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button, Stack, ToggleButton, ButtonGroup } from "react-bootstrap";
+import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
 import { DisabledSkills, Player, PlayerStats } from "../utils/types";
 import { Set } from 'immutable';
 
@@ -27,7 +27,16 @@ const PlayerCard: React.FC<{
       <ButtonGroup>
         {Object.entries(player.build)
           .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const)
-          .map(([k, e, passives], idx) => passives.length > 0 && (
+          .map(([k, e, passives], idx) => passives.length > 0 && (<OverlayTrigger
+            placement="right"
+            delay={{ show: 100, hide: 250 }}
+            overlay={<Popover>
+              <Popover.Header as="h3">{e.display}</Popover.Header>
+              <Popover.Body>
+                {e.tooltip}
+              </Popover.Body>
+            </Popover>}
+          >
             <ToggleButton
               key={idx}
               checked={!Set(disabledSkills).has(k)}
@@ -41,6 +50,7 @@ const PlayerCard: React.FC<{
                   : Set(disabledSkills).add(k).toArray())}>
               {e.display}
             </ToggleButton>
+          </OverlayTrigger>
           ))}
       </ButtonGroup>
     </>)}
@@ -48,18 +58,29 @@ const PlayerCard: React.FC<{
       <Stack direction="horizontal" gap={2}>
         {Object.values(player.build)
           .flatMap((a) => a.effects ?? [])
-          .map((e, idx) => (<>
-            <Button
-              key={e.display}
-              active={selectedButtons.has(e.display)}
-              disabled={playerStats.stamina < e.stamina}
-              onClick={(_) => onClickEffect(idx)}
-            >
-              [<i>{idx + 1}</i>] <b>{e.display}</b>
-            </Button>
-            <br key={`$br-{idx}`} />
-            <Card.Text key={`footer-${idx}`}>💪:{e.stamina} ⏱:{e.priority}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(", ")}</Card.Text>
-          </>
+          .map((e, idx) => (<OverlayTrigger
+            key={e.display}
+            placement="top"
+            delay={{ show: 100, hide: 250 }}
+            overlay={<Popover>
+              <Popover.Header as="h3">{e.display}</Popover.Header>
+              <Popover.Body>
+                {e.tooltip}
+              </Popover.Body>
+            </Popover>}
+          >
+            <div>
+              <Button
+                active={selectedButtons.has(e.display)}
+                disabled={playerStats.stamina < e.stamina}
+                onClick={(_) => onClickEffect(idx)}
+              >
+                [<i>{idx + 1}</i>] <b>{e.display}</b>
+              </Button>
+              <br />
+              <Card.Text>💪:{e.stamina} ⏱:{e.priority}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(", ")}</Card.Text>
+            </div>
+          </OverlayTrigger>
           ))}
       </Stack>
     </Card.Body>)}
