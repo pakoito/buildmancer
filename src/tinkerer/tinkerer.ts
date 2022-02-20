@@ -10,7 +10,7 @@ export type TinkererOptions = typeof defaultTinkererOptions & { turns?: number }
 
 export const defaultTinkererOptions = {
   playerSeed: "Miau",
-  weights: { monster: 0.70, player: 0.125, turn: 0.05, stamina: 0.075 },
+  weights: { monster: 0.70, player: 0.125, turn: 0.1, stamina: 0.075 },
   debug: false,
 };
 

@@ -15,7 +15,9 @@
   "player": {
     "hp": 25,
     "stamina": 5,
-    "staminaPerTurn": 1
+    "staminaPerTurn": 1,
+    "speed": 0,
+    "attack": 0
   },
   "turns": 50,
   "seed": "paco",

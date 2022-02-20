@@ -9,7 +9,7 @@ export type EffectFunctionT = {
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
-  'Basic:RecoverStamina': undefined;
+  'Basic:UseStamina': { amount: number };
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -50,7 +50,7 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
 
 const repo: EffectFunctionRepository = {
   'Target:Bleed': effectFun(
-    ({ target }) => (origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(currentState, origin as MonsterTarget, -1) : actions.attackMonster(currentState, target, -1)],
+    ({ target }) => (origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(currentState, origin as MonsterTarget, 1) : actions.attackMonster(currentState, target, 1)],
     (params) => (origin, play, currentState) => [play,
       (params.target !== 'Player' && currentState.enemies[params.target]!!.hp.current > 0)
         && (params.lifespan > 0)
@@ -63,8 +63,8 @@ const repo: EffectFunctionRepository = {
   'Monster:Dead': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
   ),
-  'Basic:RecoverStamina': effectFun(
-    () => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current)]
+  'Basic:UseStamina': effectFun(
+    ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current - amount)]
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, newState) => [play, newState]
@@ -76,19 +76,19 @@ const repo: EffectFunctionRepository = {
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
   ),
   'Axe:Chop': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)]
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)]
   ),
   'Axe:Cut': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)],
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
     () => (origin, play, currentState) => [play,
       actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { target: currentState.target, lifespan: 2 }])] })]
   ),
   'Hook:GetHere': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)],
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
     () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -1)]
   ),
   'Monster:Swipe': effectFun(
-    () => (origin, play, currentState) => [play, actions.attackPlayer(currentState, origin as MonsterTarget, -2)]
+    () => (origin, play, currentState) => [play, actions.attackPlayer(currentState, origin as MonsterTarget, 2)]
   ),
   'Monster:Roar': effectFun(
     () => (_, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, -5)]
@@ -118,9 +118,7 @@ const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, m
   }
   return {
     ...curr,
-    player: {
-      ...curr.player,
-    },
+    player
   };
 }
 
@@ -128,7 +126,7 @@ const actions = {
   attackMonster: (curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: { max: hp.max, current: clamp(hp.current + amount + curr.player.attack.current, 0, hp.max) } })),
+    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: { max: hp.max, current: clamp(hp.current - amount - curr.player.attack.current, 0, hp.max) } })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
@@ -142,7 +140,7 @@ const actions = {
     ],
   attackPlayer: (curr: Snapshot, monster: MonsterTarget, amount: number): Snapshot =>
     updatePlayerStat(curr, 'hp', hp => ({
-      current: clamp(hp.current + amount, 0, hp.max)
+      current: clamp(hp.current - amount - curr.enemies[monster]!!.attack.current, 0, hp.max)
     })),
   modifyPlayerStamina: (
     start: Snapshot,

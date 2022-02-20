@@ -64,11 +64,14 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
   };
 }
 
+const clamp = (num: number, min: number, max: number = Infinity) =>
+  Math.min(Math.max(num, min), max);
+
 const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: string): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([origin, a]) => {
       const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
-      return a.priority + Math.max(priorityBonus, 0);
+      return clamp(a.priority - priorityBonus, 0, 4);
     })
     .reduce((acc, value) => {
       const [origin, effect] = value;
@@ -84,7 +87,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall('Basic:RecoverStamina')], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 

@@ -40,7 +40,7 @@ const validators = !isNode
         case 'Target:Bleed': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Summon': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Dead': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
-        case 'Basic:RecoverStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Basic:UseStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:Rest': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:Advance': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:Retreat': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
