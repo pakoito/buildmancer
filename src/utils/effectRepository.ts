@@ -6,6 +6,7 @@ export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: 
 export type Op = '+' | '*';
 export type StatsFun<T> = [Op, keyof T, T[keyof T]];
 export type EffectFunctionT = {
+  // FIXME: KNOWN TO BE BUGGY, AVOID FOR NOW
   'Player:Stats': Nel<StatsFun<PlayerStats>>;
   'Monster:Stats': Nel<StatsFun<EnemyStats>>;
   'Target:Bleed': { target: Target; lifespan: number };
