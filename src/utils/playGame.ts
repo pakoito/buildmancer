@@ -68,7 +68,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
   Seq(funs)
     .sortBy(([origin, a]) => {
       const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
-      return a.priority + priorityBonus;
+      return a.priority + Math.max(priorityBonus, 0);
     })
     .reduce((acc, value) => {
       const [origin, effect] = value;
