@@ -188,6 +188,14 @@ export const build: Record<
       display: "of Resilience",
       passive: "Charm:ofResilience",
     },
+    {
+      display: "of Strength",
+      passive: "Charm:ofStrength",
+    },
+    {
+      display: "of Swiftness",
+      passive: "Charm:ofSwiftness",
+    },
   ],
 };
 

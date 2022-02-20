@@ -19,7 +19,7 @@ const PlayerCard: React.FC<{
       <Card.Subtitle className="mb-2 text-muted">
         {player.build.class.display}
       </Card.Subtitle>
-      <Card.Text>{playerStats.hp.current} / {playerStats.hp.max} ❤ {playerStats.stamina.current} / {playerStats.stamina.max} 💪</Card.Text>
+      <Card.Text>{playerStats.hp.current}/{playerStats.hp.max} ❤ {playerStats.stamina.current}/{playerStats.stamina.max} 💪</Card.Text>
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
     {canAct && (<>

@@ -92,7 +92,7 @@ interface EffectFunCallT {
 };
 export type EffectFunCall = Opaque<EffectFunCallT, EffectFunCallT>;
 export const effectFunCall = <T extends EffectFunRepoIndex>(t: EffectFunParams<T> extends undefined ? T : [T, EffectFunParams<T>]): EffectFunCall =>
-  ({ index: t[0], parameters: t[1] }) as EffectFunCall;
+  (Array.isArray(t) ? { index: t[0], parameters: t[1] } : { index: t, parameters: undefined }) as EffectFunCall;
 export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo, t: T, p: EffectFunParams<T>) => {
   const f = repo[t];
   // @ts-expect-error: index and parameters are enforced to be compatible at construction and the runtime check above ^^^^

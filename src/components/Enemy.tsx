@@ -31,7 +31,7 @@ const EnemyCard: React.FC<{
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
       <Card.Title>{enemy.lore.name} {enemyStats.hp.current > 0 ? "" : (<b>💀DEAD💀</b>)}</Card.Title>
-      <Card.Text>❤:{enemyStats.hp} 🏹:{enemyStats.distance + 1}</Card.Text>
+      <Card.Text>❤:{enemyStats.hp.current} 🏹:{enemyStats.distance + 1}</Card.Text>
       {latestAttack && (<Card.Text>Latest attack: {latestAttack}</Card.Text>)}
       <Card.Text>
         Next attack prediction:
