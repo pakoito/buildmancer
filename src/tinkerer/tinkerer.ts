@@ -33,8 +33,8 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
   const config: GeneticAlgorithmConfig<Play> = {
     mutationFunction: (oldPlay) => {
       const latestState = previousState(oldPlay);
-      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp, 0);
-      const playerHealth = latestState.player.hp;
+      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp.current, 0);
+      const playerHealth = latestState.player.hp.current;
       if (playerHealth === 0 || monsterHealth === 0) {
         return oldPlay;
       }
@@ -43,7 +43,7 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
         newPlay = setSelected(newPlay, rand.natural({ min: 0, max: previousState(newPlay).enemies.length - 1 }) as MonsterTarget);
       }
       const latest = previousState(newPlay);
-      const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stamina).map(([_, idx]) => idx);
+      const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stamina.current).map(([_, idx]) => idx);
       newPlay = handlePlayerEffect(
         newPlay,
         rand.natural({ min: 0, max: actions.length - 1, exclude: unavailable })
@@ -52,12 +52,12 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
     },
     fitnessFunction: (play) => {
       const latestState = previousState(play);
-      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp, 0);
-      const playerHealth = latestState.player.hp;
-      const playerStamina = latestState.player.stamina;
-      const startPlayerHealth = play.states[0].player.hp;
-      const startPlayerStamina = play.states[0].player.hp;
-      const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.hp, 0);
+      const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp.current, 0);
+      const playerHealth = latestState.player.hp.current;
+      const playerStamina = latestState.player.stamina.current;
+      const startPlayerHealth = play.states[0].player.hp.max;
+      const startPlayerStamina = play.states[0].player.stamina.max;
+      const startMonsterHealth = play.states[0].enemies.reduce((acc, monster) => acc + monster.hp.current, 0);
 
       const monsterKillingFitness = ((startMonsterHealth - monsterHealth) / startMonsterHealth);
       const playerAlivenessFitness = (playerHealth / startPlayerHealth);

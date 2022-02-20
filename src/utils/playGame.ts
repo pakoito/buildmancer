@@ -81,7 +81,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Player:Stats', [['+', 'stamina', amount]]])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall('Basic:RecoverStamina')], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
@@ -97,7 +97,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn - usedSkill.stamina)]], play, initialState, 'STAMINA');
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, 'STAMINA');
 
   // BOT
   // Lingering effects
@@ -111,7 +111,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const turnFunctions: [Target, Effect][] = Seq(postEntitiesBotPlay.enemies).zip(Seq(postEntitiesBotState.enemies))
     .map(([e, stats], idx) =>
       [idx as Target,
-      stats.hp > 0
+      stats.hp.current > 0
         ? e.effects[e.rolls[stats.distance][rand(0, e.rolls[stats.distance].length)]]
         : effectDead] as const)
     .concat([['Player' as Target, usedSkill] as const])

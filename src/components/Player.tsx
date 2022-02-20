@@ -15,11 +15,11 @@ const PlayerCard: React.FC<{
 }> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction, disabledSkills, setDisabledSkills }) => (
   <Card>
     <Card.Body>
-      <Card.Title>{player.lore.name}{playerStats.hp > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
+      <Card.Title>{player.lore.name}{playerStats.hp.current > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
       <Card.Subtitle className="mb-2 text-muted">
         {player.build.class.display}
       </Card.Subtitle>
-      <Card.Text>{playerStats.hp} ❤ {playerStats.stamina} 💪</Card.Text>
+      <Card.Text>{playerStats.hp.current} / {playerStats.hp.max} ❤ {playerStats.stamina.current} / {playerStats.stamina.max} 💪</Card.Text>
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
     {canAct && (<>
@@ -72,7 +72,7 @@ const PlayerCard: React.FC<{
             <div>
               <Button
                 active={selectedButtons.has(e.display)}
-                disabled={playerStats.stamina < e.stamina}
+                disabled={playerStats.stamina.current < e.stamina}
                 onClick={(_) => onClickEffect(idx)}
               >
                 [<i>{idx + 1}</i>] <b>{e.display}</b>

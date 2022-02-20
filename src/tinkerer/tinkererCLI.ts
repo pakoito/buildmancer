@@ -37,8 +37,8 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   });
   const docs = await Promise.all(results.flatMap(async (r) => {
     const lastState = r.phenotype.states[r.phenotype.states.length - 1];
-    const playerHp = lastState.player.hp;
-    const monsterHp = lastState.enemies.reduce((acc, m) => m.hp + acc, 0);
+    const playerHp = lastState.player.hp.current;
+    const monsterHp = lastState.enemies.reduce((acc, m) => m.hp.current + acc, 0);
     const outcome = playerHp > 0 && monsterHp <= 0 ? 'W' : 'L';
     const res = await pouch.get(r.phenotype.id).catch(() => null);
     return (res == null)

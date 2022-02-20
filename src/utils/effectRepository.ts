@@ -6,12 +6,10 @@ export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: 
 export type Op = '+' | '*';
 export type StatsFun<T> = [Op, keyof T, T[keyof T]];
 export type EffectFunctionT = {
-  // FIXME: KNOWN TO BE BUGGY, AVOID FOR NOW
-  'Player:Stats': Nel<StatsFun<PlayerStats>>;
-  'Monster:Stats': Nel<StatsFun<EnemyStats>>;
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
+  'Basic:RecoverStamina': undefined;
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -51,16 +49,10 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
     }) : funs[0]) as EffectFun<T>;
 
 const repo: EffectFunctionRepository = {
-  'Player:Stats': effectFun(
-    (ops) => (_origin, play, currentState) => [play, { ...currentState, player: ops.reduce((player, [op, k, v]) => applyKvp(op, player, k, v), currentState.player) }],
-  ),
-  'Monster:Stats': effectFun(
-    (ops) => (_origin, play, currentState) => [play, { ...currentState, enemies: currentState.enemies.map((e, idx) => idx === currentState.target ? ops.reduce((enemy, [op, k, v]) => applyKvp(op, enemy, k, v), e) : e) as EnemiesStats }],
-  ),
   'Target:Bleed': effectFun(
-    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(startState(play), currentState, 1) : actions.attackMonster(startState(play), currentState, target, 1)],
+    ({ target }) => (_origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(currentState, -1) : actions.attackMonster(currentState, target, -1)],
     (params) => (origin, play, currentState) => [play,
-      (params.target !== 'Player' && currentState.enemies[params.target]!!.hp > 0)
+      (params.target !== 'Player' && currentState.enemies[params.target]!!.hp.current > 0)
         && (params.lifespan > 0)
         ? actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[params.target]!!.lore.name} [${params.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { ...params, lifespan: params.lifespan - 1 }])] })
         : currentState],
@@ -70,6 +62,9 @@ const repo: EffectFunctionRepository = {
   ),
   'Monster:Dead': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
+  ),
+  'Basic:RecoverStamina': effectFun(
+    () => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current)]
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, newState) => [play, newState]
@@ -81,19 +76,19 @@ const repo: EffectFunctionRepository = {
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
   ),
   'Axe:Chop': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)]
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)]
   ),
   'Axe:Cut': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)],
     () => (origin, play, currentState) => [play,
       actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { target: currentState.target, lifespan: 2 }])] })]
   ),
   'Hook:GetHere': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(startState(play), currentState, currentState.target, 3)],
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, -3)],
     () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -1)]
   ),
   'Monster:Swipe': effectFun(
-    () => (_, play, currentState) => [play, actions.attackPlayer(startState(play), currentState, 2)]
+    () => (_, play, currentState) => [play, actions.attackPlayer(currentState, -2)]
   ),
   'Monster:Roar': effectFun(
     () => (_, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, -5)]
@@ -109,50 +104,54 @@ const repo: EffectFunctionRepository = {
 const clamp = (num: number, min: number, max: number = Infinity) =>
   Math.min(Math.max(num, min), max);
 
-const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => object): EnemiesStats =>
+const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => Partial<EnemyStats>): EnemiesStats =>
   enemies.map((m, idx) =>
     (idx === target)
       ? { ...m, ...override(m) }
       : m) as EnemiesStats;
 
+const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, modify: (player: PlayerStats[T]) => Partial<PlayerStats[T]>): Snapshot => {
+  const player = curr.player;
+  player[key] = {
+    ...player[key],
+    ...modify(player[key])
+  }
+  return {
+    ...curr,
+    player: {
+      ...curr.player,
+    },
+  };
+}
+
 const actions = {
-  attackMonster: (start: Snapshot, curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
+  attackMonster: (curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: clamp(hp - amount, 0) })),
+    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: { max: hp.max, current: clamp(hp.current + amount, 0, hp.max) } })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 0, 4) })),
+    enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({ distance: clamp(distance + amount, 0, 4) as MonsterTarget })),
   }),
   removeMonster: (currPlay: Play, currSnap: Snapshot, target: MonsterTarget): [Play, Snapshot] =>
     [
       { ...currPlay, enemies: currPlay.enemies.filter((_, idx) => idx === target) as Enemies },
       { ...currSnap, target: 0, enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats }
     ],
-
-  attackPlayer: (start: Snapshot, curr: Snapshot, amount: number): Snapshot =>
-  ({
-    ...curr,
-    player: {
-      ...curr.player,
-      hp: clamp(curr.player.hp - amount, 0, start.player.hp)
-    },
-  }),
+  attackPlayer: (curr: Snapshot, amount: number): Snapshot =>
+    updatePlayerStat(curr, 'hp', hp => ({
+      current: clamp(hp.current + amount, 0, hp.max)
+    })),
   modifyPlayerStamina: (
     start: Snapshot,
     curr: Snapshot,
     amount: number,
   ): Snapshot =>
-  ({
-    ...curr,
-    player: {
-      ...curr.player,
-      stamina: clamp(curr.player.stamina + amount, 0, start.player.stamina),
-    },
-  }),
-
+    updatePlayerStat(curr, 'stamina', stamina => ({
+      current: clamp(stamina.current + amount, 0, stamina.max)
+    })),
   addEotEffect: (
     curr: Snapshot,
     origin: Target,
@@ -169,7 +168,6 @@ const actions = {
     ...curr,
     bot: [...(curr.eot ?? []), [origin, effect]],
   }),
-
   addEnemy: (
     play: Play,
     curr: Snapshot,

@@ -1,6 +1,6 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall } from "./types";
+import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall, Stat } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -27,9 +27,11 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
       ...buildOverride,
     }
   }, {
-    hp: 25,
-    stamina: 8,
-    staminaPerTurn: 2,
+    hp: makeStat(25),
+    stamina: makeStat(8),
+    staminaPerTurn: makeStat(2),
+    speed: makeStat(0),
+    attack: makeStat(0),
     ...statsOverride,
   }];
 }
@@ -38,13 +40,18 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new 
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
+export const makeStat = (amount: number): Stat => ({ current: amount, max: amount });
+
+
 export const effectDead: Effect =
-  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall(["Monster:Dead"])], range: allRanges };
+  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges };
 
 export const statsRepository: StatsFunRepo = {
-  'Charm:ofHealth': (player, enemies) => [{ ...player, hp: player.hp + 10 }, enemies],
-  'Charm:ofHaste': (player, enemies) => [{ ...player, staminaPerTurn: player.staminaPerTurn + 1 }, enemies],
-  'Charm:ofResilience': (player, enemies) => [{ ...player, stamina: player.stamina + 10 }, enemies],
+  'Charm:ofHealth': (player, enemies) => [{ ...player, hp: makeStat(player.hp.current + 10) }, enemies],
+  'Charm:ofHaste': (player, enemies) => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 10) }, enemies],
+  'Charm:ofResilience': (player, enemies) => [{ ...player, stamina: makeStat(player.stamina.current + 10) }, enemies],
+  'Charm:ofStrength': (player, enemies) => [{ ...player, attack: makeStat(player.attack.current + 1) }, enemies],
+  'Charm:ofSwiftness': (player, enemies) => [{ ...player, speed: makeStat(player.speed.current + 1) }, enemies],
 }
 
 export const build: Record<
@@ -61,7 +68,7 @@ export const build: Record<
           priority: 4,
           stamina: 0,
           range: selfRange,
-          effects: [effectFunCall(['Basic:Rest'])]
+          effects: [effectFunCall('Basic:Rest')]
         },
         {
           display: "Advance",
@@ -69,12 +76,12 @@ export const build: Record<
           priority: 4,
           stamina: 1,
           range: selfRange,
-          effects: [effectFunCall(['Basic:Advance'])]
+          effects: [effectFunCall('Basic:Advance')]
         },
         {
           display: "Retreat",
           tooltip: "Move further",
-          effects: [effectFunCall(["Basic:Retreat"])],
+          effects: [effectFunCall("Basic:Retreat")],
           priority: 4,
           stamina: 1,
           range: selfRange,
@@ -108,7 +115,7 @@ export const build: Record<
         {
           display: "Chop",
           tooltip: "Chop",
-          effects: [effectFunCall(["Axe:Chop"])],
+          effects: [effectFunCall("Axe:Chop")],
           priority: 2,
           stamina: 2,
           range: makeRange(0, 1),
@@ -116,7 +123,7 @@ export const build: Record<
         {
           display: "Cut",
           tooltip: "Cut",
-          effects: [effectFunCall(["Axe:Cut"])],
+          effects: [effectFunCall("Axe:Cut")],
           priority: 3,
           stamina: 2,
           range: makeRange(0),
@@ -131,7 +138,7 @@ export const build: Record<
         {
           display: "Get over here!",
           tooltip: "Moves enemy closer",
-          effects: [effectFunCall(["Hook:GetHere"])],
+          effects: [effectFunCall("Hook:GetHere")],
           priority: 4,
           stamina: 3,
           range: makeRange(2, 3, 4),
@@ -164,7 +171,7 @@ export const build: Record<
       tooltip: "Increases distance by 2 every turn",
       priority: 0,
       range: allRanges,
-      effects: [effectFunCall(['BootsOfFlight:EOT'])],
+      effects: [effectFunCall('BootsOfFlight:EOT')],
     }],
   },
   ],
@@ -199,22 +206,23 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange(0, 1) },
-      { display: "Roar", tooltip: "Swipe", priority: 1, effects: [effectFunCall(["Monster:Roar"])], range: allRanges },
-      { display: "Jump", tooltip: "Swipe", priority: 2, effects: [effectFunCall(["Monster:Jump"])], range: makeRange(2, 3, 4) },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange(0, 1) },
+      { display: "Roar", tooltip: "Swipe", priority: 1, effects: [effectFunCall("Monster:Roar")], range: allRanges },
+      { display: "Jump", tooltip: "Swipe", priority: 2, effects: [effectFunCall("Monster:Jump")], range: makeRange(2, 3, 4) },
     ],
   }, {
-    hp: 25,
-    rage: 0,
+    hp: makeStat(25),
     distance: 4,
+    speed: makeStat(0),
+    attack: makeStat(0),
   }],
   [{
     lore: {
       name: "Toro",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: allRanges },
-      { display: "Jump", tooltip: "Jump", priority: 2, effects: [effectFunCall(["Monster:Jump"])], range: makeRange(2, 3, 4) },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: allRanges },
+      { display: "Jump", tooltip: "Jump", priority: 2, effects: [effectFunCall("Monster:Jump")], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 0, 0],
@@ -224,17 +232,18 @@ export const enemies: [Enemy, EnemyStats][] = [
       [1, 1, 1, 1, 0],
     ]
   }, {
-    hp: 22,
-    rage: 0,
+    hp: makeStat(22),
     distance: 4,
+    speed: makeStat(0),
+    attack: makeStat(0),
   }],
   [{
     lore: {
       name: "Summoner",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange(0, 1) },
-      { display: "Jump", tooltip: "Jump", priority: 3, effects: [effectFunCall(["Monster:Jump"])], range: allRanges },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange(0, 1) },
+      { display: "Jump", tooltip: "Jump", priority: 3, effects: [effectFunCall("Monster:Jump")], range: allRanges },
       { display: "Summon Toro", tooltip: "Summon Toro", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 1 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
@@ -245,16 +254,17 @@ export const enemies: [Enemy, EnemyStats][] = [
       [1, 2, 2, 0, 0],
     ]
   }, {
-    hp: 30,
-    rage: 0,
+    hp: makeStat(30),
     distance: 4,
+    speed: makeStat(0),
+    attack: makeStat(0),
   }],
   [{
     lore: {
       name: "Body",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange() },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange() },
     ],
     rolls: [
       [0],
@@ -264,9 +274,10 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0],
     ]
   }, {
-    hp: 300,
-    rage: 0,
+    hp: makeStat(300),
     distance: 0,
+    speed: makeStat(0),
+    attack: makeStat(0),
   }],
 
   [{
@@ -274,7 +285,7 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Smol",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Swipe"])], range: makeRange() },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange() },
     ],
     rolls: [
       [0],
@@ -284,9 +295,10 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0],
     ]
   }, {
-    hp: 5,
-    rage: 0,
+    hp: makeStat(5),
     distance: 0,
+    speed: makeStat(0),
+    attack: makeStat(0),
   }],
 ];
 

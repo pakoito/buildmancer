@@ -34,24 +34,28 @@ export type TupleUpTo<T, N extends number> =
   EQ<N, 1> extends true ? [T] : TupleUpTo<T, Subtract<N, 1>> | Tuple<T, N>;
 
 export type UpTo<N extends number> =
-  EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N
+  EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N;
 
-export type PlayerStats = Record<string, number> & { hp: number, stamina: number, staminaPerTurn: number };
-export type EnemyStats = Record<string, number> & { hp: number, distance: UpTo<Subtract<Distances, 1>> };
+export interface Stat {
+  max: number,
+  current: UpTo<Stat['max']>,
+}
+export interface PlayerStats { hp: Stat, stamina: Stat, staminaPerTurn: Stat, speed: Stat, attack: Stat };
+export interface EnemyStats { hp: Stat, speed: Stat, attack: Stat, distance: UpTo<Subtract<Distances, 1>> };
 
 export type Priorities = 5;
 export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 5;
 
-export type EffectSummary = {
+export interface EffectSummary {
   origin: Target;
   display: string;
   phase: string;
 }
 
 export type DisabledSkills = string[];
-export type Snapshot = {
+export interface Snapshot {
   player: PlayerStats;
   enemies: EnemiesStats;
   target: MonsterTarget;
@@ -63,7 +67,7 @@ export type Snapshot = {
 
 export type RNG = Opaque<number[][], 'RNG'>;
 
-export type Play = {
+export interface Play {
   states: Nel<Snapshot>;
   player: Player;
   enemies: Enemies,
@@ -82,12 +86,12 @@ export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerSt
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
 
-type EffectFunCallT = {
+interface EffectFunCallT {
   index: EffectFunRepoIndex;
   parameters: EffectFunParams<EffectFunRepoIndex>;
 };
 export type EffectFunCall = Opaque<EffectFunCallT, EffectFunCallT>;
-export const effectFunCall = <T extends EffectFunRepoIndex>(t: EffectFunParams<T> extends undefined ? [T] : [T, EffectFunParams<T>]): EffectFunCall =>
+export const effectFunCall = <T extends EffectFunRepoIndex>(t: EffectFunParams<T> extends undefined ? T : [T, EffectFunParams<T>]): EffectFunCall =>
   ({ index: t[0], parameters: t[1] }) as EffectFunCall;
 export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo, t: T, p: EffectFunParams<T>) => {
   const f = repo[t];
@@ -95,7 +99,7 @@ export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo,
   return f(p);
 }
 
-type EffectT = {
+interface EffectT {
   display: string;
   tooltip: string;
   effects: Nel<EffectFunCall>;
@@ -103,7 +107,7 @@ type EffectT = {
   range: Ranges;
 };
 export type Effect = EffectT;
-export type InventoryEffect = Effect & {
+export type InventoryEffect = EffectT & {
   stamina: UpTo<Subtract<Staminas, 1>>;
 };
 
@@ -116,7 +120,7 @@ export type Build = Record<
   Item
 >;
 
-export type Item = {
+export interface Item {
   display: string;
   passive?: StatsFunIndex;
   bot?: Nel<Effect>;
@@ -125,7 +129,7 @@ export type Item = {
   [key: string]: any;
 };
 
-export type Player = {
+export interface Player {
   id: string;
   lore: Record<string, string | number>;
   build: Build;
@@ -133,7 +137,7 @@ export type Player = {
 
 // Place in the array for now
 type EffectIdentity = number;
-export type Enemy = {
+export interface Enemy {
   lore: Record<string, string | number>;
   effects: Nel<Effect>;
   rolls: Tuple<EffectIdentity[], Distances>;
