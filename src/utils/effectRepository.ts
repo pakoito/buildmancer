@@ -106,7 +106,7 @@ const repo: EffectFunctionRepository = {
   ),
 };
 
-const clamp = (num: number, min: number, max: number) =>
+const clamp = (num: number, min: number, max: number = Infinity) =>
   Math.min(Math.max(num, min), max);
 
 const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => object): EnemiesStats =>
@@ -119,7 +119,7 @@ const actions = {
   attackMonster: (start: Snapshot, curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: clamp(hp - amount, 0, start.enemies[target]!!/* enforced by UI */.hp) })),
+    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: clamp(hp - amount, 0) })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
