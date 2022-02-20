@@ -66,7 +66,10 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
 
 const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: string): [Play, Snapshot] =>
   Seq(funs)
-    .sortBy(([_t, a]) => a.priority)
+    .sortBy(([origin, a]) => {
+      const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
+      return a.priority + priorityBonus;
+    })
     .reduce((acc, value) => {
       const [origin, effect] = value;
       const [oldPlay, oldState] = acc;
