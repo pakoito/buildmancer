@@ -29,6 +29,7 @@ const PlayerCard: React.FC<{
         {Object.entries(player.build)
           .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const)
           .map(([k, e, passives], idx) => passives.length > 0 && (<OverlayTrigger
+            key={idx}
             placement="right"
             delay={{ show: 100, hide: 250 }}
             overlay={<Popover>
@@ -39,7 +40,6 @@ const PlayerCard: React.FC<{
             </Popover>}
           >
             <ToggleButton
-              key={idx}
               checked={!Set(disabledSkills).has(k)}
               value={k}
               id={`passive-skill-${k}`}

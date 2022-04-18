@@ -26,8 +26,8 @@ export type EffectFunctionT = {
 
 export const statsRepository = {
   'Charm:ofHealth': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current + 10) }, enemies],
-  'Charm:ofHaste': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 10) }, enemies],
-  'Charm:ofResilience': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current + 10) }, enemies],
+  'Charm:ofHaste': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 1) }, enemies],
+  'Charm:ofResilience': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current + 3) }, enemies],
   'Charm:ofStrength': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, attack: makeStat(player.attack.current + 1) }, enemies],
   'Charm:ofSwiftness': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, speed: makeStat(player.speed.current + 1) }, enemies],
   'Charm:ofDefence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, defence: makeStat(player.defence.current + 1) }, enemies],

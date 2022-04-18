@@ -17,7 +17,8 @@
     "stamina": 5,
     "staminaPerTurn": 1,
     "speed": 0,
-    "attack": 0
+    "attack": 0,
+    "defence": 0
   },
   "turns": 50,
   "seed": "paco",
