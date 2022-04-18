@@ -91,7 +91,7 @@ const applyEffectStamina = (amount: number): Effect =>
   ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Utility:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
 const resetArmor: Effect =
-  ({ display: 'Reset Armor', tooltip: 'Reset Armor', effects: [effectFunCall('Utility:ResetArmor')], range: allRanges, priority: 0 });
+  ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 

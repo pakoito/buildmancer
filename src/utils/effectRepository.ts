@@ -21,7 +21,7 @@ export type EffectFunctionT = {
   'Monster:Jump': undefined;
   'BootsOfFlight:EOT': undefined;
   'Utility:UseStamina': { amount: number };
-  'Utility:ResetArmor': undefined;
+  'Utility:Cleanup': undefined;
 }
 
 export const statsRepository = {
@@ -79,9 +79,9 @@ const repo: EffectFunctionRepository = {
   'Utility:UseStamina': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current - amount)]
   ),
-  'Utility:ResetArmor': effectFun(
-    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 } }))],
-    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 } })), currentState)],
+  'Utility:Cleanup': effectFun(
+    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) } }))],
+    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) } })), currentState)],
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
@@ -236,7 +236,7 @@ function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): S
   const afterDefence = Math.max(damage - monster.defence.current, 0);
   const afterArmor = Math.max(afterDefence - armor, 0);
   const armorSpent = armor - (afterDefence - afterArmor);
-  const afterBleed = afterArmor + (curr.player.status.bleed.turns > 0 ? 1 : 0);
+  const afterBleed = afterArmor + (monster.status.bleed.turns > 0 ? 1 : 0);
   return ({
     ...curr,
     enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
