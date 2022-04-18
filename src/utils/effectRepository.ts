@@ -215,14 +215,15 @@ function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): S
   }
 
   const armor = monster.status.armor.amount;
-  const damage = amount + curr.player.attack.current + (monster.status.bleed.turns > 0 ? 1 : 0);
+  const damage = amount + curr.player.attack.current;
   const afterDefence = Math.max(damage - monster.defence.current, 0);
   const afterArmor = Math.max(afterDefence - armor, 0);
   const armorSpent = armor - (afterDefence - afterArmor);
+  const afterBleed = afterArmor + (curr.player.status.bleed.turns > 0 ? 1 : 0);
   return ({
     ...curr,
     enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
-      hp: { max: hp.max, current: clamp(hp.current - afterArmor, 0, hp.max) },
+      hp: { max: hp.max, current: clamp(hp.current - afterBleed, 0, hp.max) },
       status:
         { ...status, armor: { amount: armorSpent } }
     })),
@@ -236,12 +237,13 @@ function attackPlayer(curr: Snapshot, monster: MonsterTarget, amount: number): S
   }
 
   const armor = curr.player.status.armor.amount;
-  const damage = amount + curr.player.attack.current + (curr.player.status.bleed.turns > 0 ? 1 : 0);
+  const damage = amount + curr.player.attack.current;
   const afterDefence = Math.max(damage - curr.player.defence.current, 0);
   const afterArmor = Math.max(afterDefence - armor, 0);
   const armorSpent = armor - (afterDefence - afterArmor);
+  const afterBleed = afterArmor + (curr.player.status.bleed.turns > 0 ? 1 : 0);
   return updatePlayer(curr, ({ hp, status }) => ({
-    hp: { max: hp.max, current: clamp(hp.current - afterArmor, 0, hp.max) },
+    hp: { max: hp.max, current: clamp(hp.current - afterBleed, 0, hp.max) },
     status: { ...status, armor: { amount: status.armor.amount - armorSpent } }
   }));
 }
