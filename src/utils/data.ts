@@ -1,6 +1,6 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall, Stat } from "./types";
+import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall, Stat, Status } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -32,6 +32,8 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
     staminaPerTurn: makeStat(2),
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
     ...statsOverride,
   }];
 }
@@ -41,7 +43,11 @@ export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
 export const makeStat = (amount: number): Stat => ({ current: amount, max: amount });
-
+export const defaultStatus: Status = {
+  dodge: { active: false },
+  armor: { amount: 0 },
+  bleed: { turns: 0 }
+}
 
 export const effectDead: Effect =
   { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges };
@@ -137,9 +143,9 @@ export const build: Record<
           range: makeRange(0),
         },
         {
-          display: "Poison",
-          tooltip: "Adds Poison",
-          effects: [effectFunCall("Axe:Poison")],
+          display: "Bleed",
+          tooltip: "Makes the enemy bleed",
+          effects: [effectFunCall("Axe:Bleed")],
           priority: 3,
           stamina: 2,
           range: allRanges,
@@ -239,6 +245,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     distance: 4,
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
   }],
   [{
     lore: {
@@ -260,6 +268,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     distance: 4,
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
   }],
   [{
     lore: {
@@ -282,6 +292,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     distance: 4,
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
   }],
   [{
     lore: {
@@ -302,6 +314,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     distance: 0,
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
   }],
 
   [{
@@ -323,6 +337,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     distance: 0,
     speed: makeStat(0),
     attack: makeStat(0),
+    defence: makeStat(0),
+    status: defaultStatus,
   }],
 ];
 
