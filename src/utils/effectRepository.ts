@@ -214,9 +214,8 @@ function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): S
     });
   }
 
-
   const armor = monster.status.armor.amount;
-  const damage = amount + curr.player.attack.current;
+  const damage = amount + curr.player.attack.current + (monster.status.bleed.turns > 0 ? 1 : 0);
   const afterDefence = Math.max(damage - monster.defence.current, 0);
   const afterArmor = Math.max(afterDefence - armor, 0);
   const armorSpent = armor - (afterDefence - afterArmor);
@@ -236,9 +235,8 @@ function attackPlayer(curr: Snapshot, monster: MonsterTarget, amount: number): S
     return updatePlayerStat(curr, 'status', () => ({ dodge: { active: false } }));
   }
 
-
   const armor = curr.player.status.armor.amount;
-  const damage = amount + curr.player.attack.current;
+  const damage = amount + curr.player.attack.current + (curr.player.status.bleed.turns > 0 ? 1 : 0);
   const afterDefence = Math.max(damage - curr.player.defence.current, 0);
   const afterArmor = Math.max(afterDefence - armor, 0);
   const armorSpent = armor - (afterDefence - afterArmor);
