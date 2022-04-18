@@ -87,10 +87,10 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:UseStamina', { amount }])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Utility:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
 const resetArmor: Effect =
-  ({ display: `Reset Armor`, tooltip: `Reset Armor`, effects: [effectFunCall('Basic:ResetArmor')], range: allRanges, priority: 0 });
+  ({ display: `Reset Armor`, tooltip: `Reset Armor`, effects: [effectFunCall('Utility:ResetArmor')], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 

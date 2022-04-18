@@ -8,8 +8,6 @@ export type EffectFunctionT = {
   'Target:Poison': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
-  'Basic:UseStamina': { amount: number };
-  'Basic:ResetArmor': undefined;
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -23,6 +21,8 @@ export type EffectFunctionT = {
   'Monster:Roar': undefined;
   'Monster:Jump': undefined;
   'BootsOfFlight:EOT': undefined;
+  'Utility:UseStamina': { amount: number };
+  'Utility:ResetArmor': undefined;
 }
 
 export type Op = '+' | '*';
@@ -68,10 +68,10 @@ const repo: EffectFunctionRepository = {
   'Monster:Dead': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
   ),
-  'Basic:UseStamina': effectFun(
+  'Utility:UseStamina': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current - amount)]
   ),
-  'Basic:ResetArmor': effectFun(
+  'Utility:ResetArmor': effectFun(
     () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 } }))],
     () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 } })), currentState)],
   ),
