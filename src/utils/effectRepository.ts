@@ -12,7 +12,8 @@ export type EffectFunctionT = {
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
-  'Basic:Dodge': undefined;
+  'Effect:Dodge': undefined;
+  'Effect:Armor': { amount: number };
   'Axe:Chop': undefined;
   'Axe:Cut': undefined;
   'Axe:Bleed': undefined;
@@ -78,7 +79,7 @@ const repo: EffectFunctionRepository = {
   'Basic:Retreat': effectFun(
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
   ),
-  'Basic:Dodge': effectFun(
+  'Effect:Dodge': effectFun(
     () => (_origin, play, newState) => [play, actions.changeStatusPlayer(newState, (o) => ({ ...o, dodge: { active: true } }))]
   ),
   'Axe:Chop': effectFun(
@@ -90,8 +91,11 @@ const repo: EffectFunctionRepository = {
       actions.addEotEffect(currentState, origin, { display: `Poison ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Poison', { target: currentState.target, lifespan: 2 }])] })]
   ),
   'Axe:Bleed': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 2)],
     () => (_, play, currentState) => [play, actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, bleed: { turns: o.bleed.turns + 5 } }))]
+  ),
+  'Effect:Armor': effectFun(
+    () => (_, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 3 } }))]
   ),
   'Hook:GetHere': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],

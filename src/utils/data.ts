@@ -94,10 +94,10 @@ export const build: Record<
         },
         {
           display: "Dodge",
-          tooltip: "Skip 1 attack",
-          effects: [effectFunCall("Basic:Dodge")],
-          priority: 1,
-          stamina: 3,
+          tooltip: "Avoid 1 enemy attack",
+          effects: [effectFunCall("Effect:Dodge")],
+          priority: 2,
+          stamina: 4,
           range: selfRange,
         },
       ]
@@ -167,6 +167,19 @@ export const build: Record<
         },
       ],
     },
+    {
+      display: "Shield",
+      effects: [
+        {
+          display: "Not today!",
+          tooltip: "Blocks some damage",
+          effects: [effectFunCall(["Effect:Armor", { amount: 3 }])],
+          priority: 2,
+          stamina: 3,
+          range: selfRange,
+        },
+      ],
+    },
   ],
   consumable: [
     {
@@ -185,6 +198,16 @@ export const build: Record<
   ],
   footwear: [{
     display: "Boots of Dooooodge!",
+    effects: [
+      {
+        display: "Advanced Dodge",
+        tooltip: "Avoid 1 attack",
+        effects: [effectFunCall("Effect:Dodge")],
+        priority: 1,
+        stamina: 3,
+        range: selfRange,
+      },
+    ],
   },
   {
     display: "Boots of Flight",
