@@ -1,5 +1,5 @@
 import { Opaque } from "type-fest";
-import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex } from "./effectFunctions";
+import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex, StatsFunIndex } from "./effectFunctions";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -82,8 +82,7 @@ export interface Play {
 type ItemOrMonster = string /* TODO all items */ | 'Monster';
 export type FunIndex = `${ItemOrMonster}:${string}`;
 
-export type StatsFunIndex = FunIndex;
-export type StatsFunRepo = { [key: StatsFunIndex]: StatsFun; }
+export type StatsFunRepo = { [key in StatsFunIndex]: StatsFun; }
 export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerStats, EnemiesStats];
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];

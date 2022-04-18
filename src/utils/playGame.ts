@@ -1,10 +1,11 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, EnemyStats } from "./types";
 import { Seq, Set } from "immutable";
-import { allRanges, effectDead, previousState, statsRepository } from "./data";
+import { allRanges, effectDead, previousState } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 import { extractFunction } from "./effectFunctions";
+import { statsRepository } from "./effectRepository";
 
 /**
  * @returns min inclusive, max exclusive rand

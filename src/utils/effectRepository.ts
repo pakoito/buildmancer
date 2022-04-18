@@ -1,7 +1,6 @@
-import { allRanges, enemies, startState } from "./data";
+import { allRanges, enemies, makeStat, startState } from "./data";
 import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
-import { playerActions } from "./playGame";
-import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Status, Target } from "./types";
+import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, PlayerStats, Snapshot, StatsFun, StatsFunRepo, Status, Target } from "./types";
 
 export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
 export type EffectFunctionT = {
@@ -25,8 +24,17 @@ export type EffectFunctionT = {
   'Utility:ResetArmor': undefined;
 }
 
+export const statsRepository = {
+  'Charm:ofHealth': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current + 10) }, enemies],
+  'Charm:ofHaste': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 10) }, enemies],
+  'Charm:ofResilience': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current + 10) }, enemies],
+  'Charm:ofStrength': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, attack: makeStat(player.attack.current + 1) }, enemies],
+  'Charm:ofSwiftness': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, speed: makeStat(player.speed.current + 1) }, enemies],
+  'Charm:ofDefence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, defence: makeStat(player.defence.current + 1) }, enemies],
+}
+
 export type Op = '+' | '*';
-export type StatsFun<T> = [Op, keyof T, T[keyof T]];
+export type StatsOpFun<T> = [Op, keyof T, T[keyof T]];
 const applyObject = <T extends { [k: string]: number }>(op: Op, obj: T, apply: Partial<T>): T =>
   Object.entries(apply).reduce((acc, [k, v]) => {
     if (v == null) {

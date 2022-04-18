@@ -1,7 +1,7 @@
 import { createIs, is } from 'typescript-is';
 import { Opaque } from "type-fest";
 import { callEffectFun, Effect, FunIndex, Play, Snapshot, Target } from "./types";
-import effectRepository, { EffectFunctionRepository, EffectFunctionT } from './effectRepository';
+import effectRepository, { EffectFunctionRepository, EffectFunctionT, statsRepository } from './effectRepository';
 
 export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
 export type ParametrizedFun<T> = (params: T) => ReduceFun;
@@ -10,6 +10,8 @@ export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
 export type EffectFunRepo = EffectFunctionRepository;
 export type EffectFunRepoIndex = keyof EffectFunctionT & FunIndex;
 export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
+
+export type StatsFunIndex = keyof typeof statsRepository;
 
 const isNode = typeof process === 'undefined';
 
