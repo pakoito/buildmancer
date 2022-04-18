@@ -23,10 +23,12 @@ export type GameProps = {
   redo: (() => void) | undefined;
 };
 
+const monsterHotkeys = ["q", "w", "e", "r", "t", "y"];
+
 const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills } = previousState(game);
-  const [show, setShowLog] = useState(false);
+  const [isLogShown, setShowLog] = useState(false);
 
   const handleCloseLog = () => setShowLog(false);
   const handleShowLog = () => setShowLog(true);
@@ -45,6 +47,40 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       const hasStamina = playerSkills[valNum - 1].stamina <= playerStats.stamina.current;
       if (!hasStamina) return;
       handlePlayerEffect(valNum - 1);
+    }
+    if (key === "h") {
+      hint(100);
+    }
+
+    if (key === "l") {
+      setShowLog(!isLogShown);
+    }
+
+    if (key === "s") {
+      save();
+    }
+
+    if (key === "a" && game.states.length > 1) {
+      undo();
+    }
+    if (key === "d" && redo != null) {
+      redo();
+    }
+
+    if (key === monsterHotkeys[0] && enemies.length > 0) {
+      setSelected(0 as MonsterTarget);
+    }
+    if (key === monsterHotkeys[1] && enemies.length > 1) {
+      setSelected(1 as MonsterTarget);
+    }
+    if (key === monsterHotkeys[2] && enemies.length > 2) {
+      setSelected(2 as MonsterTarget);
+    }
+    if (key === monsterHotkeys[3] && enemies.length > 3) {
+      setSelected(3 as MonsterTarget);
+    }
+    if (key === monsterHotkeys[4] && enemies.length > 4) {
+      setSelected(4 as MonsterTarget);
     }
   });
 
@@ -81,13 +117,13 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               canAct={canAct} />
             <Row>
               <ButtonGroup>
-                {game.states.length > 1 && (<Button onClick={(_) => undo()}>Undo ↩</Button>)}
-                {redo && (<Button onClick={(_) => redo()}>Redo ↪</Button>)}
+                {game.states.length > 1 && (<Button onClick={(_) => undo()}>[<i>A</i>] Undo ↩</Button>)}
+                {redo && (<Button onClick={(_) => redo()}>[<i>D</i>] Redo ↪</Button>)}
               </ButtonGroup>
             </Row>
             <Row>
               <ButtonGroup>
-                <Button onClick={(_) => hint(100)}>Hint</Button>
+                <Button onClick={(_) => hint(100)}><i>[H]</i> Hint</Button>
               </ButtonGroup>
             </Row>
             <Row>
@@ -101,6 +137,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
                     latestAttack={Seq(lastAttacks).filter(({ origin }) => origin === idx).map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
                     isSelected={idx === target}
                     onSelect={() => setSelected(idx as MonsterTarget)}
+                    hotkey={monsterHotkeys[idx]}
                   />
                 </Col>
               ))}
@@ -110,8 +147,8 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
             </Card.Title>
             <Row>
               <ButtonGroup>
-                <Button onClick={handleShowLog}>Log 🗒</Button>
-                <Button onClick={save}>Dump to file 📂</Button>
+                <Button onClick={handleShowLog}>[<i>L</i>] Log 🗒</Button>
+                <Button onClick={save}>[<i>S</i>] Dump to file 📂</Button>
               </ButtonGroup>
             </Row>
             <Card.Title>
@@ -126,7 +163,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
           </Col>
         </Row>
       </Container>
-      <Modal show={show} onHide={handleCloseLog} scrollable={true} centered={true}>
+      <Modal show={isLogShown} onHide={handleCloseLog} scrollable={true} centered={true}>
         <Modal.Header closeButton>
           <Modal.Title>Game Log</Modal.Title>
         </Modal.Header>

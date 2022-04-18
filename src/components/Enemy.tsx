@@ -27,7 +27,8 @@ const EnemyCard: React.FC<{
   isSelected?: boolean;
   onSelect: () => void;
   canAct: boolean;
-}> = ({ enemy, enemyStats, isSelected, onSelect, latestAttack, canAct }) => (
+  hotkey: string;
+}> = ({ enemy, enemyStats, isSelected, onSelect, latestAttack, canAct, hotkey }) => (
   <Card bg={isSelected ? "info" : undefined}>
     <Card.Body>
       <Card.Title>{enemy.lore.name} {enemyStats.hp.current > 0 ? "" : (<b>💀DEAD💀</b>)}</Card.Title>
@@ -40,7 +41,7 @@ const EnemyCard: React.FC<{
         {skillPercents(enemy.rolls[enemyStats.distance].map((idx) => enemy.effects[idx]))}
         <br />
       </Card.Text>
-      {canAct && (<Button disabled={isSelected} onClick={onSelect}>Select</Button>)}
+      {canAct && (<Button disabled={isSelected} onClick={onSelect}>[<i>{hotkey.toUpperCase()}</i>] Select</Button>)}
     </Card.Body>
   </Card>
 );
