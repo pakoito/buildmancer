@@ -77,7 +77,7 @@ const repo: EffectFunctionRepository = {
     () => (_origin, play, currentState) => [play, currentState]
   ),
   'Utility:UseStamina': effectFun(
-    ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current - amount)]
+    ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(currentState, amount)]
   ),
   'Utility:Cleanup': effectFun(
     () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) } }))],
@@ -118,7 +118,7 @@ const repo: EffectFunctionRepository = {
     () => (origin, play, currentState) => [play, actions.attackPlayer(currentState, origin as MonsterTarget, 2)]
   ),
   'Monster:Roar': effectFun(
-    () => (_, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, -5)]
+    () => (_, play, currentState) => [play, actions.modifyPlayerStamina(currentState, -5)]
   ),
   'Monster:Jump': effectFun(
     () => (origin, play, currentState) => [play, actions.changeDistance(currentState, origin, -2)]
@@ -178,7 +178,6 @@ const actions = {
       { ...currSnap, target: 0, enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats }
     ],
   modifyPlayerStamina: (
-    start: Snapshot,
     curr: Snapshot,
     amount: number,
   ): Snapshot =>

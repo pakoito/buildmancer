@@ -90,7 +90,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
 const applyEffectStamina = (amount: number): Effect =>
   ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Utility:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
-const resetArmor: Effect =
+const eotCleanup: Effect =
   ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
@@ -102,7 +102,8 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const initialState: Snapshot = {
     ...previousState(play),
     lastAttacks: [],
-    bot: undefined, eot: undefined,
+    bot: undefined,
+    eot: undefined,
   };
 
   // Stamina
@@ -139,7 +140,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   // Lingering effects
   const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
   // Cleanup
-  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, resetArmor]], postEotPlay, postEotState, 'EOT');
+  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, eotCleanup]], postEotPlay, postEotState, 'EOT');
 
   return {
     ...postCleanup,
