@@ -90,7 +90,7 @@ const applyEffectStamina = (amount: number): Effect =>
   ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Utility:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
 const resetArmor: Effect =
-  ({ display: `Reset Armor`, tooltip: `Reset Armor`, effects: [effectFunCall('Utility:ResetArmor')], range: allRanges, priority: 0 });
+  ({ display: 'Reset Armor', tooltip: 'Reset Armor', effects: [effectFunCall('Utility:ResetArmor')], range: allRanges, priority: 0 });
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
@@ -137,7 +137,6 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
   // Lingering effects
   const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
-
   // Cleanup
   const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, resetArmor]], postEotPlay, postEotState, 'EOT');
 
