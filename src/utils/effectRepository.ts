@@ -1,10 +1,9 @@
 import { allRanges, enemies, startState } from "./data";
 import { EffectFun, ParametrizedFun, ReduceFun } from "./effectFunctions";
-import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Target } from "./types";
+import { playerActions } from "./playGame";
+import { Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Status, Target } from "./types";
 
 export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
-export type Op = '+' | '*';
-export type StatsFun<T> = [Op, keyof T, T[keyof T]];
 export type EffectFunctionT = {
   'Target:Bleed': { target: Target; lifespan: number };
   'Monster:Summon': { enemy: number };
@@ -13,8 +12,10 @@ export type EffectFunctionT = {
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
+  'Basic:Dodge': undefined;
   'Axe:Chop': undefined;
   'Axe:Cut': undefined;
+  'Axe:Poison': undefined;
   'Hook:GetHere': undefined;
   'Monster:Swipe': undefined;
   'Monster:Roar': undefined;
@@ -22,6 +23,8 @@ export type EffectFunctionT = {
   'BootsOfFlight:EOT': undefined;
 }
 
+export type Op = '+' | '*';
+export type StatsFun<T> = [Op, keyof T, T[keyof T]];
 const applyObject = <T extends { [k: string]: number }>(op: Op, obj: T, apply: Partial<T>): T =>
   Object.entries(apply).reduce((acc, [k, v]) => {
     if (v == null) {
@@ -75,10 +78,18 @@ const repo: EffectFunctionRepository = {
   'Basic:Retreat': effectFun(
     () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
   ),
+  'Basic:Dodge': effectFun(
+    () => (_origin, play, newState) => [play, actions.changeStatusPlayer(newState, (o) => ({ ...o, 'Dodge': { active: true } }))]
+  ),
   'Axe:Chop': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)]
   ),
   'Axe:Cut': effectFun(
+    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
+    () => (origin, play, currentState) => [play,
+      actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { target: currentState.target, lifespan: 2 }])] })]
+  ),
+  'Axe:Poison': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
     () => (origin, play, currentState) => [play,
       actions.addEotEffect(currentState, origin, { display: `Bleed ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Target:Bleed', { target: currentState.target, lifespan: 2 }])] })]
@@ -123,6 +134,14 @@ const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, m
 }
 
 const actions = {
+  changeStatusPlayer: (curr: Snapshot, updateStatus: (oldStatus: Status) => Status): Snapshot => ({
+    ...curr,
+    player: { ...curr.player, status: updateStatus(curr.player.status) }
+  }),
+  changeStatusMonster: (curr: Snapshot, target: MonsterTarget, newStatus: Status): Snapshot => ({
+    ...curr,
+    enemies: updateMonster(curr.enemies, target, ({ status }) => ({ status: newStatus })),
+  }),
   attackMonster: (curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
   ({
     ...curr,

@@ -86,6 +86,14 @@ export const build: Record<
           stamina: 1,
           range: selfRange,
         },
+        {
+          display: "Dodge",
+          tooltip: "Skip 1 attack",
+          effects: [effectFunCall("Basic:Dodge")],
+          priority: 1,
+          stamina: 3,
+          range: selfRange,
+        },
       ]
     }
   ],
@@ -127,6 +135,14 @@ export const build: Record<
           priority: 3,
           stamina: 2,
           range: makeRange(0),
+        },
+        {
+          display: "Poison",
+          tooltip: "Adds Poison",
+          effects: [effectFunCall("Axe:Poison")],
+          priority: 3,
+          stamina: 2,
+          range: allRanges,
         },
       ],
     },

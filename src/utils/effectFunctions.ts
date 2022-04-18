@@ -44,8 +44,10 @@ const validators = !isNode
         case 'Basic:Rest': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:Advance': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:Retreat': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Basic:Dodge': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Axe:Chop': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Axe:Cut': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Axe:Poison': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Hook:GetHere': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Swipe': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Roar': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);

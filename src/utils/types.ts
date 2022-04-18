@@ -40,8 +40,10 @@ export interface Stat {
   max: number,
   current: UpTo<Stat['max']>,
 }
-export interface PlayerStats { hp: Stat, stamina: Stat, staminaPerTurn: Stat, speed: Stat, attack: Stat };
-export interface EnemyStats { hp: Stat, speed: Stat, attack: Stat, distance: UpTo<Subtract<Distances, 1>> };
+
+export type Status = { Dodge: { active: boolean }, Armor: { active: boolean }, Poison: { turns: number } };
+export interface PlayerStats { hp: Stat, stamina: Stat, staminaPerTurn: Stat, speed: Stat, attack: Stat, status: Status };
+export interface EnemyStats { hp: Stat, speed: Stat, attack: Stat, distance: UpTo<Subtract<Distances, 1>>, status: Status };
 
 export type Priorities = 5;
 export type Distances = 5;
