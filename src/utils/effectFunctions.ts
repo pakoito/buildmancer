@@ -37,7 +37,7 @@ const validators = !isNode
         return obj;
       }
       switch (idx) {
-        case 'Target:Bleed': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Target:Poison': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Summon': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Monster:Dead': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Basic:UseStamina': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
@@ -81,8 +81,8 @@ const test = () => {
   const assertF = (a: any, b: any) => a === b ? void 0 : console.log(`Failed ${a.toString()} compared to ${b.toString()} ${new Error().stack?.split('\n')[2].trim()}`);
   const [idx1, value1] = JSON.parse(JSON.stringify(['Monster:Summon', { enemy: 1 }]));
   assertF(true, isAnyEffectFunParams(idx1, value1));
-  assertF(false, isEffectFunParams('Target:Bleed', idx1, value1));
-  assertF(false, isAnyEffectFunParams('Target:Bleed', value1));
+  assertF(false, isEffectFunParams('Target:Poison', idx1, value1));
+  assertF(false, isAnyEffectFunParams('Target:Poison', value1));
 
   const [idx2, value2] = JSON.parse(JSON.stringify(['Monster:Summon', { patatas: 1 }]));
   assertF(false, isAnyEffectFunParams(idx2, value2));

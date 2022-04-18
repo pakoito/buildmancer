@@ -5,8 +5,8 @@ test.skip('Runtime validations', () => {
   it('Should not get confused with the types and values', () => {
     const [idx1, value1] = JSON.parse(JSON.stringify(['Monster:Summon', { enemy: 1 }]));
     expect(isAnyEffectFunParams(idx1, value1)).toMatchInlineSnapshot();
-    expect(isEffectFunParams('Target:Bleed', idx1, value1)).toMatchInlineSnapshot();
-    expect(isAnyEffectFunParams('Target:Bleed', value1)).toMatchInlineSnapshot();
+    expect(isEffectFunParams('Target:Poison', idx1, value1)).toMatchInlineSnapshot();
+    expect(isAnyEffectFunParams('Target:Poison', value1)).toMatchInlineSnapshot();
   });
 
   it('Should fail on wrong types', () => {
