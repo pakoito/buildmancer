@@ -144,7 +144,13 @@ const actions = {
   attackMonster: (curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
   ({
     ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ hp }) => ({ hp: { max: hp.max, current: clamp(hp.current - amount - curr.player.attack.current, 0, hp.max) } })),
+    enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
+      hp:
+        status.dodge.active
+          ? hp
+          : { max: hp.max, current: clamp(hp.current - amount - curr.player.attack.current, 0, hp.max) },
+      status: { ...status, dodge: { active: false } }
+    })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
@@ -157,9 +163,11 @@ const actions = {
       { ...currSnap, target: 0, enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats }
     ],
   attackPlayer: (curr: Snapshot, monster: MonsterTarget, amount: number): Snapshot =>
-    updatePlayerStat(curr, 'hp', hp => ({
-      current: clamp(hp.current - amount - curr.enemies[monster]!!.attack.current, 0, hp.max)
-    })),
+    curr.player.status.dodge.active
+      ? updatePlayerStat(curr, 'status', (s) => ({ dodge: { active: false } }))
+      : updatePlayerStat(curr, 'hp', hp => ({
+        current: clamp(hp.current - amount - curr.enemies[monster]!!.attack.current, 0, hp.max)
+      })),
   modifyPlayerStamina: (
     start: Snapshot,
     curr: Snapshot,
