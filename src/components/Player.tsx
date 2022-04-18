@@ -20,6 +20,7 @@ const PlayerCard: React.FC<{
         {player.build.class.display}
       </Card.Subtitle>
       <Card.Text>{playerStats.hp.current}/{playerStats.hp.max} ❤ {playerStats.stamina.current}/{playerStats.stamina.max} 💪</Card.Text>
+      {playerStats.status.bleed.turns > 0 && <Card.Text>` ${playerStats.status.bleed.turns} 🩸`</Card.Text>}
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
     {canAct && (<>

@@ -3,7 +3,7 @@ import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstr
 import useScroll from "../hooks/useScroll";
 
 import { Player, PlayerStats } from "../utils/types";
-import { build, makeStat, randomName } from "../utils/data";
+import { build, defaultStatus, makeStat, randomName } from "../utils/data";
 import Chance from 'chance';
 
 const version = 'dev';
@@ -53,6 +53,8 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
       staminaPerTurn: makeStat(1),
       speed: makeStat(0),
       attack: makeStat(0),
+      defence: makeStat(0),
+      status: defaultStatus,
     });
   };
   const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;
