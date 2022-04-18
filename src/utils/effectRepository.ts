@@ -9,6 +9,7 @@ export type EffectFunctionT = {
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
   'Basic:UseStamina': { amount: number };
+  'Basic:ResetArmor': undefined;
   'Basic:Rest': undefined;
   'Basic:Advance': undefined;
   'Basic:Retreat': undefined;
@@ -70,17 +71,21 @@ const repo: EffectFunctionRepository = {
   'Basic:UseStamina': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(startState(play), currentState, currentState.player.staminaPerTurn.current - amount)]
   ),
+  'Basic:ResetArmor': effectFun(
+    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 } }))],
+    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 } })), currentState)],
+  ),
   'Basic:Rest': effectFun(
-    () => (_origin, play, newState) => [play, newState]
+    () => (_origin, play, currentState) => [play, currentState]
   ),
   'Basic:Advance': effectFun(
-    () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, -2)]
+    () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -2)]
   ),
   'Basic:Retreat': effectFun(
-    () => (_origin, play, newState) => [play, actions.changeDistance(newState, newState.target, 2)]
+    () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, 2)]
   ),
   'Effect:Dodge': effectFun(
-    () => (_origin, play, newState) => [play, actions.changeStatusPlayer(newState, (o) => ({ ...o, dodge: { active: true } }))]
+    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, dodge: { active: true } }))]
   ),
   'Axe:Chop': effectFun(
     () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)]

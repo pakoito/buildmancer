@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, EnemyStats } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, effectDead, previousState, statsRepository } from "./data";
 import { Chance } from "chance";
@@ -89,6 +89,9 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
 const applyEffectStamina = (amount: number): Effect =>
   ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:UseStamina', { amount }])], range: allRanges, priority: 0 });
 
+const resetArmor: Effect =
+  ({ display: `Reset Armor`, tooltip: `Reset Armor`, effects: [effectFunCall('Basic:ResetArmor')], range: allRanges, priority: 0 });
+
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   const usedSkill = playerActions(play.player)[index];
@@ -135,9 +138,12 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   // Lingering effects
   const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
 
+  // Cleanup
+  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, resetArmor]], postEotPlay, postEotState, 'EOT');
+
   return {
-    ...postEotPlay,
-    states: [...postEotPlay.states, postEotState],
+    ...postCleanup,
+    states: [...postCleanup.states, postCleanupState],
   };
 };
 
