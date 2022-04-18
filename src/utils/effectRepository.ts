@@ -120,6 +120,13 @@ const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: 
       ? { ...m, ...override(m) }
       : m) as EnemiesStats;
 
+const updatePlayer = (curr: Snapshot, override: (player: PlayerStats) => Partial<PlayerStats>): Snapshot => {
+  return {
+    ...curr,
+    player: { ...curr.player, ...override(curr.player) }
+  };
+}
+
 const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, modify: (player: PlayerStats[T]) => Partial<PlayerStats[T]>): Snapshot => {
   const player = curr.player;
   player[key] = {
@@ -133,6 +140,8 @@ const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, m
 }
 
 const actions = {
+  attackPlayer,
+  attackMonster,
   changeStatusPlayer: (curr: Snapshot, updateStatus: (oldStatus: Status) => Status): Snapshot => ({
     ...curr,
     player: { ...curr.player, status: updateStatus(curr.player.status) }
@@ -140,17 +149,6 @@ const actions = {
   changeStatusMonster: (curr: Snapshot, target: MonsterTarget, updateStatus: (oldStatus: Status) => Status): Snapshot => ({
     ...curr,
     enemies: updateMonster(curr.enemies, target, ({ status }) => ({ status: updateStatus(status) })),
-  }),
-  attackMonster: (curr: Snapshot, target: MonsterTarget, amount: number): Snapshot =>
-  ({
-    ...curr,
-    enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
-      hp:
-        status.dodge.active
-          ? hp
-          : { max: hp.max, current: clamp(hp.current - amount - curr.player.attack.current, 0, hp.max) },
-      status: { ...status, dodge: { active: false } }
-    })),
   }),
   changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot =>
   ({
@@ -162,12 +160,6 @@ const actions = {
       { ...currPlay, enemies: currPlay.enemies.filter((_, idx) => idx === target) as Enemies },
       { ...currSnap, target: 0, enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats }
     ],
-  attackPlayer: (curr: Snapshot, monster: MonsterTarget, amount: number): Snapshot =>
-    curr.player.status.dodge.active
-      ? updatePlayerStat(curr, 'status', (s) => ({ dodge: { active: false } }))
-      : updatePlayerStat(curr, 'hp', hp => ({
-        current: clamp(hp.current - amount - curr.enemies[monster]!!.attack.current, 0, hp.max)
-      })),
   modifyPlayerStamina: (
     start: Snapshot,
     curr: Snapshot,
@@ -209,5 +201,51 @@ const actions = {
       : [play, curr];
   }
 };
+
+function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): Snapshot {
+  const monster = curr.enemies[target]!!;
+  const hasDodge = monster.status.dodge.active;
+  if (hasDodge) {
+    return ({
+      ...curr,
+      enemies: updateMonster(curr.enemies, target, ({ status }) => ({
+        status: { ...status, dodge: { active: false } }
+      })),
+    });
+  }
+
+
+  const armor = monster.status.armor.amount;
+  const damage = amount + curr.player.attack.current;
+  const afterDefence = Math.max(damage - monster.defence.current, 0);
+  const afterArmor = Math.max(afterDefence - armor, 0);
+  const armorSpent = armor - (afterDefence - afterArmor);
+  return ({
+    ...curr,
+    enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
+      hp: { max: hp.max, current: clamp(hp.current - afterArmor, 0, hp.max) },
+      status:
+        { ...status, armor: { amount: armorSpent } }
+    })),
+  });
+}
+
+function attackPlayer(curr: Snapshot, monster: MonsterTarget, amount: number): Snapshot {
+  const hasDodge = curr.player.status.dodge.active;
+  if (hasDodge) {
+    return updatePlayerStat(curr, 'status', () => ({ dodge: { active: false } }));
+  }
+
+
+  const armor = curr.player.status.armor.amount;
+  const damage = amount + curr.player.attack.current;
+  const afterDefence = Math.max(damage - curr.player.defence.current, 0);
+  const afterArmor = Math.max(afterDefence - armor, 0);
+  const armorSpent = armor - (afterDefence - afterArmor);
+  return updatePlayer(curr, ({ hp, status }) => ({
+    hp: { max: hp.max, current: clamp(hp.current - afterArmor, 0, hp.max) },
+    status: { ...status, armor: { amount: status.armor.amount - armorSpent } }
+  }));
+}
 
 export default repo;
