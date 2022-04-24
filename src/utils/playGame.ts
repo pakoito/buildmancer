@@ -33,12 +33,12 @@ export const playerActions = (player: Player): InventoryEffect[] =>
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.bot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
     // Sure, typescript
-    .map(a => [...a])
+    .map(a => [...a]);
 
 const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.eot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
     // Sure, typescript
-    .map(a => [...a])
+    .map(a => [...a]);
 
 export const playerBotEffects = (player: Player, d: string[]): [PlayerTarget, Effect][] =>
   Object.entries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
