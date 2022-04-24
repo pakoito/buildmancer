@@ -58,6 +58,7 @@ const validators = !isNode
         case 'Monster:Jump': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'BootsOfFlight:EOT': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
         case 'Debug:GGWP': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
+        case 'Debug:Sudoku': return assignObject(idx, obj, [createIs<typeof idx>(), createIs<EffectFunParams<typeof idx>>()]);
       }
     }, {}) as Validators;
 type Validators = { [k in EffectFunRepoIndex]: [(object: any) => object is k, (object: any) => object is EffectFunParams<k>] };

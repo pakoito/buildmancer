@@ -94,7 +94,6 @@ const arcade = {
     defeat: {
       type: 'final' as const,
       on: {
-        MENU: undefined,
         // ACK: { target: '#menus.leaderboards' }
       }
     },
@@ -121,7 +120,6 @@ const survival = {
     defeat: {
       type: 'final' as const,
       on: {
-        MENU: undefined,
         // ACK: { target: '#menus.leaderboards' }
       }
     },

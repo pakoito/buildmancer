@@ -101,6 +101,14 @@ export const build: Record<
           stamina: 4,
           range: selfRange,
         },
+        {
+          display: "SUDOKU",
+          tooltip: "Loses the game",
+          priority: 1,
+          stamina: 0,
+          range: allRanges,
+          effects: [effectFunCall('Debug:Sudoku')]
+        },
       ]
     }
   ],

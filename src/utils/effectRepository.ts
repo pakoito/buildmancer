@@ -23,6 +23,7 @@ export type EffectFunctionT = {
   'Utility:UseStamina': { amount: number };
   'Utility:Cleanup': undefined;
   'Debug:GGWP': undefined;
+  'Debug:Sudoku': undefined;
 }
 
 export const statsRepository = {
@@ -61,6 +62,15 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
       const [newPlay, newState] = acc(params)(origin, play, oldState);
       return value(params)(origin, newPlay, newState);
     }) : funs[0]) as EffectFun<T>;
+
+const debugFunctions = {
+  'Debug:GGWP': effectFun(
+    () => (_, play, currentState) => [play, { ...currentState, enemies: currentState.enemies.map(m => ({ ...m, hp: { ...m.hp, current: 0 } })) as EnemiesStats }]
+  ),
+  'Debug:Sudoku': effectFun(
+    () => (_, play, currentState) => [play, { ...currentState, player: { ...currentState.player, hp: { ...currentState.player.hp, current: 0 } } }]
+  ),
+}
 
 const repo: EffectFunctionRepository = {
   'Target:Poison': effectFun(
@@ -127,9 +137,7 @@ const repo: EffectFunctionRepository = {
   'BootsOfFlight:EOT': effectFun(
     () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState)]
   ),
-  'Debug:GGWP': effectFun(
-    () => (_, play, currentState) => [play, { ...currentState, enemies: currentState.enemies.map(m => ({ ...m, hp: { ...m.hp, current: 0 } })) as EnemiesStats }]
-  ),
+  ...debugFunctions,
 };
 
 const clamp = (num: number, min: number, max: number = Infinity) =>

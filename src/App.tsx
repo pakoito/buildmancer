@@ -39,7 +39,7 @@ function App() {
     case state.matches({ quick: 'win' }):
     case state.matches({ quick: 'lose' }):
       return <Menu
-        title={`${state.event.result} in ${state.event.game.states.length} turns`}
+        title={`${state.event.result} in ${state.event.game.states.length - 1} turns`}
         states={["MENU"]}
         onClick={send}
       />;
@@ -58,10 +58,10 @@ function App() {
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
     }
-    case state.matches({ quick: 'win' }):
-    case state.matches({ quick: 'lose' }):
+    case state.matches({ single: 'win' }):
+    case state.matches({ single: 'lose' }):
       return <Menu
-        title={`${state.event.result} in ${state.event.game.states.length} turns`}
+        title={`${state.event.result} in ${state.event.game.states.length - 1} turns`}
         states={["MENU"]}
         onClick={send}
       />;
