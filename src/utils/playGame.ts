@@ -1,6 +1,6 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, EnemyStats } from "./types";
 import { Seq, Set } from "immutable";
-import { allRanges, effectDead, previousState } from "./data";
+import { allRanges, effectDead, enemies, previousState } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
@@ -68,7 +68,7 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
 const clamp = (num: number, min: number, max: number = Infinity) =>
   Math.min(Math.max(num, min), max);
 
-const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: string): [Play, Snapshot] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: boolean, phase: string): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([origin, a]) => {
       const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
@@ -77,14 +77,41 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: strin
     .reduce((acc, value) => {
       const [origin, effect] = value;
       const [oldPlay, oldState] = acc;
-      const target = origin === 'Player' ? oldState.target : origin;
-      const isInRange = Set([...effect.range]).has(oldState.enemies[target]?.distance!!);
-      if (isInRange) {
-        const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
-        return [newPlay, { ...newState, lastAttacks: [...newState.lastAttacks, { origin, display: effect.display, phase }] }]
-      } else {
-        return [oldPlay, { ...oldState, lastAttacks: [...oldState.lastAttacks, { origin, display: `${effect.display} ❌❌WHIFF❌❌`, phase }] }]
+      const monsterId = origin === 'Player' ? oldState.target : origin;
+      const targetMonster = oldState.enemies[monsterId]!!;
+      const isInRange = Set([...effect.range]).has(targetMonster.distance);
+
+      if (!isInRange) {
+        const newState: Snapshot = {
+          ...oldState,
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `❌❌WHIFFED❌❌ ${effect.display}`, phase }]
+        };
+        return [oldPlay, newState];
       }
+
+      const monsterDodged = dodgeable && origin === 'Player' && targetMonster.status.dodge.active;
+      if (monsterDodged) {
+        const newState: Snapshot = {
+          ...oldState,
+          enemies: oldState.enemies.map((e, i) => i === monsterId ? { ...e, status: { ...e.status, dodge: { active: false } } } : e) as EnemiesStats,
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `💨💨DODGED💨💨 ${effect.display}`, phase }]
+        };
+        return [oldPlay, newState];
+      }
+
+      const playerDodged = dodgeable && origin !== 'Player' && oldState.player.status.dodge.active;
+      if (playerDodged) {
+        const newState: Snapshot = {
+          ...oldState,
+          player: { ...oldState.player, status: { ...oldState.player.status, dodge: { active: false } } },
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `💨💨DODGED💨💨 ${effect.display}`, phase }]
+        };
+        return [oldPlay, newState];
+      }
+
+      const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
+      const finalState: Snapshot = { ...newState, lastAttacks: [...newState.lastAttacks, { origin, display: effect.display, phase }] };
+      return [newPlay, finalState];
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
@@ -108,14 +135,14 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, 'STAMINA');
+    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'STAMINA');
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, 'BOT');
+  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, false, 'BOT');
   // Player & Monster effects
   const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player, postBotState.disabledSkills), ...enemiesBotEffects(postBotPlay.enemies)];
-  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, 'BOT');
+  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, false, 'BOT');
 
   // Turn
   const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length);
@@ -131,16 +158,16 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .map(a => [...a]);
 
   const [newPlay, newState] =
-    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, 'MAIN');
+    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, true, 'MAIN');
 
   // EOT
   // Player & Monster effects
   const entitiesEot = [...playerEotEffects(newPlay.player, newState.disabledSkills), ...enemiesEotEffects(newPlay.enemies)];
-  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, false, 'EOT');
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
+  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, false, 'EOT');
   // Cleanup
-  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, eotCleanup]], postEotPlay, postEotState, 'EOT');
+  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, eotCleanup]], postEotPlay, postEotState, false, 'EOT');
 
   return {
     ...postCleanup,

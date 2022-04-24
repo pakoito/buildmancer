@@ -220,16 +220,6 @@ const actions = {
 
 function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): Snapshot {
   const monster = curr.enemies[target]!!;
-  const hasDodge = monster.status.dodge.active;
-  if (hasDodge) {
-    return ({
-      ...curr,
-      enemies: updateMonster(curr.enemies, target, ({ status }) => ({
-        status: { ...status, dodge: { active: false } }
-      })),
-    });
-  }
-
   const armor = monster.status.armor.amount;
   const damage = amount + curr.player.attack.current;
   const afterDefence = Math.max(damage - monster.defence.current, 0);
@@ -247,11 +237,6 @@ function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): S
 }
 
 function attackPlayer(curr: Snapshot, monster: MonsterTarget, amount: number): Snapshot {
-  const hasDodge = curr.player.status.dodge.active;
-  if (hasDodge) {
-    return updatePlayerStat(curr, 'status', () => ({ dodge: { active: false } }));
-  }
-
   const armor = curr.player.status.armor.amount;
   const damage = amount + curr.player.attack.current;
   const afterDefence = Math.max(damage - curr.player.defence.current, 0);
