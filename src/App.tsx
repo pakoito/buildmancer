@@ -66,12 +66,15 @@ function App() {
         onClick={send}
       />;
     // ARCADE
-    case state.matches({ arcade: 'player' }):
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
+    case state.matches({ arcade: 'player' }): {
+      const encounter = randomEnemy();
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "123") }); }} />;
+    }
     case state.matches({ arcade: 'play' }): {
       const encounter = randomEnemy();
+      const firstState: Snapshot = state.event.game.states[0];
       return <SingleGame
-        play={play(state.event.player[0], state.event.player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        play={play(state.event.game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed)}
         timeTravel={false}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
@@ -85,7 +88,7 @@ function App() {
     }
     case state.matches({ arcade: 'defeat' }): {
       return <Menu
-        title={`Failed after ${state.context.arcadeContext.victories} victories`}
+        title={`Failed after ${state.context.arcadeContext.victories - 1} victories`}
         states={["MENU"]}
         onClick={send}
       />;
@@ -93,20 +96,20 @@ function App() {
     // SURVIVAL
     case state.matches({ survival: 'player' }): {
       const encounter = randomEnemy();
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "123") }); }} />;
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "NOT_USED") }); }} />;
     }
     case state.matches({ survival: 'play' }): {
       const encounter = randomEnemy();
       const lastState: Snapshot = state.event.game.states[state.event.game.states.length - 1];
       return <SingleGame
-        play={play(state.event.game.player, lastState.player, [encounter[0]], [encounter[1]], 50, "123")}
+        play={play(state.event.game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed)}
         timeTravel={false}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
     }
     case state.matches({ survival: 'defeat' }): {
       return <Menu
-        title={`Completed after ${state.context.survivalContext.victories} victories`}
+        title={`Completed after ${state.context.survivalContext.victories - 1} victories`}
         states={["MENU"]}
         onClick={send}
       />;

@@ -70,18 +70,13 @@ const arcade = {
       }
     },
     play: {
-      on: {
-        WIN: { target: 'win' },
-        LOSE: { target: 'defeat' }
-      }
-    },
-    win: {
       entry: ['bumpVictories'],
       on: {
-        always: [
+        WIN: [
           { target: 'play', cond: 'isNotFinal' },
           { target: 'victory', cond: 'isFinal' }
-        ]
+        ],
+        LOSE: { target: 'defeat' }
       }
     },
     victory: {

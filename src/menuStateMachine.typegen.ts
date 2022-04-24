@@ -4,7 +4,7 @@ export interface Typegen0 {
   "@@xstate/typegen": true;
   eventsCausingActions: {
     reset: "xstate.init";
-    bumpVictories: "WIN" | "PLAYER";
+    bumpVictories: "PLAYER" | "WIN";
   };
   internalEvents: {
     "xstate.init": { type: "xstate.init" };
@@ -18,8 +18,8 @@ export interface Typegen0 {
   };
   eventsCausingServices: {};
   eventsCausingGuards: {
-    isNotFinal: "always";
-    isFinal: "always";
+    isNotFinal: "WIN";
+    isFinal: "WIN";
   };
   eventsCausingDelays: {};
   matchesStates:
@@ -37,7 +37,6 @@ export interface Typegen0 {
     | "arcade"
     | "arcade.player"
     | "arcade.play"
-    | "arcade.win"
     | "arcade.victory"
     | "arcade.defeat"
     | "survival"
@@ -47,7 +46,7 @@ export interface Typegen0 {
     | {
         quick?: "play" | "win" | "lose";
         single?: "player" | "encounter" | "play" | "win" | "lose";
-        arcade?: "player" | "play" | "win" | "victory" | "defeat";
+        arcade?: "player" | "play" | "victory" | "defeat";
         survival?: "player" | "play" | "defeat";
       };
   tags: never;
