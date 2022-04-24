@@ -19,15 +19,10 @@ const toMenu = {
 }
 
 const quick = {
-  initial: 'random',
+  initial: 'play',
   states: {
-    random: {
-      entry: ['resetSingle'],
-      on: {
-        ACK: { target: 'play' }
-      }
-    },
     play: {
+      entry: ['resetSingle'],
       on: {
         WIN: { target: 'win' },
         LOSE: { target: 'lose' }
@@ -71,12 +66,7 @@ const arcade = {
     player: {
       entry: ['resetArcade'],
       on: {
-        PLAYER: { target: 'encounter' }
-      }
-    },
-    encounter: {
-      on: {
-        ENCOUNTER: { target: 'play' }
+        PLAYER: { target: 'play' }
       }
     },
     play: {
@@ -89,7 +79,7 @@ const arcade = {
       entry: ['bumpVictories'],
       on: {
         always: [
-          { target: 'encounter', cond: 'isNotFinal' },
+          { target: 'play', cond: 'isNotFinal' },
           { target: 'victory', cond: 'isFinal' }
         ]
       }
@@ -118,17 +108,12 @@ const survival = {
     player: {
       entry: ['resetSurvival'],
       on: {
-        PLAYER: { target: 'encounter' }
-      }
-    },
-    encounter: {
-      on: {
-        ENCOUNTER: { target: 'play' }
+        PLAYER: { target: 'play' }
       }
     },
     play: {
       on: {
-        WIN: { target: 'encounter' },
+        WIN: { target: 'win' },
         LOSE: { target: 'defeat' }
       }
     },
@@ -136,7 +121,7 @@ const survival = {
       entry: ['bumpVictories'],
       on: {
         always: [
-          { target: 'encounter' },
+          { target: 'play' },
         ]
       }
     },

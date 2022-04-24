@@ -7,10 +7,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, setDisabledSkills, setSelected } from "./utils/playGame";
+import play, { handlePlayerEffect, PlayState, playState, setDisabledSkills, setSelected } from "./utils/playGame";
 import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
-import { previousState, randomPlayer } from "./utils/data";
+import { previousState, randomEnemy, randomPlayer } from "./utils/data";
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from "./menuStateMachine";
 import { StateValue } from "xstate";
@@ -25,9 +25,28 @@ function App() {
   switch (true) {
     case state.matches('main'):
       return <Menu
+        title={"Main Menu"}
         states={Object.keys(gameMenuMachine.states.main.on)}
         onClick={send}
-      ></Menu >;
+      />;
+    // QUICK
+    case state.matches({ quick: 'play' }): {
+      const player = randomPlayer();
+      const encounter = randomEnemy();
+      return <SingleGame
+        play={play(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        timeTravel={true}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ quick: 'win' }):
+    case state.matches({ quick: 'lose' }):
+      return <Menu
+        title={`${state.event.result} in ${state.event.game.states.length} turns`}
+        states={["MENU"]}
+        onClick={send}
+      />;
+    // SINGLE
     case state.matches({ single: 'player' }):
       return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
     case state.matches({ single: 'encounter' }):
@@ -36,10 +55,60 @@ function App() {
         onSave={(enemies, enemiesStats) => { send('ENCOUNTER', { encounter: [enemies, enemiesStats], player: state.event.player }) }}
       />;
     case state.matches({ single: 'play' }): {
-      console.log(JSON.stringify(state.event));
       return <SingleGame
         play={play(state.event.player[0], state.event.player[1], state.event.encounter[0], state.event.encounter[1], 50, state.context.singleContext.seed)}
         timeTravel={true}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ quick: 'win' }):
+    case state.matches({ quick: 'lose' }):
+      return <Menu
+        title={`${state.event.result} in ${state.event.game.states.length} turns`}
+        states={["MENU"]}
+        onClick={send}
+      />;
+    // ARCADE
+    case state.matches({ arcade: 'player' }):
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
+    case state.matches({ arcade: 'play' }): {
+      const encounter = randomEnemy();
+      return <SingleGame
+        play={play(state.event.player[0], state.event.player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        timeTravel={false}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ arcade: 'victory' }): {
+      return <Menu
+        title={`VICTORY!`}
+        states={["MENU"]}
+        onClick={send}
+      />;
+    }
+    case state.matches({ arcade: 'defeat' }): {
+      return <Menu
+        title={`Failed after ${state.context.arcadeContext.victories} victories`}
+        states={["MENU"]}
+        onClick={send}
+      />;
+    }
+    // SURVIVAL
+    case state.matches({ survival: 'player' }):
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
+    case state.matches({ survival: 'play' }): {
+      const encounter = randomEnemy();
+      return <SingleGame
+        play={state.event.play}
+        timeTravel={false}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ survival: 'defeat' }): {
+      return <Menu
+        title={`Completed after ${state.context.survivalContext.victories} victories`}
+        states={[...Object.keys(gameMenuMachine.states.arcade.states.defeat.on), "MENU"]}
+        onClick={send}
       />;
     }
     default:
@@ -47,11 +116,17 @@ function App() {
   }
 }
 
-const SingleGame = ({ play, timeTravel }: { play: Play; timeTravel: boolean }) => {
+const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void }) => {
   const [game, setGame] = React.useState<Play>(play);
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
-  return (
+  const gameState = playState(game);
+  const hasEnded = gameState !== 'playing';
+  if (hasEnded) {
+    onGameEnd(gameState, game);
+  }
+
+  return <>{!hasEnded && (
     <Game
       game={game}
       timeTravel={timeTravel ? {
@@ -77,7 +152,8 @@ const SingleGame = ({ play, timeTravel }: { play: Play; timeTravel: boolean }) =
         })
       }
     />
-  );
+  )}
+  </>;
 }
 
 export default App;

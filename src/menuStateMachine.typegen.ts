@@ -27,7 +27,6 @@ export interface Typegen0 {
   matchesStates:
     | "main"
     | "quick"
-    | "quick.random"
     | "quick.play"
     | "quick.win"
     | "quick.lose"
@@ -39,14 +38,12 @@ export interface Typegen0 {
     | "single.lose"
     | "arcade"
     | "arcade.player"
-    | "arcade.encounter"
     | "arcade.play"
     | "arcade.win"
     | "arcade.victory"
     | "arcade.defeat"
     | "survival"
     | "survival.player"
-    | "survival.encounter"
     | "survival.play"
     | "survival.win"
     | "survival.defeat"
@@ -57,10 +54,10 @@ export interface Typegen0 {
     | "puzzle.complete"
     | "leaderboards"
     | {
-        quick?: "random" | "play" | "win" | "lose";
+        quick?: "play" | "win" | "lose";
         single?: "player" | "encounter" | "play" | "win" | "lose";
-        arcade?: "player" | "encounter" | "play" | "win" | "victory" | "defeat";
-        survival?: "player" | "encounter" | "play" | "win" | "defeat";
+        arcade?: "player" | "play" | "win" | "victory" | "defeat";
+        survival?: "player" | "play" | "win" | "defeat";
         puzzle?: "puzzle" | "player" | "play" | "complete";
       };
   tags: never;

@@ -190,3 +190,14 @@ export const setDisabledSkills = (play: Play, disabled: DisabledSkills): Play =>
     states: [...play.states],
   };
 }
+
+export type PlayState = 'win' | 'loss' | 'playing'
+
+export const playState = (play: Play): PlayState => {
+  const state = play.states[play.states.length - 1];
+  return state.player.hp.current <= 0
+    ? 'loss'
+    : state.enemies.reduce((acc, monster) => acc + monster.hp.current, 0) <= 0
+      ? 'win'
+      : 'playing';
+}
