@@ -68,15 +68,17 @@ function App() {
     // ARCADE
     case state.matches({ arcade: 'player' }): {
       const encounter = randomEnemy();
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "123") }); }} />;
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
     }
     case state.matches({ arcade: 'play' }): {
-      const encounter = randomEnemy();
-      const firstState: Snapshot = state.event.game.states[0];
       return <SingleGame
-        play={play(state.event.game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed)}
+        play={state.event.game}
         timeTravel={false}
-        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+        onGameEnd={(result, game) => {
+          const encounter = randomEnemy();
+          const firstState: Snapshot = game.states[0];
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+        }}
       />;
     }
     case state.matches({ arcade: 'victory' }): {
@@ -96,15 +98,17 @@ function App() {
     // SURVIVAL
     case state.matches({ survival: 'player' }): {
       const encounter = randomEnemy();
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "NOT_USED") }); }} />;
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
     }
     case state.matches({ survival: 'play' }): {
-      const encounter = randomEnemy();
-      const lastState: Snapshot = state.event.game.states[state.event.game.states.length - 1];
       return <SingleGame
-        play={play(state.event.game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed)}
+        play={state.event.game}
         timeTravel={false}
-        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+        onGameEnd={(result, game) => {
+          const encounter = randomEnemy();
+          const lastState: Snapshot = game.states[state.event.game.states.length - 1];
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+        }}
       />;
     }
     case state.matches({ survival: 'defeat' }): {
