@@ -91,8 +91,8 @@ const repo: EffectFunctionRepository = {
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(currentState, amount)]
   ),
   'Utility:Cleanup': effectFun(
-    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) } }))],
-    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) } })), currentState)],
+    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false } }))],
+    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false } })), currentState)],
   ),
   'Basic:Rest': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
