@@ -18,11 +18,12 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
     build: {
       basic: rng.pickone(build.basic),
       class: rng.pickone(build.class),
+      skill: rng.pickone(build.skill),
       armor: rng.pickone(build.armor),
       weapon: rng.pickone(build.weapon),
       offhand: rng.pickone(build.offhand),
       footwear: rng.pickone(build.footwear),
-      headwear: rng.pickone(build.headwear),
+      headgear: rng.pickone(build.headgear),
       charm: rng.pickone(build.charm),
       ...buildOverride,
     }

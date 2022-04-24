@@ -197,7 +197,8 @@ const makeGameContext = () => ({
   singleContext: makeSingleContext(),
 });
 
-const gameMenuMachine = createMachine({
+export const gameMenuMachine = createMachine({
+  tsTypes: {} as import("./menuStateMachine.typegen").Typegen0,
   id: 'menus',
   initial: 'main',
   context: makeGameContext(),

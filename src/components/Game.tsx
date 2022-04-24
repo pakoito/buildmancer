@@ -19,13 +19,12 @@ export type GameProps = {
   handlePlayerEffect: (index: number) => void,
   solveGame: (iterations: number) => void,
   hint: (iterations: number) => void,
-  undo: () => void
-  redo: (() => void) | undefined;
+  timeTravel: { undo: () => void; redo: (() => void) | undefined } | undefined,
 };
 
 const monsterHotkeys = ["q", "w", "e", "r", "t", "y"];
 
-const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, undo, redo, hint }: GameProps): JSX.Element => {
+const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, timeTravel, hint }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills } = previousState(game);
   const [isLogShown, setShowLog] = useState(false);
@@ -60,11 +59,11 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       save();
     }
 
-    if (key === "a" && game.states.length > 1) {
-      undo();
+    if (key === "a" && game.states.length > 1 && timeTravel) {
+      timeTravel.undo();
     }
-    if (key === "d" && redo != null) {
-      redo();
+    if (key === "d" && timeTravel && timeTravel.redo != null) {
+      timeTravel.redo();
     }
 
     if (key === monsterHotkeys[0] && enemies.length > 0) {
@@ -116,10 +115,12 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               lastAction={lastAttacks.filter(a => a.origin === 'Player').map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
               canAct={canAct} />
             <Row>
-              <ButtonGroup>
-                {game.states.length > 1 && (<Button onClick={(_) => undo()}>[<i>A</i>] Undo ↩</Button>)}
-                {redo && (<Button onClick={(_) => redo()}>[<i>D</i>] Redo ↪</Button>)}
-              </ButtonGroup>
+              {timeTravel != null && (
+                <ButtonGroup>
+                  {game.states.length > 1 && (<Button onClick={(_) => timeTravel.undo()}>[<i>A</i>] Undo ↩</Button>)}
+                  {timeTravel?.redo && (<Button onClick={(_) => timeTravel!!.redo!!()}>[<i>D</i>] Redo ↪</Button>)}
+                </ButtonGroup>
+              )}
             </Row>
             <Row>
               <ButtonGroup>
