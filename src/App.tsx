@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Enemies, EnemiesStats, Player, PlayerStats, Snapshot, Play } from "./utils/types";
+import { Snapshot, Play } from "./utils/types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
@@ -13,10 +13,7 @@ import { Seq } from "immutable";
 import { previousState, randomEnemy, randomPlayer } from "./utils/data";
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from "./menuStateMachine";
-import { StateValue } from "xstate";
 import Menu from "./components/menus/Menu";
-
-type AppStatus = "buildPlayer" | "buildEncounter" | "game" | "endGame";
 
 function App() {
   const player = randomPlayer();
@@ -94,12 +91,15 @@ function App() {
       />;
     }
     // SURVIVAL
-    case state.matches({ survival: 'player' }):
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
+    case state.matches({ survival: 'player' }): {
+      const encounter = randomEnemy();
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, "123") }); }} />;
+    }
     case state.matches({ survival: 'play' }): {
       const encounter = randomEnemy();
+      const lastState: Snapshot = state.event.game.states[state.event.game.states.length - 1];
       return <SingleGame
-        play={state.event.play}
+        play={play(state.event.game.player, lastState.player, [encounter[0]], [encounter[1]], 50, "123")}
         timeTravel={false}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
@@ -107,7 +107,7 @@ function App() {
     case state.matches({ survival: 'defeat' }): {
       return <Menu
         title={`Completed after ${state.context.survivalContext.victories} victories`}
-        states={[...Object.keys(gameMenuMachine.states.arcade.states.defeat.on), "MENU"]}
+        states={["MENU"]}
         onClick={send}
       />;
     }
@@ -120,40 +120,42 @@ const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: b
   const [game, setGame] = React.useState<Play>(play);
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
-  const gameState = playState(game);
-  const hasEnded = gameState !== 'playing';
-  if (hasEnded) {
-    onGameEnd(gameState, game);
-  }
+  useEffect(() => {
+    const gameState = playState(game);
+    const hasEnded = gameState !== 'playing';
+    if (hasEnded) {
+      onGameEnd(gameState, game);
+    }
+  }, [game]);
 
-  return <>{!hasEnded && (
-    <Game
-      game={game}
-      timeTravel={timeTravel ? {
-        redo: redo.length > 0 ? (() => {
-          const newRedo = [...redo];
-          const latest = newRedo.pop() as Snapshot;
-          setRedo(newRedo);
-          setGame({ ...game, states: [...game.states, latest] });
-        }) : undefined,
-        undo: () => {
-          setRedo([...redo, previousState(game)]);
-          setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
-        }
-      } : undefined}
-      setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
-      setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
-      handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
-      solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
-      hint={(iterations) =>
-        setGame({
-          ...game,
-          states: [...game.states, Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
-        })
-      }
-    />
-  )}
-  </>;
+  const timeTravelObj = timeTravel ? {
+    redo: redo.length > 0 ? (() => {
+      const newRedo = [...redo];
+      const latest = newRedo.pop() as Snapshot;
+      setRedo(newRedo);
+      setGame({ ...game, states: [...game.states, latest] });
+    }) : undefined,
+    undo: () => {
+      setRedo([...redo, previousState(game)]);
+      setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
+    }
+  } : undefined;
+
+  return (<Game
+    game={game}
+    timeTravel={timeTravelObj}
+    setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
+    setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
+    handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
+    solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
+    hint={(iterations) =>
+      setGame({
+        ...game,
+        states: [...game.states, Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
+      })
+    }
+  />
+  );
 }
 
 export default App;

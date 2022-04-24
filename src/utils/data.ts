@@ -62,6 +62,14 @@ export const build: Record<
       display: "Basic",
       effects: [
         {
+          display: "GGWP",
+          tooltip: "Wins the game",
+          priority: 1,
+          stamina: 0,
+          range: allRanges,
+          effects: [effectFunCall('Debug:GGWP')]
+        },
+        {
           display: "Rest",
           tooltip: "Skip the turn and restore stamina",
           priority: 4,

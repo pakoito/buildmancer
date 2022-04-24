@@ -3,10 +3,8 @@
 export interface Typegen0 {
   "@@xstate/typegen": true;
   eventsCausingActions: {
-    resetSingle: "xstate.init";
-    resetArcade: "xstate.init";
-    bumpVictories: "WIN";
-    resetSurvival: "xstate.init";
+    reset: "xstate.init";
+    bumpVictories: "WIN" | "PLAYER";
   };
   internalEvents: {
     "xstate.init": { type: "xstate.init" };
@@ -45,20 +43,12 @@ export interface Typegen0 {
     | "survival"
     | "survival.player"
     | "survival.play"
-    | "survival.win"
     | "survival.defeat"
-    | "puzzle"
-    | "puzzle.puzzle"
-    | "puzzle.player"
-    | "puzzle.play"
-    | "puzzle.complete"
-    | "leaderboards"
     | {
         quick?: "play" | "win" | "lose";
         single?: "player" | "encounter" | "play" | "win" | "lose";
         arcade?: "player" | "play" | "win" | "victory" | "defeat";
-        survival?: "player" | "play" | "win" | "defeat";
-        puzzle?: "puzzle" | "player" | "play" | "complete";
+        survival?: "player" | "play" | "defeat";
       };
   tags: never;
 }

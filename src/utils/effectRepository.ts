@@ -22,6 +22,7 @@ export type EffectFunctionT = {
   'BootsOfFlight:EOT': undefined;
   'Utility:UseStamina': { amount: number };
   'Utility:Cleanup': undefined;
+  'Debug:GGWP': undefined;
 }
 
 export const statsRepository = {
@@ -125,6 +126,9 @@ const repo: EffectFunctionRepository = {
   ),
   'BootsOfFlight:EOT': effectFun(
     () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState)]
+  ),
+  'Debug:GGWP': effectFun(
+    () => (_, play, currentState) => [play, { ...currentState, enemies: currentState.enemies.map(m => ({ ...m, hp: { ...m.hp, current: 0 } })) as EnemiesStats }]
   ),
 };
 

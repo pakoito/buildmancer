@@ -22,7 +22,7 @@ const quick = {
   initial: 'play',
   states: {
     play: {
-      entry: ['resetSingle'],
+      entry: ['reset'],
       on: {
         WIN: { target: 'win' },
         LOSE: { target: 'lose' }
@@ -38,7 +38,7 @@ const single = {
   initial: 'player',
   states: {
     player: {
-      entry: ['resetSingle'],
+      entry: ['reset'],
       on: {
         PLAYER: { target: 'encounter' }
       }
@@ -64,7 +64,7 @@ const arcade = {
   initial: 'player',
   states: {
     player: {
-      entry: ['resetArcade'],
+      entry: ['reset'],
       on: {
         PLAYER: { target: 'play' }
       }
@@ -88,14 +88,14 @@ const arcade = {
       type: 'final' as const,
       on: {
         MENU: undefined,
-        ACK: { target: '#menus.leaderboards' }
+        // ACK: { target: '#menus.leaderboards' }
       }
     },
     defeat: {
       type: 'final' as const,
       on: {
         MENU: undefined,
-        ACK: { target: '#menus.leaderboards' }
+        // ACK: { target: '#menus.leaderboards' }
       }
     },
   },
@@ -106,30 +106,23 @@ const survival = {
   initial: 'player',
   states: {
     player: {
-      entry: ['resetSurvival'],
+      entry: ['reset'],
       on: {
         PLAYER: { target: 'play' }
       }
     },
     play: {
-      on: {
-        WIN: { target: 'win' },
-        LOSE: { target: 'defeat' }
-      }
-    },
-    win: {
       entry: ['bumpVictories'],
       on: {
-        always: [
-          { target: 'play' },
-        ]
+        WIN: { target: 'play' },
+        LOSE: { target: 'defeat' }
       }
     },
     defeat: {
       type: 'final' as const,
       on: {
         MENU: undefined,
-        ACK: { target: '#menus.leaderboards' }
+        // ACK: { target: '#menus.leaderboards' }
       }
     },
   },
@@ -194,8 +187,8 @@ export const gameMenuMachine = createMachine({
         SINGLE: { target: 'single' },
         ARCADE: { target: 'arcade' },
         SURVIVAL: { target: 'survival' },
-        PUZZLE: { target: 'puzzle' },
-        LEADERBOARDS: { target: 'leaderboards' },
+        // PUZZLE: { target: 'puzzle' },
+        // LEADERBOARDS: { target: 'leaderboards' },
       }
     },
     quick: {
@@ -210,12 +203,12 @@ export const gameMenuMachine = createMachine({
     survival: {
       ...survival,
     },
-    puzzle: {
-      ...puzzle,
-    },
-    leaderboards: {
-      ...toMenu,
-    }
+    // puzzle: {
+    //   ...puzzle,
+    // },
+    // leaderboards: {
+    //   ...toMenu,
+    // }
   },
 }, {
   guards: {
@@ -224,15 +217,12 @@ export const gameMenuMachine = createMachine({
   },
   actions: {
     bumpVictories: assign({
-      arcadeContext: ({ arcadeContext }, _event) => ({ ...arcadeContext, victories: arcadeContext.victories + 1 }),
+      arcadeContext: ({ arcadeContext }, _event) => ({ ...arcadeContext, victories: arcadeContext.victories + 1, seed: Math.random() }),
+      survivalContext: ({ survivalContext }, _event) => ({ ...survivalContext, victories: survivalContext.victories + 1, seed: Math.random() }),
     }),
-    resetSurvival: assign({
+    reset: assign({
       survivalContext: (c, e) => makeSurvivalContext(),
-    }),
-    resetArcade: assign({
       arcadeContext: (c, e) => makeArcadeContext(),
-    }),
-    resetSingle: assign({
       singleContext: (c, e) => makeSingleContext(),
     }),
   }
