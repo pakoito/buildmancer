@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
-import { Player, Enemies, Enemy, EnemiesStats, EnemyStats } from "../utils/types";
+import { Player, Enemies, Enemy, EnemiesStats, EnemyStats, Build } from "../utils/types";
 import { enemies, randomEnemy } from "../utils/data";
 
 const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void }) => {
@@ -13,7 +13,7 @@ const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies
     // Size enforced by UI
     onSave(enemies as Enemies, enemiesStats as EnemiesStats);
   };
-  const displayType = (type: string) => <b>{player.build[type].display}</b>;
+  const displayType = (type: keyof Build) => <b>{player.build[type].display}</b>;
   return (
     <Form onSubmit={onFormSubmit}>
       <Container fluid style={{ marginBottom: encounter.length > 0 ? '205px' : '105px' }}>
