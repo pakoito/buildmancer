@@ -11,6 +11,7 @@ export const makeGame = (gameConfig: GameConfig): Play => play(
       age: 123,
     },
     build: {
+      debug: build.debug[0],
       basic: build.basic[gameConfig.basic],
       class: build.class[gameConfig.class],
       weapon: build.weapon[gameConfig.weapon],

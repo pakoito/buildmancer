@@ -1,13 +1,13 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall, Stat, Status } from "./types";
+import { Build, Distances, Effect, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, StatsFunRepo, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, InventoryEffect, Nel } from "./types";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
-export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build): [Player, PlayerStats] => {
+export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partial<Build>): [Player, PlayerStats] => {
   const rng = new Chance();
   return [{
     id: rng.string(),
@@ -16,6 +16,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
       age: rng.age(),
     },
     build: {
+      debug: build.debug[0],
       basic: rng.pickone(build.basic),
       class: rng.pickone(build.class),
       skill: rng.pickone(build.skill),
@@ -25,6 +26,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Build)
       footwear: rng.pickone(build.footwear),
       headgear: rng.pickone(build.headgear),
       charm: rng.pickone(build.charm),
+      consumable: rng.pickone(build.consumable),
       ...buildOverride,
     }
   }, {
@@ -50,49 +52,48 @@ export const defaultStatus: Status = {
   bleed: { turns: 0 }
 }
 
-export const effectDead: Effect =
-  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges };
 
-export const build: Record<
-  string,
-  Item[]
-> = {
-  basic: [
+// TODO
+const weapons: Item[] = [
+  {
+    display: "Axe",
+    effects: [
+      {
+        display: "Chop",
+        tooltip: "Chop",
+        effects: [effectFunCall("Axe:Chop")],
+        priority: 2,
+        stamina: 2,
+        range: makeRange(0, 1),
+      },
+      {
+        display: "Cut",
+        tooltip: "Cut",
+        effects: [effectFunCall("Axe:Cut")],
+        priority: 3,
+        stamina: 2,
+        range: makeRange(0),
+      },
+      {
+        display: "Bleed",
+        tooltip: "Makes the enemy bleed",
+        effects: [effectFunCall("Axe:Bleed")],
+        priority: 3,
+        stamina: 2,
+        range: allRanges,
+      },
+    ],
+  },
+];
+
+export const build: BuildRepository = {
+  debug: [
     {
-      display: "Basic",
+      display: "None",
+    },
+    {
+      display: "Debug",
       effects: [
-        {
-          display: "Rest",
-          tooltip: "Skip the turn and restore stamina",
-          priority: 4,
-          stamina: 0,
-          range: selfRange,
-          effects: [effectFunCall('Basic:Rest')]
-        },
-        {
-          display: "Advance",
-          tooltip: "Move closer",
-          priority: 4,
-          stamina: 1,
-          range: selfRange,
-          effects: [effectFunCall('Basic:Advance')]
-        },
-        {
-          display: "Retreat",
-          tooltip: "Move further",
-          effects: [effectFunCall("Basic:Retreat")],
-          priority: 4,
-          stamina: 1,
-          range: selfRange,
-        },
-        {
-          display: "Dodge",
-          tooltip: "Avoid 1 enemy attack",
-          effects: [effectFunCall("Effect:Dodge")],
-          priority: 2,
-          stamina: 4,
-          range: selfRange,
-        },
         {
           display: "GGWP",
           tooltip: "Wins the game",
@@ -112,59 +113,132 @@ export const build: Record<
       ]
     }
   ],
+  basic: [
+    {
+      display: "Basic",
+      effects: [
+        {
+          display: "Rest",
+          tooltip: "Skip the turn and restore stamina",
+          priority: 4,
+          stamina: 0,
+          range: selfRange,
+          effects: [effectFunCall('Basic:Rest')]
+        },
+        {
+          display: "Advance",
+          tooltip: "Move closer",
+          priority: 4,
+          stamina: 1,
+          range: selfRange,
+          effects: [effectFunCall(['Basic:Advance', { amount: 1 }])]
+        },
+        {
+          display: "Retreat",
+          tooltip: "Move farther",
+          effects: [effectFunCall(["Basic:Retreat", { amount: 1 }])],
+          priority: 4,
+          stamina: 1,
+          range: selfRange,
+        }
+      ]
+    }
+  ],
   class: [
     {
       display: "Warrior",
+      passives: ["+Attack", "+Defence", "+Stamina"],
+      effects: [
+        {
+          display: "Strategic Kick",
+          tooltip: "Last resource attack",
+          effects: [effectFunCall(["Basic:Attack", { amount: 2 }])],
+          priority: 2,
+          stamina: 1,
+          range: makeRange(1),
+        }
+      ]
+
     },
     {
       display: "Mage",
+      passives: ["+StaPerTurn", "+Stamina", "-Health"],
+      effects: [
+        {
+          display: "Just having a thought",
+          tooltip: "Restores stamina for the next action",
+          priority: 4,
+          stamina: 0,
+          range: selfRange,
+          effects: [effectFunCall(['Basic:Stamina', { amount: 999 }])]
+        },
+      ]
     },
     {
       display: "Rogue",
+      passives: ["+Speed", "+Speed", "-Attack", "-Stamina"],
+      effects: [
+        {
+          display: "Strategic retreat",
+          tooltip: "Jump backwards",
+          effects: [effectFunCall(["Basic:Retreat", { amount: 4 }])],
+          priority: 4,
+          stamina: 1,
+          range: selfRange,
+        }
+      ]
+    },
+    {
+      display: "Berserk",
+      passives: ["+Attack", "+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
     },
   ],
   skill: [
     {
       display: "Sturdy",
+      effects: [
+        {
+          display: "Endure the pain",
+          tooltip: "Blocks some damage",
+          effects: [effectFunCall(["Effect:Armor", { amount: 2 }])],
+          priority: 1,
+          stamina: 2,
+          range: selfRange,
+        },
+      ]
     },
     {
       display: "Nimble",
-    },
-  ],
-  weapon: [
-    {
-      display: "Axe",
       effects: [
         {
-          display: "Chop",
-          tooltip: "Chop",
-          effects: [effectFunCall("Axe:Chop")],
+          display: "Dodge",
+          tooltip: "Avoid 1 enemy attack",
+          effects: [effectFunCall("Effect:Dodge")],
           priority: 2,
-          stamina: 2,
-          range: makeRange(0, 1),
-        },
+          stamina: 4,
+          range: selfRange,
+        }
+      ]
+    },
+    {
+      display: "Resourceful",
+      effects: [
         {
-          display: "Cut",
-          tooltip: "Cut",
-          effects: [effectFunCall("Axe:Cut")],
-          priority: 3,
-          stamina: 2,
-          range: makeRange(0),
-        },
-        {
-          display: "Bleed",
-          tooltip: "Makes the enemy bleed",
-          effects: [effectFunCall("Axe:Bleed")],
-          priority: 3,
-          stamina: 2,
-          range: allRanges,
-        },
-      ],
+          display: "Dodge this!",
+          tooltip: "Throws a stone",
+          effects: [effectFunCall(["Basic:Attack", { amount: 2 }])],
+          priority: 4,
+          stamina: 3,
+          range: makeRange(3, 4),
+        }
+      ]
     },
   ],
+  weapon: weapons,
   offhand: [
     {
       display: "Hook",
+      passives: ["-Stamina"],
       effects: [
         {
           display: "Get over here!",
@@ -177,82 +251,181 @@ export const build: Record<
       ],
     },
     {
+      display: "Parry Dagger",
+      passives: ["-Defence"],
+      effects: [
+        {
+          display: "Get over here!",
+          tooltip: "Avoids a melee attack",
+          effects: [effectFunCall("Effect:Dodge")],
+          priority: 2,
+          stamina: 2,
+          range: makeRange(1),
+        },
+      ],
+    },
+    {
       display: "Shield",
+      passives: ["+Defence", "-Speed"],
       effects: [
         {
           display: "Not today!",
-          tooltip: "Blocks some damage",
-          effects: [effectFunCall(["Effect:Armor", { amount: 3 }])],
+          tooltip: "Blocks a lot of damage",
+          effects: [effectFunCall(["Effect:Armor", { amount: 5 }])],
           priority: 2,
-          stamina: 3,
+          stamina: 4,
           range: selfRange,
         },
       ],
     },
-  ],
-  consumable: [
     {
-      display: "Potion",
+      display: "Focus",
+      passives: ["+Speed", "+StaPerTurn"]
+    },
+    {
+      display: "Wand",
+      passives: ["-Defence", "-StaPerTurn"],
+      effects: [
+        {
+          display: "Magic Bolt",
+          tooltip: "Shoots mana bolts until the caster faints",
+          effects: [effectFunCall("Wand:MagicBolt")],
+          priority: 3,
+          stamina: 1,
+          range: makeRange(3, 4),
+        }
+      ]
     },
   ],
   armor: [
     {
       display: "Heavy",
+      passives: ["+Defence", "+Defence", "+Defence", "+Defence", "-Speed", "-Speed", "-StaPerTurn"],
+    },
+    {
+      display: "Medium",
+      passives: ["+Defence", "+Defence", "-StaPerTurn"],
+    },
+    {
+      display: "Light",
+      passives: ["+Defence"],
+    },
+    {
+      display: "None",
+      passives: [],
     },
   ],
+  // TODO
   headgear: [
     {
       display: "Helm",
+      passives: ["+Defence", "+Defence", "-Speed", "-StaPerTurn"],
+      tooltip: "Big protection for slow combatants",
+    },
+    {
+      display: "Feather Cap",
+      passives: ["+StaPerTurn", "+Stamina"],
+      tooltip: "Makes you feel energized, doesn't it?",
+    },
+    {
+      display: "Mage Hat",
+      passives: ["-StaPerTurn"],
+      tooltip: "Small tricks for big plays",
+      effects: [
+        {
+          display: "Flash!",
+          tooltip: "Blinks you to a better position",
+          effects: [
+            effectFunCall(["Basic:Attack", { amount: 1 }]),
+            effectFunCall(["Basic:Retreat", { amount: 2 }])
+          ],
+          priority: 3,
+          stamina: 4,
+          range: makeRange(1, 2),
+        }
+      ]
     },
   ],
-  footwear: [{
-    display: "Boots of Dooooodge!",
-    effects: [
-      {
-        display: "Advanced Dodge",
-        tooltip: "Avoid 1 attack",
-        effects: [effectFunCall("Effect:Dodge")],
-        priority: 1,
-        stamina: 3,
-        range: selfRange,
-      },
-    ],
-  },
-  {
-    display: "Boots of Flight",
-    eot: [{
-      display: "Flight!",
-      tooltip: "Increases distance by 2 every turn",
-      priority: 0,
-      range: allRanges,
-      effects: [effectFunCall('BootsOfFlight:EOT')],
-    }],
-  },
+  footwear: [
+    {
+      display: "Slippers of Dooooodge!",
+      tooltip: "Allows you to dodge attacks",
+      passives: ["-Stamina"],
+      effects: [
+        {
+          display: "Advanced Dodge",
+          tooltip: "Avoid 1 attack",
+          effects: [effectFunCall("Effect:Dodge")],
+          priority: 1,
+          stamina: 3,
+          range: selfRange,
+        },
+      ],
+    },
+    {
+      display: "Boots of Flight",
+      tooltip: "Avoid your enemies",
+      passives: ["-StaPerTurn", "-Defence"],
+      eot: [{
+        display: "Flight!",
+        tooltip: "Increases distance every turn",
+        priority: 0,
+        range: allRanges,
+        effects: [effectFunCall('BootsOfFlight:EOT')],
+      }],
+    },
+    {
+      display: "Greaves of Stability",
+      tooltip: "Extra resilient",
+      passives: ["+Defence", "-Speed"],
+      effects: [
+        {
+          display: "Dig your heels",
+          tooltip: "Resists damage",
+          effects: [effectFunCall(["Effect:Armor", { amount: 3 }])],
+          priority: 1,
+          stamina: 4,
+          range: selfRange,
+        },
+      ],
+    },
   ],
   charm: [
     {
       display: "of Health",
-      passive: "Charm:ofHealth",
+      passives: ["+Health", "-Speed"],
+      tooltip: "Increases your maximum health",
     },
     {
       display: "of Haste",
-      passive: "Charm:ofHaste",
+      passives: ["+StaPerTurn", "-Stamina"],
+      tooltip: "Increases your maximum stamina regeneration",
     },
     {
       display: "of Resilience",
-      passive: "Charm:ofResilience",
+      passives: ["+Stamina", "-StaPerTurn"],
+      tooltip: "Increases your maximum stamina",
     },
     {
       display: "of Strength",
-      passive: "Charm:ofStrength",
+      passives: ["+Attack", "-Health", "-StaPerTurn"],
+      tooltip: "Increases your maximum attack",
     },
     {
       display: "of Swiftness",
-      passive: "Charm:ofSwiftness",
+      passives: ["+Speed", "-Attack"],
+      tooltip: "Increases your maximum speed",
     },
     {
       display: "of Defence",
-      passive: "Charm:ofDefence",
+      passives: ["+Defence", "-Stamina", "-Speed"],
+      tooltip: "Increases your maximum defence",
+    },
+  ],
+  // TODO
+  consumable: [
+    {
+      display: "Potion",
     },
   ],
 };

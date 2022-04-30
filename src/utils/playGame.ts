@@ -1,11 +1,10 @@
 import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, EnemyStats } from "./types";
 import { Seq, Set } from "immutable";
-import { allRanges, effectDead, enemies, previousState } from "./data";
+import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
-import { extractFunction } from "./effectFunctions";
-import { statsRepository } from "./effectRepository";
+import { extractFunction, statsRepository } from "./effectRepository";
 
 /**
  * @returns min inclusive, max exclusive rand
@@ -25,7 +24,7 @@ export const turnRng = (play: Play, turn: number): ((min: number, max: number) =
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
-  Object.values(player.build).flatMap((s) => s.passive ?? []).map(i => statsRepository[i]);
+  Object.values(player.build).flatMap((s) => s.passives ?? []).map(i => statsRepository[i]);
 
 export const playerActions = (player: Player): InventoryEffect[] =>
   Object.values(player.build).flatMap((s) => s.effects ?? []);
@@ -115,10 +114,13 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Utility:UseStamina', { amount }])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:Stamina', { amount: -amount }])], range: allRanges, priority: 0 });
 
-const eotCleanup: Effect =
+const effectEotCleanup: Effect =
   ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0 });
+
+const effectDead: Effect =
+  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges };
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
@@ -167,7 +169,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   // Lingering effects
   const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, false, 'EOT');
   // Cleanup
-  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, eotCleanup]], postEotPlay, postEotState, false, 'EOT');
+  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, effectEotCleanup]], postEotPlay, postEotState, false, 'EOT');
 
   return {
     ...postCleanup,

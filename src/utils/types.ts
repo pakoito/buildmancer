@@ -1,5 +1,5 @@
 import { Opaque } from "type-fest";
-import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex, StatsFunIndex } from "./effectFunctions";
+import { EffectFunParams, EffectFunRepo, EffectFunRepoIndex, StatsFunIndex } from "./effectRepository";
 
 export type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
 type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
@@ -48,7 +48,7 @@ export interface EnemyStats { hp: Stat, speed: Stat, attack: Stat, defence: Stat
 export type Priorities = 5;
 export type Distances = 5;
 export type MonsterCount = 5;
-export type Staminas = 5;
+export type Staminas = 10;
 
 export interface EffectSummary {
   origin: Target;
@@ -100,15 +100,14 @@ export const callEffectFun = <T extends EffectFunRepoIndex>(repo: EffectFunRepo,
   return f(p);
 }
 
-interface EffectT {
+export interface Effect {
   display: string;
   tooltip: string;
   effects: Nel<EffectFunCall>;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
 };
-export type Effect = EffectT;
-export type InventoryEffect = EffectT & {
+export interface InventoryEffect extends Effect {
   stamina: UpTo<Subtract<Staminas, 1>>;
 };
 
@@ -116,18 +115,31 @@ export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type PlayerTarget = 'Player';
 export type Target = MonsterTarget | PlayerTarget;
 
-export type Build = Record<
-  string,
-  Item
->;
+export interface BuildRepository {
+  debug: Item[];
+  basic: Item[];
+  class: Item[];
+  skill: Item[];
+  weapon: Item[];
+  offhand: Item[];
+  consumable: Item[];
+  armor: Item[];
+  headgear: Item[];
+  footwear: Item[];
+  charm: Item[];
+}
+export type Build = {
+  [k in keyof BuildRepository]: Item
+};
 
 export interface Item {
   display: string;
-  passive?: StatsFunIndex;
+  tooltip?: string;
+  passives?: StatsFunIndex[];
   bot?: Nel<Effect>;
   eot?: Nel<Effect>;
   effects?: Nel<InventoryEffect>;
-  [key: string]: any;
+  //[key: string]: any;
 };
 
 export interface Player {
