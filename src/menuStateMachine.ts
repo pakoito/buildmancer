@@ -73,7 +73,7 @@ const arcade = {
       on: {
         WIN: [
           { target: 'victory', cond: 'isFinal' },
-          { target: 'play', actions: ['bumpVictories'], internal: false },
+          { target: 'play', actions: ['bumpVictories'], internal: true },
         ],
         LOSE: { target: 'defeat' }
       }
@@ -196,7 +196,7 @@ export const gameMenuMachine = createMachine({
   },
 }, {
   guards: {
-    isFinal: ({ arcadeContext: { victories } }) => victories >= 7,
+    isFinal: ({ arcadeContext: { victories } }) => victories + 1 >= 7,
   },
   actions: {
     bumpVictories: assign({

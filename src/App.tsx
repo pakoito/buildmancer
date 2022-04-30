@@ -79,7 +79,6 @@ function App() {
       return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
     }
     case state.matches({ arcade: 'play' }): {
-      console.log(`NEW GAME ${event.game.seed}`);
       return <SingleGame
         play={event.game}
         timeTravel={false}
@@ -133,6 +132,10 @@ const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: b
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
   useEffect(() => {
+    setGame(play);
+  }, [play]);
+
+  useEffect(() => {
     const gameState = playState(game);
     const hasEnded = gameState !== 'playing';
     if (hasEnded) {
@@ -152,8 +155,6 @@ const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: b
       setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
     }
   } : undefined;
-
-  console.log(`REPAINT GAME ${game.seed}`);
 
   return (<Game
     game={game}
