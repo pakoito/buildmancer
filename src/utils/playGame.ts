@@ -45,8 +45,11 @@ export const playerBotEffects = (player: Player, d: DisabledSkills): [PlayerTarg
 export const playerEotEffects = (player: Player, d: DisabledSkills): [PlayerTarget, Effect][] =>
   safeEntries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
 
+export const buildPlayer = (player: Player, playerStats: PlayerStats, enemiesStats: EnemiesStats): [PlayerStats, EnemiesStats] =>
+  playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats]);
+
 export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
-  const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);
+  const [playerGameStats, enemyGameStats] = buildPlayer(player, playerStats, enemiesStats);
   return {
     player,
     enemies,
@@ -114,7 +117,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:Stamina', { amount: -amount }])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:Stamina', { amount }])], range: allRanges, priority: 0 });
 
 const effectEotCleanup: Effect =
   ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0 });
@@ -124,12 +127,13 @@ const effectDead: Effect =
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
+  const lastTurnState = previousState(play);
   const usedSkill = playerActions(play.player)[index];
-  const bot = previousState(play).bot ?? [];
-  const eot = previousState(play).eot ?? [];
+  const bot = lastTurnState.bot ?? [];
+  const eot = lastTurnState.eot ?? [];
 
   const initialState: Snapshot = {
-    ...previousState(play),
+    ...lastTurnState,
     lastAttacks: [],
     bot: undefined,
     eot: undefined,
@@ -137,7 +141,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(previousState(play).player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'STAMINA');
+    reduceFuns([['Player', applyEffectStamina(lastTurnState.player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'STAMINA');
 
   // BOT
   // Lingering effects
