@@ -4,6 +4,9 @@ import useScroll from "../hooks/useScroll";
 
 import { Build, Item, Player, PlayerStats, safeEntries } from "../utils/types";
 import { build, randomName, randomPlayer } from "../utils/data";
+import { Set } from 'immutable';
+
+const systemBuildKeys: Set<keyof Build> = Set(['debug', 'basic']);
 
 const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: PlayerStats) => void }) => {
   const [player, playerStats] = randomPlayer();
@@ -28,13 +31,15 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
     <Form onSubmit={onFormSubmit}>
       <Container fluid style={{ marginBottom: '105px' }}>
         <Row className="g-2">
-          {safeEntries(build).map(([type, values]) =>
-            <ElementPicker
-              setField={(value) => setField(type, value)}
-              section={type}
-              options={(values as Item[])}
-              key={type}
-              isSelected={(value) => form[type].display === value.display} />)
+          {safeEntries(build)
+            .filter(([type, _]) => !systemBuildKeys.has(type))
+            .map(([type, values]) =>
+              <ElementPicker
+                setField={(value) => setField(type, value)}
+                section={type}
+                options={(values as Item[])}
+                key={type}
+                isSelected={(value) => form[type].display === value.display} />)
           }
         </Row>
         <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
