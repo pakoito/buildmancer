@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
 import { Snapshot, Play } from "./utils/types";
@@ -128,11 +128,11 @@ const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: b
   const [game, setGame] = React.useState<Play>(play);
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setGame(play);
   }, [play]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const gameState = playState(game);
     const hasEnded = gameState !== 'playing';
     if (hasEnded) {
