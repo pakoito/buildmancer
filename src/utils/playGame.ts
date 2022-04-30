@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
@@ -39,11 +39,11 @@ const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
     // Sure, typescript
     .map(a => [...a]);
 
-export const playerBotEffects = (player: Player, d: string[]): [PlayerTarget, Effect][] =>
-  Object.entries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
+export const playerBotEffects = (player: Player, d: DisabledSkills): [PlayerTarget, Effect][] =>
+  safeEntries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.bot ?? [] : []).map(a => ['Player', a]);
 
-export const playerEotEffects = (player: Player, d: string[]): [PlayerTarget, Effect][] =>
-  Object.entries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
+export const playerEotEffects = (player: Player, d: DisabledSkills): [PlayerTarget, Effect][] =>
+  safeEntries(player.build).flatMap(([k, s]) => !Set(d).has(k) ? s.eot ?? [] : []).map(a => ['Player', a]);
 
 export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats] as const);

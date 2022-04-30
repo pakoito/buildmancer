@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
-import { DisabledSkills, Player, PlayerStats } from "../utils/types";
+import { DisabledSkills, Player, PlayerStats, safeEntries } from "../utils/types";
 import { Set } from 'immutable';
 
 const PlayerCard: React.FC<{
@@ -26,7 +26,7 @@ const PlayerCard: React.FC<{
     {canAct && (<>
       <b>Passives</b>
       <ButtonGroup>
-        {Object.entries(player.build)
+        {safeEntries(player.build)
           .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const)
           .map(([k, e, passives], idx) => passives.length > 0 && (<OverlayTrigger
             key={idx}

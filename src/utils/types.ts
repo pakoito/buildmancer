@@ -56,7 +56,7 @@ export interface EffectSummary {
   phase: string;
 }
 
-export type DisabledSkills = string[];
+export type DisabledSkills = (keyof BuildRepository)[];
 export interface Snapshot {
   player: PlayerStats;
   enemies: EnemiesStats;
