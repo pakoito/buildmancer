@@ -20,13 +20,6 @@ function App() {
   const [state, send] = useMachine(gameMenuMachine, { devTools: true });
   const event = state.event;
 
-  const endArcade = useCallback((result: PlayState, game: Play) => {
-    console.log(`GAME END! ${game.seed}`);
-    const encounter = randomEnemy();
-    const firstState: Snapshot = game.states[0];
-    send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
-  }, []);
-
   switch (true) {
     case state.matches('main'):
       return <Menu
@@ -82,7 +75,11 @@ function App() {
       return <SingleGame
         play={event.game}
         timeTravel={false}
-        onGameEnd={endArcade}
+        onGameEnd={(result: PlayState, game: Play) => {
+          const encounter = randomEnemy();
+          const firstState: Snapshot = game.states[0];
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+        }}
       />;
     }
     case state.matches({ arcade: 'victory' }): {
