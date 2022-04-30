@@ -170,6 +170,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
         </Modal.Header>
         <Modal.Body>
           {game.states.map((s, idx) => (
+            // FIXME add key
             <>
               <b>Turn {idx}</b><br />
               Player: {JSON.stringify(s.player, null, 2)}<br />
@@ -186,7 +187,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
             Close
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal >
     </>
   );
 };

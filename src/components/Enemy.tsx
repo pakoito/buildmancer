@@ -16,7 +16,7 @@ const skillPercents = (effects: Effect[]) =>
           {tooltip}<br />⏱:{priority}<br />🏹:{range.length === 5 ? 'Any' : range.length === 0 ? 'None' : range.map(a => a + 1).join(", ")}
         </Popover.Body>
       </Popover>}
-    ><div>[{(v / effects.length * 100).toFixed(2)}%] {display}<br key={idx} /></div>
+    ><>[{(v / effects.length * 100).toFixed(2)}%] {display}<br key={idx} /></>
     </OverlayTrigger>
   });
 
