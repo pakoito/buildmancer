@@ -70,27 +70,19 @@ const arcade = {
       }
     },
     play: {
-      entry: ['bumpVictories'],
       on: {
         WIN: [
-          { target: 'play', cond: 'isNotFinal' },
-          { target: 'victory', cond: 'isFinal' }
+          { target: 'victory', cond: 'isFinal' },
+          { target: 'play', actions: ['bumpVictories'], internal: false },
         ],
         LOSE: { target: 'defeat' }
       }
     },
     victory: {
       type: 'final' as const,
-      on: {
-        MENU: undefined,
-        // ACK: { target: '#menus.leaderboards' }
-      }
     },
     defeat: {
       type: 'final' as const,
-      on: {
-        // ACK: { target: '#menus.leaderboards' }
-      }
     },
   },
   ...toMenu,
@@ -106,9 +98,8 @@ const survival = {
       }
     },
     play: {
-      entry: ['bumpVictories'],
       on: {
-        WIN: { target: 'play' },
+        WIN: { target: 'play', actions: ['bumpVictories'] },
         LOSE: { target: 'defeat' }
       }
     },
@@ -206,7 +197,6 @@ export const gameMenuMachine = createMachine({
 }, {
   guards: {
     isFinal: ({ arcadeContext: { victories } }) => victories >= 7,
-    isNotFinal: ({ arcadeContext: { victories } }) => victories < 7,
   },
   actions: {
     bumpVictories: assign({

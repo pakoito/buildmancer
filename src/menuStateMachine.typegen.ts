@@ -3,8 +3,8 @@
 export interface Typegen0 {
   "@@xstate/typegen": true;
   eventsCausingActions: {
+    bumpVictories: "WIN";
     reset: "xstate.init";
-    bumpVictories: "PLAYER" | "WIN";
   };
   internalEvents: {
     "xstate.init": { type: "xstate.init" };
@@ -18,7 +18,6 @@ export interface Typegen0 {
   };
   eventsCausingServices: {};
   eventsCausingGuards: {
-    isNotFinal: "WIN";
     isFinal: "WIN";
   };
   eventsCausingDelays: {};
