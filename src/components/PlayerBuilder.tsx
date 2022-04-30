@@ -2,35 +2,14 @@ import React from "react";
 import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstrap";
 import useScroll from "../hooks/useScroll";
 
-import { Player, PlayerStats } from "../utils/types";
-import { build, defaultStatus, makeStat, randomName } from "../utils/data";
-import Chance from 'chance';
-
-const version = 'dev';
-
-const selects = Object.entries(build).map(([type, options]) => ({
-  type,
-  options: options.map(({ display }, value) => ({
-    display,
-    value,
-  })),
-}));
+import { Build, Item, Player, PlayerStats, safeEntries } from "../utils/types";
+import { build, randomName, randomPlayer } from "../utils/data";
 
 const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: PlayerStats) => void }) => {
-  const [form, setForm] = React.useState<Record<string, number>>(
-    selects.reduce(
-      (acc, { type, options }) => ({
-        ...acc,
-        [type]: options[0].value,
-      }),
-      {},
-    ),
-  );
-  const [lore, setLore] = React.useState({
-    name: randomName(),
-    age: new Chance().age(),
-  });
-  const setField = (field: string, value: number) => {
+  const [player, playerStats] = randomPlayer();
+  const [form, setForm] = React.useState<Build>(player.build);
+  const [lore, setLore] = React.useState(player.lore);
+  const setField = <T extends keyof Build>(field: T, value: Build[T]) => {
     setForm({
       ...form,
       [field]: value,
@@ -41,36 +20,22 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
     onSave({
       id: "p-1",
       lore,
-      build: Object.entries(form).reduce((acc, [type, value]) => {
-        return {
-          ...acc,
-          [type]: build[type][value]
-        }
-      }, { basic: build.basic[0] }),
-    }, {
-      hp: makeStat(25),
-      stamina: makeStat(6),
-      staminaPerTurn: makeStat(1),
-      speed: makeStat(0),
-      attack: makeStat(0),
-      defence: makeStat(0),
-      status: defaultStatus,
-    });
+      build: form,
+    }, playerStats);
   };
-  const displayType = (type: string) => <b>{build[type][form[type]].display}</b>;
+  const displayType = (type: keyof Build) => <b>{form[type].display}</b>;
   return (
     <Form onSubmit={onFormSubmit}>
-      Build: {version}
       <Container fluid style={{ marginBottom: '105px' }}>
         <Row className="g-2">
-          {selects.map(({ type, options }) =>
+          {safeEntries(build).map(([type, values]) =>
             <ElementPicker
               setField={(value) => setField(type, value)}
               section={type}
-              options={options}
+              options={(values as Item[])}
               key={type}
-              isSelected={(value) => form[type] === value} />
-          )}
+              isSelected={(value) => form[type].display === value.display} />)
+          }
         </Row>
         <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
           <Container>
@@ -84,10 +49,7 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
 };
 
 const ElementPicker = ({ isSelected, section, options, setField }: {
-  options: {
-    display: string;
-    value: number;
-  }[], isSelected: (value: number) => boolean, setField: (value: number) => void, section: string
+  options: Item[], isSelected: (value: Item) => boolean, setField: (value: Item) => void, section: string
 }) => {
   const [scrollTo, scrollRef] = useScroll({
     behavior: 'smooth',
@@ -99,14 +61,14 @@ const ElementPicker = ({ isSelected, section, options, setField }: {
       <Form.Label>{section}</Form.Label>
       <br />
       <ButtonGroup size="lg" className="mb-2">
-        {options.map(({ display, value }) => (
+        {options.map((item) => (
           <Button
-            key={value}
+            key={item.display}
             name={section}
-            id={`${value}`}
-            variant={isSelected(value) ? 'primary' : 'secondary'}
-            onClick={() => { setField(value); scrollTo(); }}
-          >{display}</Button>
+            id={`${item.display}`}
+            variant={isSelected(item) ? 'primary' : 'secondary'}
+            onClick={() => { setField(item); scrollTo(); }}
+          >{item.display}</Button>
         ))}
       </ButtonGroup>
       <div id={`${section}-scroll`} ref={scrollRef} />

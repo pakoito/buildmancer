@@ -160,3 +160,9 @@ export interface Enemy {
 
 export type Enemies = TupleUpTo<Enemy, MonsterCount>;
 export type EnemiesStats = TupleUpTo<EnemyStats, MonsterCount>;
+
+export function safeEntries<T, K extends keyof T>(o: {
+  [s in K]: T[s];
+}): [K, T[K]][] {
+  return Object.entries(o).map(([k, v]) => [k as K, v as T[K]]);
+}
