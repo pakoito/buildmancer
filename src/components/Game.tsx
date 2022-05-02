@@ -49,7 +49,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       handlePlayerEffect(valNum - 1);
     }
 
-    if (key == "Escape") {
+    if (key === "Escape") {
       onMenu();
     }
     if (key === "h") {

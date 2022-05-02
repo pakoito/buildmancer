@@ -3,7 +3,7 @@ import { assign, createMachine, interpret } from 'xstate';
 import { inspect } from '@xstate/inspect/lib/server.js';
 import { scoreGame } from './utils/playGame';
 
-const isDebug = process.env['SMD'] === '1';
+const isDebug = process && process.env['SMD'] === '1';
 
 if (isDebug) {
   inspect({
