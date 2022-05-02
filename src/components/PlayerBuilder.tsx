@@ -49,8 +49,11 @@ const PlayerBuilder = ({ onSave }: { onSave: (player: Player, playerStats: Playe
         <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
           <Container>
             <Navbar.Text>You are <i onClick={() => setLore((lore) => ({ ...lore, name: randomName() }))}>{lore.name}</i>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
-            <Navbar.Text>HP | Speed<br />Attack | Defence<br />Stamina | Per Turn</Navbar.Text>
-            <Navbar.Text>{postBuildPlayerStats.hp.max} | {postBuildPlayerStats.speed.max}<br />{postBuildPlayerStats.attack.max} | {postBuildPlayerStats.defence.max}<br />{postBuildPlayerStats.stamina.max} | {postBuildPlayerStats.staminaPerTurn.max}</Navbar.Text>
+            <Navbar.Text>
+              {postBuildPlayerStats.hp.current}/{postBuildPlayerStats.hp.max} ❤<br />
+              {postBuildPlayerStats.stamina.current}/{postBuildPlayerStats.stamina.max} 💪 ({postBuildPlayerStats.staminaPerTurn.current >= 0 && "+"}{postBuildPlayerStats.staminaPerTurn.current})<br />
+              Attack {postBuildPlayerStats.attack.current} | Defence {postBuildPlayerStats.defence.current} | Speed {postBuildPlayerStats.speed.current}
+            </Navbar.Text>
             <Button type="submit">This is me!</Button>
           </Container>
         </ Navbar>

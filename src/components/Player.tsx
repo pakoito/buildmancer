@@ -24,7 +24,9 @@ const PlayerCard: React.FC<{
       <Card.Subtitle className="mb-2 text-muted">
         {player.build.class.display}
       </Card.Subtitle>
-      <Card.Text>{playerStats.hp.current}/{playerStats.hp.max} ❤ {playerStats.stamina.current}/{playerStats.stamina.max} 💪</Card.Text>
+      <Card.Text>Attack {playerStats.attack.current} | Defence {playerStats.defence.current} | Speed {playerStats.speed.current}</Card.Text>
+      <Card.Text>{playerStats.hp.current}/{playerStats.hp.max} ❤</Card.Text>
+      <Card.Text>{playerStats.stamina.current}/{playerStats.stamina.max} 💪 ({playerStats.staminaPerTurn.current >= 0 && "+"}{playerStats.staminaPerTurn.current})</Card.Text>
       {playerStats.status.bleed.turns > 0 && <Card.Text>` ${playerStats.status.bleed.turns} 🩸`</Card.Text>}
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>

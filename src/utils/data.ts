@@ -33,7 +33,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
     }
   }, {
     hp: makeStat(25),
-    stamina: makeStat(8),
+    stamina: makeStat(10),
     staminaPerTurn: makeStat(2),
     speed: makeStat(0),
     attack: makeStat(0),

@@ -1,9 +1,9 @@
-import play from "../utils/playGame";
+import { makeGameNew } from "../utils/playGame";
 import { Enemies, EnemiesStats, Play } from "../utils/types";
 import { build, defaultStatus, enemies, makeStat } from "../utils/data";
 import { TinkererOptions } from "./tinkerer";
 
-export const makeGame = (gameConfig: GameConfig): Play => play(
+export const makeGame = (gameConfig: GameConfig): Play => makeGameNew(
   {
     id: "1",
     lore: {
