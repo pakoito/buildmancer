@@ -18,38 +18,35 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
       return value(params)(origin, newPlay, newState);
     }) : funs[0]) as EffectFun<T>;
 
-export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
-export type ParametrizedFun<T> = (params: T) => ReduceFun;
-export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
-
-export type EffectFunRepo = EffectFunctionRepository;
-export type EffectFunRepoIndex = keyof EffectFunctionT & FunIndex;
-export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunRepo[T]>[0];
-
-export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
-export type EffectFunctionT = {
-  'Monster:Summon': { enemy: number };
-  'Monster:Dead': undefined;
-  'Monster:Attack': { amount: number };
+type SystemFunctionT = {
+  'Utility:Cleanup': undefined;
+  'Debug:GGWP': undefined;
+  'Debug:Sudoku': undefined;
+}
+type BasicFunctionT = {
   'Basic:Rest': undefined;
   'Basic:Move': { amount: number };
   'Basic:Attack': { amount: number };
   'Basic:Stamina': { amount: number };
+}
+type StatusFunctionT = {
   'Effect:Poison': { target: Target; lifespan: number };
   'Effect:Dodge': undefined;
   'Effect:Armor': { amount: number };
+}
+type MonsterFunctionT = {
+  'Monster:Summon': { enemy: number };
+  'Monster:Dead': undefined;
+  'Monster:Attack': { amount: number };
+  'Monster:Move': { amount: number };
+}
+type ItemFunctionT = {
   'Wand:MagicBolt': undefined;
   'Axe:Chop': undefined;
   'Axe:Cut': undefined;
   'Axe:Bleed': undefined;
   'Hook:GetHere': undefined;
-  'Monster:Swipe': undefined;
-  'Monster:Roar': undefined;
-  'Monster:Jump': undefined;
   'BootsOfFlight:EOT': undefined;
-  'Utility:Cleanup': undefined;
-  'Debug:GGWP': undefined;
-  'Debug:Sudoku': undefined;
 }
 
 const engineFunctions = {
@@ -107,13 +104,7 @@ const effectFunRepo: EffectFunctionRepository = {
   'Monster:Dead': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
   ),
-  'Monster:Swipe': effectFun(
-    () => (_, play, currentState) => [play, actions.attackPlayer(currentState, 2)]
-  ),
-  'Monster:Roar': effectFun(
-    () => (_, play, currentState) => [play, actions.modifyPlayerStamina(currentState, -5)]
-  ),
-  'Monster:Jump': effectFun(
+  'Monster:Move': effectFun(
     () => (origin, play, currentState) => [play, actions.changeDistance(currentState, origin, -2)]
   ),
   // #endregion MONSTERS
@@ -149,6 +140,16 @@ const effectFunRepo: EffectFunctionRepository = {
   ),
   // #endregion ITEMS
 };
+
+export type EffectFunctionT = SystemFunctionT & BasicFunctionT & StatusFunctionT & MonsterFunctionT & ItemFunctionT;
+
+export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
+export type ParametrizedFun<T> = (params: T) => ReduceFun;
+export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
+
+export type EffectFunctionRepository = { [k in keyof EffectFunctionT]: (params: EffectFunctionT[k]) => ReduceFun };
+export type EffectFunRepoIndex = keyof EffectFunctionT & FunIndex;
+export type EffectFunParams<T extends EffectFunRepoIndex> = Parameters<EffectFunctionRepository[T]>[0];
 
 // #endregion
 // #region Modify state

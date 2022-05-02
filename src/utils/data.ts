@@ -447,9 +447,9 @@ export const enemies: [Enemy, EnemyStats][] = [
       [0, 1, 2, 1, 0, 0],
     ],
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange(0, 1) },
-      { display: "Roar", tooltip: "Swipe", priority: 1, effects: [effectFunCall("Monster:Roar")], range: allRanges },
-      { display: "Jump", tooltip: "Swipe", priority: 2, effects: [effectFunCall("Monster:Jump")], range: makeRange(2, 3, 4) },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange(0, 1) },
+      { display: "Roar", tooltip: "Swipe", priority: 1, effects: [effectFunCall(["Basic:Stamina", { amount: -5 }])], range: allRanges },
+      { display: "Jump", tooltip: "Swipe", priority: 2, effects: [effectFunCall(["Monster:Move", { amount: -4 }])], range: makeRange(2, 3, 4) },
     ],
   }, {
     hp: makeStat(25),
@@ -464,8 +464,8 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Toro",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: allRanges },
-      { display: "Jump", tooltip: "Jump", priority: 2, effects: [effectFunCall("Monster:Jump")], range: makeRange(2, 3, 4) },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: allRanges },
+      { display: "Jump", tooltip: "Jump", priority: 2, effects: [effectFunCall(["Monster:Move", { amount: -4 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 0, 0],
@@ -487,16 +487,17 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Summoner",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange(0, 1) },
-      { display: "Jump", tooltip: "Jump", priority: 3, effects: [effectFunCall("Monster:Jump")], range: allRanges },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange(0, 1) },
+      { display: "Retreat", tooltip: "Jump", priority: 3, effects: [effectFunCall(["Monster:Move", { amount: 5 }])], range: allRanges },
       { display: "Summon Smol", tooltip: "Summon Smol", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 4 }])], range: makeRange(2, 3, 4) },
+      { display: "Spit", tooltip: "Summon Smol", priority: 4, effects: [effectFunCall(["Monster:Attack", { amount: 2 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
-      [0, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 1, 2, 0, 0],
-      [1, 1, 2, 0, 0],
-      [1, 2, 2, 0, 0],
+      [1, 1, 1, 0, 0],
+      [1, 1, 1, 0, 0],
+      [1, 1, 3, 3, 0],
+      [2, 3, 3, 3, 0],
+      [2, 2, 3, 3, 0],
     ]
   }, {
     hp: makeStat(30),
@@ -511,7 +512,7 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Body",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange() },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange() },
     ],
     rolls: [
       [0],
@@ -534,7 +535,7 @@ export const enemies: [Enemy, EnemyStats][] = [
       name: "Smol",
     },
     effects: [
-      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange() },
+      { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange() },
     ],
     rolls: [
       [0],
