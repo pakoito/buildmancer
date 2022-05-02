@@ -32,8 +32,7 @@ export type EffectFunctionT = {
   'Monster:Dead': undefined;
   'Monster:Attack': { amount: number };
   'Basic:Rest': undefined;
-  'Basic:Advance': { amount: number };
-  'Basic:Retreat': { amount: number };
+  'Basic:Move': { amount: number };
   'Basic:Attack': { amount: number };
   'Basic:Stamina': { amount: number };
   'Effect:Poison': { target: Target; lifespan: number };
@@ -72,10 +71,7 @@ const effectFunRepo: EffectFunctionRepository = {
   'Basic:Rest': effectFun(
     () => (_origin, play, currentState) => [play, currentState]
   ),
-  'Basic:Advance': effectFun(
-    ({ amount }) => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -amount)]
-  ),
-  'Basic:Retreat': effectFun(
+  'Basic:Move': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, amount)]
   ),
   'Basic:Attack': effectFun(

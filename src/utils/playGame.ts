@@ -84,7 +84,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
       if (isDeadAttackingMonster) {
         const newState: Snapshot = {
           ...oldState,
-          lastAttacks: [...oldState.lastAttacks, { origin, display: `💀💀DEAD💀💀💀💀 ${effect.display}`, phase }]
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `💀💀DEAD💀💀 ${effect.display}`, phase }]
         };
         return [oldPlay, newState];
       }

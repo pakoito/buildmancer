@@ -133,12 +133,12 @@ export const build: BuildRepository = {
           priority: 4,
           stamina: 1,
           range: selfRange,
-          effects: [effectFunCall(['Basic:Advance', { amount: 1 }])]
+          effects: [effectFunCall(['Basic:Move', { amount: -1 }])]
         },
         {
           display: "Retreat",
           tooltip: "Move farther",
-          effects: [effectFunCall(["Basic:Retreat", { amount: 1 }])],
+          effects: [effectFunCall(["Basic:Move", { amount: 1 }])],
           priority: 4,
           stamina: 1,
           range: selfRange,
@@ -183,7 +183,7 @@ export const build: BuildRepository = {
         {
           display: "Strategic retreat",
           tooltip: "Jump backwards",
-          effects: [effectFunCall(["Basic:Retreat", { amount: 4 }])],
+          effects: [effectFunCall(["Basic:Move", { amount: 4 }])],
           priority: 4,
           stamina: 1,
           range: selfRange,
@@ -314,7 +314,7 @@ export const build: BuildRepository = {
     },
     {
       display: "None",
-      passives: [],
+      passives: ["+Speed"],
     },
   ],
   // TODO
@@ -339,7 +339,7 @@ export const build: BuildRepository = {
           tooltip: "Blinks you to a better position",
           effects: [
             effectFunCall(["Basic:Attack", { amount: 1 }]),
-            effectFunCall(["Basic:Retreat", { amount: 2 }])
+            effectFunCall(["Basic:Move", { amount: 2 }])
           ],
           priority: 3,
           stamina: 4,
