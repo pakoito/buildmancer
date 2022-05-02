@@ -109,7 +109,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
           <Col sm={12} md={8}>
             <Button onClick={onMenu}>[<i>Esc</i>] MAIN MENU</Button>
             <Card.Title>
-              Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
+              {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""} Turn {game.states.length} out of {game.turns}
             </Card.Title>
             <PlayerCard
               player={player}
@@ -118,7 +118,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               setDisabledSkills={setDisabledSkills}
               onClickEffect={(idx) => handlePlayerEffect(idx)}
               selectedButtons={selectedButtons}
-              lastAction={lastAttacks.filter(a => a.origin === 'Player').map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
+              lastAction={lastAttacks.filter(a => a.origin === 'Player' && a.phase === 'MAIN').map(a => `${a.display}`).join(" -> ") ?? undefined}
               canAct={canAct} />
             <Row>
               {timeTravel != null && (
@@ -141,7 +141,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
                     enemyStats={stats}
                     enemy={enemy}
                     canAct={canAct}
-                    latestAttack={Seq(lastAttacks).filter(({ origin }) => origin === idx).map(a => `[${a.phase}] ${a.display}`).join(" -> ") ?? undefined}
+                    latestAttack={Seq(lastAttacks).filter(({ origin, phase }) => origin === idx && phase === 'MAIN').map(a => `${a.display}`).join(" -> ") ?? undefined}
                     isSelected={idx === target}
                     onSelect={() => setSelected(idx as MonsterTarget)}
                     hotkey={monsterHotkeys[idx]}
@@ -176,16 +176,16 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
         </Modal.Header>
         <Modal.Body>
           {game.states.map((s, idx) => (
-            // FIXME add key
-            <>
+            <div key={idx}>
               <b>Turn {idx}</b><br />
               Player: {JSON.stringify(s.player, null, 2)}<br />
               Enemies: {JSON.stringify(s.enemies, null, 2)}<br />
               Target [{s.target}]<br />
-              Eot? Bot?: {JSON.stringify({ bot: s.bot, eot: s.eot }, null, 2)}<br />
+              Bot?: {JSON.stringify(s.bot, null, 2)}<br />
+              Eot?: {JSON.stringify(s.eot, null, 2)}<br />
               Actions:<br />
-              {s.lastAttacks.map(a => (<>  {JSON.stringify(a, null, 2)}<br /></>))}
-            </>
+              {s.lastAttacks.map(a => (<>{"-->"} {JSON.stringify(a, null, 2)}<br /></>))}
+            </div>
           ))}
         </Modal.Body>
         <Modal.Footer>

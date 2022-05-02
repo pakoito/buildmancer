@@ -12,8 +12,12 @@ const PlayerCard: React.FC<{
   onClickEffect: (index: number) => void;
   disabledSkills: DisabledSkills;
   setDisabledSkills: (skills: DisabledSkills) => void;
-}> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction, disabledSkills, setDisabledSkills }) => (
-  <Card>
+}> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction, disabledSkills, setDisabledSkills }) => {
+  const passives = safeEntries(player.build)
+    .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const);
+
+  const hasPassives = passives.reduce((acc, [k, e, passives]) => passives.length > 0, false);
+  return <Card>
     <Card.Body>
       <Card.Title>{player.lore.name}{playerStats.hp.current > 0 ? "" : (<b> 💀DEAD💀 </b>)}</Card.Title>
       <Card.Subtitle className="mb-2 text-muted">
@@ -23,11 +27,10 @@ const PlayerCard: React.FC<{
       {playerStats.status.bleed.turns > 0 && <Card.Text>` ${playerStats.status.bleed.turns} 🩸`</Card.Text>}
       {lastAction && (<Card.Text>Last action: {lastAction}</Card.Text>)}
     </Card.Body>
-    {canAct && (<>
+    {canAct && hasPassives && (<>
       <b>Passives</b>
       <ButtonGroup>
-        {safeEntries(player.build)
-          .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const)
+        {passives
           .map(([k, e, passives], idx) => passives.length > 0 && (<OverlayTrigger
             key={idx}
             placement="right"
@@ -86,6 +89,6 @@ const PlayerCard: React.FC<{
       </Stack>
     </Card.Body>)}
   </Card>
-);
+}
 
 export default PlayerCard;

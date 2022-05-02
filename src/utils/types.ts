@@ -70,10 +70,11 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 10;
 
+export type EffectPhase = 'MAIN' | 'EOT' | 'BOT';
 export interface EffectSummary {
   origin: Target;
   display: string;
-  phase: string;
+  phase: EffectPhase;
 }
 
 export type DisabledSkills = (keyof BuildRepository)[];

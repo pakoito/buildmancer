@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
@@ -71,7 +71,7 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
 const clamp = (num: number, min: number, max: number = Infinity) =>
   Math.min(Math.max(num, min), max);
 
-const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: boolean, phase: string): [Play, Snapshot] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: boolean, phase: EffectPhase): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([origin, a]) => {
       const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
@@ -155,7 +155,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(lastTurnState.player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'STAMINA');
+    reduceFuns([['Player', applyEffectStamina(lastTurnState.player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'MAIN');
 
   // BOT
   // Lingering effects

@@ -138,7 +138,7 @@ const effectFunRepo: EffectFunctionRepository = {
     () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -1)]
   ),
   'BootsOfFlight:EOT': effectFun(
-    () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, -2), currentState)]
+    () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, 2), currentState)]
   ),
   'Wand:MagicBolt': effectFun(
     () => (_, play, currentState) => {
