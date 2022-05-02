@@ -16,9 +16,11 @@ import { gameMenuMachine } from "./menuStateMachine";
 import Menu from "./components/menus/Menu";
 
 function App() {
-  const player = randomPlayer();
   const [state, send] = useMachine(gameMenuMachine, { devTools: true });
   const event = state.event;
+  const onMenu = () => {
+    send('MENU');
+  }
 
   switch (true) {
     case state.matches('main'):
@@ -33,6 +35,7 @@ function App() {
       const encounter = randomEnemy();
       return <SingleGame
         play={play(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        onMenu={onMenu}
         timeTravel={true}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
@@ -49,12 +52,13 @@ function App() {
       return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
     case state.matches({ single: 'encounter' }):
       return <EncounterBuilder
-        player={player[0]}
+        player={event.player[0]}
         onSave={(enemies, enemiesStats) => { send('ENCOUNTER', { encounter: [enemies, enemiesStats], player: event.player }) }}
       />;
     case state.matches({ single: 'play' }): {
       return <SingleGame
         play={play(event.player[0], event.player[1], event.encounter[0], event.encounter[1], 50, state.context.singleContext.seed)}
+        onMenu={onMenu}
         timeTravel={true}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
       />;
@@ -75,6 +79,7 @@ function App() {
       return <SingleGame
         play={event.game}
         timeTravel={false}
+        onMenu={onMenu}
         onGameEnd={(result: PlayState, game: Play) => {
           const encounter = randomEnemy();
           const firstState: Snapshot = game.states[0];
@@ -84,7 +89,7 @@ function App() {
     }
     case state.matches({ arcade: 'victory' }): {
       return <Menu
-        title={`VICTORY!`}
+        title={`🎉🎉VICTORY!🎉🎉 Final score: ${state.context.arcadeContext.score}`}
         states={["MENU"]}
         onClick={send}
       />;
@@ -104,6 +109,7 @@ function App() {
     case state.matches({ survival: 'play' }): {
       return <SingleGame
         play={event.game}
+        onMenu={onMenu}
         timeTravel={false}
         onGameEnd={(result, game) => {
           const encounter = randomEnemy();
@@ -124,7 +130,7 @@ function App() {
   }
 }
 
-const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void }) => {
+const SingleGame = ({ play, timeTravel, onGameEnd, onMenu }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void, onMenu: () => void }) => {
   const [game, setGame] = React.useState<Play>(play);
   const [redo, setRedo] = React.useState<Snapshot[]>([]);
 
@@ -156,6 +162,7 @@ const SingleGame = ({ play, timeTravel, onGameEnd }: { play: Play; timeTravel: b
   return (<Game
     game={game}
     timeTravel={timeTravelObj}
+    onMenu={onMenu}
     setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
     setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
     handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}

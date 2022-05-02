@@ -4,6 +4,7 @@ export interface Typegen0 {
   "@@xstate/typegen": true;
   eventsCausingActions: {
     bumpVictories: "WIN";
+    bumpScore: "WIN";
     reset: "xstate.init";
   };
   internalEvents: {

@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import { assign, createMachine, interpret } from 'xstate';
 import { inspect } from '@xstate/inspect/lib/server.js';
+import { scoreGame } from './utils/playGame';
 
 const isDebug = process.env['SMD'] === '1';
 
@@ -73,7 +74,7 @@ const arcade = {
       on: {
         WIN: [
           { target: 'victory', cond: 'isFinal' },
-          { target: 'play', actions: ['bumpVictories'], internal: true },
+          { target: 'play', actions: ['bumpVictories', 'bumpScore'], internal: true },
         ],
         LOSE: { target: 'defeat' }
       }
@@ -202,6 +203,9 @@ export const gameMenuMachine = createMachine({
     bumpVictories: assign({
       arcadeContext: ({ arcadeContext }, _event) => ({ ...arcadeContext, victories: arcadeContext.victories + 1, seed: Math.random() }),
       survivalContext: ({ survivalContext }, _event) => ({ ...survivalContext, victories: survivalContext.victories + 1, seed: Math.random() }),
+    }),
+    bumpScore: assign({
+      arcadeContext: ({ arcadeContext }, { game }) => ({ ...arcadeContext, score: arcadeContext.score + scoreGame(game), seed: Math.random() }),
     }),
     reset: assign({
       survivalContext: (c, e) => makeSurvivalContext(),

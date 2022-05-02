@@ -221,3 +221,15 @@ export const playState = (play: Play): PlayState => {
       ? 'win'
       : 'playing';
 }
+
+export const scoreGame = (play: Play): number => {
+  const firstState = play.states[0];
+  const lastState = play.states[play.states.length - 1];
+
+  const turns = play.states.length; // 1-50
+  const hpLoss = Math.max(0, firstState.player.hp.max - lastState.player.hp.current) / firstState.player.hp.max; // 0-1
+  const staminaLoss = Math.max(0, firstState.player.stamina.max - lastState.player.stamina.current) / firstState.player.hp.max; // 0-1
+  const enemies = lastState.enemies.length; // 1-5
+
+  return enemies * ((500 * hpLoss) + (150 * staminaLoss) + (500 - (turns * 10)));
+}

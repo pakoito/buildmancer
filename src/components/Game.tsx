@@ -20,11 +20,12 @@ export type GameProps = {
   solveGame: (iterations: number) => void,
   hint: (iterations: number) => void,
   timeTravel: { undo: () => void; redo: (() => void) | undefined } | undefined,
+  onMenu: () => void,
 };
 
 const monsterHotkeys = ["q", "w", "e", "r", "t", "y"];
 
-const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, timeTravel, hint }: GameProps): JSX.Element => {
+const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, timeTravel, hint, onMenu }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills } = previousState(game);
   const [isLogShown, setShowLog] = useState(false);
@@ -36,7 +37,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
   const monsterHealth = enemiesStats.reduce((acc, m) => m.hp.current + acc, 0);
   const isPlayerAlive = playerStats.hp.current > 0;
   const areMonstersAlive = monsterHealth > 0;
-  const endGame = game.states.length <= game.turns;
+  const endGame = game.states.length < game.turns;
   const canAct = isPlayerAlive && areMonstersAlive && endGame;
 
   const pressed = usePressedKeys((key) => {
@@ -46,6 +47,10 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       const hasStamina = playerSkills[valNum - 1].stamina <= playerStats.stamina.current;
       if (!hasStamina) return;
       handlePlayerEffect(valNum - 1);
+    }
+
+    if (key == "m") {
+      onMenu();
     }
     if (key === "h") {
       hint(100);
@@ -102,6 +107,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       <Container fluid>
         <Row className="justify-content-center align-items-flex-start">
           <Col sm={12} md={8}>
+            <Button onClick={onMenu}>MAIN MENU</Button>
             <Card.Title>
               Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
             </Card.Title>
