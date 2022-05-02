@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
 import { DisabledSkills, Player, PlayerStats, safeEntries } from "../utils/types";
 import { Set } from 'immutable';
+import { clamp } from "src/utils/zFunDump";
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,
@@ -82,7 +83,7 @@ const PlayerCard: React.FC<{
                 [<i>{idx + 1}</i>] <b>{e.display}</b>
               </Button>
               <br />
-              <Card.Text>💪:{e.stamina} ⏱:{Math.max(e.priority + playerStats.speed.current)}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(", ")}</Card.Text>
+              <Card.Text>💪:{e.stamina} ⏱:{clamp(e.priority - playerStats.speed.current, 0, 4)}<br />🏹:{e.range.length === 5 ? 'Any' : e.range.map(a => a + 1).join(", ")}</Card.Text>
             </div>
           </OverlayTrigger>
           ))}

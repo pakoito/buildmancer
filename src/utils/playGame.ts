@@ -5,7 +5,7 @@ import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 import { extractFunction, statsRepository } from "./effectRepository";
-import { rangeArr } from "./zFunDump";
+import { clamp, rangeArr } from "./zFunDump";
 
 /**
  * @returns min inclusive, max exclusive rand
@@ -68,9 +68,6 @@ export default function start(player: Player, playerStats: PlayerStats, enemies:
   };
 }
 
-const clamp = (num: number, min: number, max: number = Infinity) =>
-  Math.min(Math.max(num, min), max);
-
 const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: boolean, phase: EffectPhase): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([origin, a]) => {
@@ -82,6 +79,15 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
       const [oldPlay, oldState] = acc;
       const monsterId = origin === 'Player' ? oldState.target : origin;
       const targetMonster = oldState.enemies[monsterId]!!;
+
+      const isDeadAttackingMonster = origin !== 'Player' && targetMonster.hp.current <= 0;
+      if (isDeadAttackingMonster) {
+        const newState: Snapshot = {
+          ...oldState,
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `💀💀DEAD💀💀💀💀 ${effect.display}`, phase }]
+        };
+        return [oldPlay, newState];
+      }
 
       const isStunnedPlayer = origin === 'Player' && oldState.player.status.stun.active;
       const isStunnedMonster = origin !== 'Player' && targetMonster.status.stun.active;
@@ -96,7 +102,6 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
 
 
       const isInRange = Set([...effect.range]).has(targetMonster.distance);
-
       if (!isInRange) {
         const newState: Snapshot = {
           ...oldState,

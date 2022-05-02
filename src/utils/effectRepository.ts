@@ -1,6 +1,7 @@
 import { Opaque } from "type-fest";
 import { allRanges, enemies, makeStat } from "./data";
 import { callEffectFun, Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, FunIndex, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Status, Target } from "./types";
+import { clamp } from "./zFunDump";
 
 // #region Effect funs
 
@@ -155,9 +156,6 @@ const effectFunRepo: EffectFunctionRepository = {
 
 // #endregion
 // #region Modify state
-
-const clamp = (num: number, min: number, max: number = Infinity) =>
-  Math.min(Math.max(num, min), max);
 
 const updateMonster = (enemies: EnemiesStats, target: Target, override: (stats: EnemyStats) => Partial<EnemyStats>): EnemiesStats =>
   enemies.map((m, idx) =>

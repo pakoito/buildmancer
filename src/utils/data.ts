@@ -1,6 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository } from "./types";
+import { pipe } from "./zFunDump";
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -488,7 +489,7 @@ export const enemies: [Enemy, EnemyStats][] = [
     effects: [
       { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall("Monster:Swipe")], range: makeRange(0, 1) },
       { display: "Jump", tooltip: "Jump", priority: 3, effects: [effectFunCall("Monster:Jump")], range: allRanges },
-      { display: "Summon Toro", tooltip: "Summon Toro", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 1 }])], range: makeRange(2, 3, 4) },
+      { display: "Summon Smol", tooltip: "Summon Smol", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 4 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [0, 0, 0, 0, 0],
