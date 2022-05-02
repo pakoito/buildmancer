@@ -1,7 +1,8 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository } from "./types";
-import { pipe } from "./zFunDump";
+
+export const DEBUG = true;
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -17,7 +18,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
       age: rng.age(),
     },
     build: {
-      debug: build.debug[0],
+      debug: build.debug[DEBUG ? 1 : 0],
       basic: rng.pickone(build.basic),
       class: rng.pickone(build.class),
       skill: rng.pickone(build.skill),

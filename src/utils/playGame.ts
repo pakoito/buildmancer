@@ -49,14 +49,18 @@ export const playerEotEffects = (player: Player, d: DisabledSkills): [PlayerTarg
 export const buildPlayer = (player: Player, playerStats: PlayerStats, enemiesStats: EnemiesStats): [PlayerStats, EnemiesStats] =>
   playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats]);
 
-export default function start(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
+export function makeGameNew(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = buildPlayer(player, playerStats, enemiesStats);
+  return makeGameNextLevel(player, playerGameStats, enemies, enemyGameStats, turns, seed, randPerTurn);
+}
+
+export function makeGameNextLevel(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   return {
     player,
     enemies,
     states: [{
-      player: playerGameStats,
-      enemies: enemyGameStats,
+      player: playerStats,
+      enemies: enemiesStats,
       target: 0,
       lastAttacks: [],
       disabledSkills: []

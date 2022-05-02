@@ -1,13 +1,13 @@
 import React from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Snapshot, Play } from "./utils/types";
+import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from "./utils/types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import play, { handlePlayerEffect, PlayState, playState, setDisabledSkills, setSelected } from "./utils/playGame";
+import { makeGameNew, makeGameNextLevel, handlePlayerEffect, PlayState, playState, setDisabledSkills, setSelected } from "./utils/playGame";
 import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
 import { previousState, randomEnemy, randomPlayer } from "./utils/data";
@@ -34,7 +34,7 @@ function App() {
       const player = randomPlayer();
       const encounter = randomEnemy();
       return <SingleGame
-        play={play(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        play={makeGameNew(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
         onMenu={onMenu}
         timeTravel={true}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
@@ -57,7 +57,7 @@ function App() {
       />;
     case state.matches({ single: 'play' }): {
       return <SingleGame
-        play={play(event.player[0], event.player[1], event.encounter[0], event.encounter[1], 50, state.context.singleContext.seed)}
+        play={makeGameNew(event.player[0], event.player[1], event.encounter[0], event.encounter[1], 50, state.context.singleContext.seed)}
         onMenu={onMenu}
         timeTravel={true}
         onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
@@ -73,7 +73,7 @@ function App() {
     // ARCADE
     case state.matches({ arcade: 'player' }): {
       const encounter = randomEnemy();
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: makeGameNew(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
     }
     case state.matches({ arcade: 'play' }): {
       return <SingleGame
@@ -81,9 +81,21 @@ function App() {
         timeTravel={false}
         onMenu={onMenu}
         onGameEnd={(result: PlayState, game: Play) => {
-          const encounter = randomEnemy();
+          let encounter = [[], []] as [Enemy[], EnemyStats[]];
+          if (state.context.arcadeContext.victories >= 0) {
+            const otherEnemy = randomEnemy();
+            encounter = [[...encounter[0], otherEnemy[0]], [...encounter[1], otherEnemy[1]]];
+          }
+          if (state.context.arcadeContext.victories >= 2) {
+            const otherEnemy = randomEnemy();
+            encounter = [[...encounter[0], otherEnemy[0]], [...encounter[1], otherEnemy[1]]];
+          }
+          if (state.context.arcadeContext.victories >= 5) {
+            const otherEnemy = randomEnemy();
+            encounter = [[...encounter[0], otherEnemy[0]], [...encounter[1], otherEnemy[1]]];
+          }
           const firstState: Snapshot = game.states[0];
-          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, firstState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, firstState.player, encounter[0] as Enemies, encounter[1] as EnemiesStats, 50, state.context.survivalContext.seed) });
         }}
       />;
     }
@@ -104,7 +116,7 @@ function App() {
     // SURVIVAL
     case state.matches({ survival: 'player' }): {
       const encounter = randomEnemy();
-      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: play(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { game: makeGameNew(player, playerStats, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) }); }} />;
     }
     case state.matches({ survival: 'play' }): {
       return <SingleGame
@@ -114,7 +126,7 @@ function App() {
         onGameEnd={(result, game) => {
           const encounter = randomEnemy();
           const lastState: Snapshot = game.states[event.game.states.length - 1];
-          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: play(game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
         }}
       />;
     }

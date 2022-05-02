@@ -184,7 +184,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               Bot?: {JSON.stringify(s.bot, null, 2)}<br />
               Eot?: {JSON.stringify(s.eot, null, 2)}<br />
               Actions:<br />
-              {s.lastAttacks.map(a => (<>{"-->"} {JSON.stringify(a, null, 2)}<br /></>))}
+              {s.lastAttacks.map((a, idx) => (<div key={idx}>{"-->"} {JSON.stringify(a, null, 2)}<br /></div>))}
             </div>
           ))}
         </Modal.Body>
