@@ -5,6 +5,7 @@ import { Chance } from "chance";
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 import { extractFunction, statsRepository } from "./effectRepository";
+import { rangeArr } from "./zFunDump";
 
 /**
  * @returns min inclusive, max exclusive rand
@@ -12,8 +13,8 @@ import { extractFunction, statsRepository } from "./effectRepository";
 function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: string | number): RNG {
   const monsterChance = new Chance(monsterSeed);
   const monsterRng =
-    [...Array(turns).keys()]
-      .map(_ => [...Array(randPerTurn).keys()]
+    rangeArr(turns)
+      .map(_ => rangeArr(randPerTurn)
         .map(_ => monsterChance.floating({ min: 0, max: 1, fixed: 2 })));
   return monsterRng as RNG;
 }
@@ -81,6 +82,19 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
       const [oldPlay, oldState] = acc;
       const monsterId = origin === 'Player' ? oldState.target : origin;
       const targetMonster = oldState.enemies[monsterId]!!;
+
+      const isStunnedPlayer = origin === 'Player' && oldState.player.status.stun.active;
+      const isStunnedMonster = origin !== 'Player' && targetMonster.status.stun.active;
+      const isStunned = isStunnedPlayer || isStunnedMonster;
+      if (isStunned) {
+        const newState: Snapshot = {
+          ...oldState,
+          lastAttacks: [...oldState.lastAttacks, { origin, display: `💫💫STUNNED💫💫 ${effect.display}`, phase }]
+        };
+        return [oldPlay, newState];
+      }
+
+
       const isInRange = Set([...effect.range]).has(targetMonster.distance);
 
       if (!isInRange) {

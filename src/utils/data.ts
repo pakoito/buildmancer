@@ -49,7 +49,8 @@ export const makeStat = (amount: number): Stat => ({ current: amount, max: amoun
 export const defaultStatus: Status = {
   dodge: { active: false },
   armor: { amount: 0 },
-  bleed: { turns: 0 }
+  bleed: { turns: 0 },
+  stun: { active: false },
 }
 
 

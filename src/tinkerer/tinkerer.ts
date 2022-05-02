@@ -5,6 +5,7 @@ import { MonsterTarget, Play } from '../utils/types';
 import { previousState } from '../utils/data';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';
+import { rangeArr } from 'src/utils/zFunDump';
 
 export type TinkererOptions = typeof defaultTinkererOptions & { turns?: number };
 
@@ -27,7 +28,7 @@ export const gameRender = (results: ScoredPhenotype<Play>[]): string => {
 
 export default function tinkerer(play: Play, iter: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Play>[] {
   const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
-  const range = [...Array(iter).keys()];
+  const range = rangeArr(iter);
   const rand = new Chance(options.playerSeed);
   const actions = playerActions(play.player);
   const config: GeneticAlgorithmConfig<Play> = {
