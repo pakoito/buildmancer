@@ -49,7 +49,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       handlePlayerEffect(valNum - 1);
     }
 
-    if (key == "m") {
+    if (key == "Escape") {
       onMenu();
     }
     if (key === "h") {
@@ -107,7 +107,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
       <Container fluid>
         <Row className="justify-content-center align-items-flex-start">
           <Col sm={12} md={8}>
-            <Button onClick={onMenu}>MAIN MENU</Button>
+            <Button onClick={onMenu}>[<i>Esc</i>] MAIN MENU</Button>
             <Card.Title>
               Turn {game.states.length} out of {game.turns} {!isPlayerAlive ? (<b>❌❌DEFEAT❌❌</b>) : !areMonstersAlive ? (<b>🎉🎉VICTORY🎉🎉</b>) : ""}
             </Card.Title>
