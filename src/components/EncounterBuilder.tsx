@@ -42,7 +42,7 @@ const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies
           <Navbar.Text>You are <i>{player.lore.name}</i>, the {displayType('skill')} {displayType('class')} {displayType('charm')}<br />who wields a {displayType('weapon')} and a {displayType('offhand')}<br />and wears {displayType('armor')} with {displayType('headgear')} and {displayType('footwear')}</Navbar.Text>
           <ButtonGroup>
             <Button
-              disabled={encounter.length < 0 || encounter.length > 5}
+              disabled={encounter.length < 0 || encounter.length > 4}
               onClick={(_) => setEncounter((e) => [...e, randomEnemy()])}>
               Add Random
             </Button>
