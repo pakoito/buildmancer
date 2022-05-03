@@ -120,14 +120,12 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               selectedButtons={selectedButtons}
               lastAction={lastAttacks.filter(a => a.origin === 'Player' && a.phase === 'MAIN').map(a => `${a.display}`).join(" -> ") ?? undefined}
               canAct={canAct} />
-            <Row>
-              {timeTravel != null && (
-                <ButtonGroup>
-                  {game.states.length > 1 && (<Button onClick={(_) => timeTravel.undo()}>[<i>A</i>] Undo ↩</Button>)}
-                  {timeTravel?.redo && (<Button onClick={(_) => timeTravel!!.redo!!()}>[<i>D</i>] Redo ↪</Button>)}
-                </ButtonGroup>
-              )}
-            </Row>
+            {timeTravel != null && (<Row>
+              <ButtonGroup>
+                {game.states.length > 1 && (<Button onClick={(_) => timeTravel.undo()}>[<i>A</i>] Undo ↩</Button>)}
+                {timeTravel.redo && (<Button onClick={(_) => timeTravel.redo!!()}>[<i>D</i>] Redo ↪</Button>)}
+              </ButtonGroup>
+            </Row>)}
             <Row>
               <ButtonGroup>
                 <Button onClick={(_) => hint(100)}><i>[H]</i> Hint</Button>
