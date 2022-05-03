@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/buildmancer/static/css/main.cc5c7ef2.chunk.css",
-    "main.js": "/buildmancer/static/js/main.e7010248.chunk.js",
-    "main.js.map": "/buildmancer/static/js/main.e7010248.chunk.js.map",
+    "main.js": "/buildmancer/static/js/main.69f2e905.chunk.js",
+    "main.js.map": "/buildmancer/static/js/main.69f2e905.chunk.js.map",
     "runtime-main.js": "/buildmancer/static/js/runtime-main.2514aad3.js",
     "runtime-main.js.map": "/buildmancer/static/js/runtime-main.2514aad3.js.map",
     "static/css/2.0a9ec390.chunk.css": "/buildmancer/static/css/2.0a9ec390.chunk.css",
@@ -22,6 +22,6 @@
     "static/css/2.0a9ec390.chunk.css",
     "static/js/2.478f49fa.chunk.js",
     "static/css/main.cc5c7ef2.chunk.css",
-    "static/js/main.e7010248.chunk.js"
+    "static/js/main.69f2e905.chunk.js"
   ]
 }
