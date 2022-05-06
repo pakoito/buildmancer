@@ -33,6 +33,7 @@ const EnemyCard: React.FC<{
     <Card.Body>
       <Card.Title>{enemy.lore.name} {enemyStats.hp.current > 0 ? "" : (<b>💀DEAD💀</b>)}</Card.Title>
       <Card.Text>❤:{enemyStats.hp.current} 🏹:{enemyStats.distance + 1}</Card.Text>
+      <Card.Text>Attack {enemyStats.attack.current}<br />Defence {enemyStats.defence.current}<br />Speed {enemyStats.speed.current}</Card.Text>
       {enemyStats.status.bleed.turns > 0 && ` ${enemyStats.status.bleed.turns} 🩸`}
       {latestAttack && (<Card.Text>Latest attack: {latestAttack}</Card.Text>)}
       <Card.Text>
