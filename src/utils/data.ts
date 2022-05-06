@@ -95,7 +95,7 @@ const weapons: Item[] = [
     ],
   },
   {
-    display: "Colossal Greatsword",
+    display: "Greatsword",
     tooltip: "Specialized in big damage",
     effects: [
       {
