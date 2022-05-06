@@ -18,11 +18,9 @@ const makeGame = (p: Build, e: Enemy, s: EnemyStats) =>
 
 
 const playGauntlet = (iterations: number, seed: string, p: Build, gauntlet: [Enemy, EnemyStats][]): ScoredPhenotype<Play>[][] =>
-  gauntlet.reduce((acc, current) => {
-    const [enemies, enemiesStats] = current;
-    const results = tinker(makeGame(p, enemies, enemiesStats), iterations, { playerSeed: seed });
-    return [...acc, results];
-  }, [] as ScoredPhenotype<Play>[][]);
+  gauntlet.reduce((acc, [enemies, enemiesStats]) =>
+    [...acc, tinker(makeGame(p, enemies, enemiesStats), iterations, { playerSeed: seed })],
+    [] as ScoredPhenotype<Play>[][]);
 
 const start = async ({ builds, encounters, encounterCount, iterations, output, takeTop, seed }: minimist.ParsedArgs) => {
   const players = (JSON.parse(readFileSync(builds).toString()) as BuildConfig[]).map(b => makeBuild(b));
@@ -30,17 +28,22 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
     console.log(`Please pass one of encounters or encounterCount`);
     return;
   }
-  const gauntlet: [Enemy, EnemyStats][] = encounters != null
-    ? encounters.map((e: number) => [enemies[e]])
-    : rangeArr(encounterCount).map(_ => randomEnemy());
+  const enc: number[][] | undefined = encounters;
+  const gauntlet: [Enemy, EnemyStats][][] = enc != null
+    ? enc.map(e => e.map(ee => enemies[ee]))
+    : rangeArr(encounterCount).map(_ =>
+      pipe(Math.random() * 6, (roll) =>
+        [randomEnemy(), ...(roll > 3 ? [randomEnemy()] : []), ...(roll > 5 ? [randomEnemy()] : [])]
+      )
+    );
 
   const playerSeed = seed ?? defaultTinkererOptions.playerSeed;
   const topScores = takeTop ?? 5;
-  const config = { iterations, playerSeed, topScores };
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n\n==========\nGAUNTLET\n==========\n${prettyjson.render(gauntlet)}\n==========\n`);
+  const config = { players: players.length, playerSeed, iterations, topScores };
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n\n==========\nGAUNTLET\n==========\n${prettyjson.render(gauntlet.map((a, idx) => [idx, a.map(b => b[0].lore.name)]))}\n==========\n`);
 
-  const results = players.map(p => playGauntlet(iterations, playerSeed, p, gauntlet));
-  const scores = results.map(ph => ph.reduce((acc, encounter) => acc + Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0), 0));
+  const results = players.map(p => gauntlet.map(encounter => playGauntlet(iterations, playerSeed, p, encounter)));
+  const scores = results.map(ph => ph.reduce((acc, gaunlet) => acc + gaunlet.reduce((acc, encounter) => acc + Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0), 0), 0));
   const winner = scores.reduce(([lead, player], score, idx) => score > lead ? [score, idx] : [lead, player], [0, 0]);
 
   console.log(`\n==========\nSCORES\n==========\n${prettyjson.render(scores)}\n==========\n`);
