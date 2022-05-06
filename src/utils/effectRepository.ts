@@ -96,14 +96,14 @@ const effectFunRepo: EffectFunctionRepository = {
   // #endregion BASIC
   // #region EFFECTS
   'Effect:Dodge': effectFun(
-    () => (_origin, play, currentState) => [play,
+    () => (origin, play, currentState) => [play,
       origin === 'Player'
         ? actions.changeStatusPlayer(currentState, (o) => ({ ...o, dodge: { active: true } }))
         : actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, dodge: { active: true } }))
     ]
   ),
   'Effect:Armor': effectFun(
-    ({ amount }) => (_, play, currentState) => [play,
+    ({ amount }) => (origin, play, currentState) => [play,
       origin === 'Player'
         ? actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: amount } }))
         : actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, armor: { amount: amount } }))

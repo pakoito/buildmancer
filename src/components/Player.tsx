@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
 import { DisabledSkills, Player, PlayerStats, safeEntries } from "../utils/types";
 import { Set } from 'immutable';
-import { clamp } from "src/utils/zFunDump";
+import { clamp } from "../utils/zFunDump";
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,

@@ -1,0 +1,38 @@
+[
+  {
+    "basic": 0,
+    "class": 3,
+    "weapon": 4,
+    "skill": 0,
+    "offhand": 1,
+    "consumable": 0,
+    "armor": 1,
+    "headgear": 0,
+    "footwear": 1,
+    "charm": 2
+  },
+  {
+    "basic": 0,
+    "class": 1,
+    "weapon": 4,
+    "skill": 1,
+    "offhand": 4,
+    "consumable": 0,
+    "armor": 3,
+    "headgear": 1,
+    "footwear": 1,
+    "charm": 2
+  },
+  {
+    "basic": 0,
+    "class": 1,
+    "weapon": 5,
+    "skill": 0,
+    "offhand": 1,
+    "consumable": 0,
+    "armor": 2,
+    "headgear": 0,
+    "footwear": 2,
+    "charm": 0
+  }
+]

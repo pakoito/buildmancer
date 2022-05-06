@@ -5,7 +5,7 @@ import { MonsterTarget, Play } from '../utils/types';
 import { previousState } from '../utils/data';
 import prettyjson from 'prettyjson';
 import { Seq } from 'immutable';
-import { rangeArr } from 'src/utils/zFunDump';
+import { rangeArr } from '../utils/zFunDump';
 
 export type TinkererOptions = typeof defaultTinkererOptions & { turns?: number };
 

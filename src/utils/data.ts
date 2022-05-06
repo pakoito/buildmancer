@@ -9,6 +9,21 @@ export const previousState = (play: Play): Snapshot => play.states[play.states.l
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
+export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) => ({
+  debug: build.debug[DEBUG ? 1 : 0],
+  basic: rng.pickone(build.basic),
+  class: rng.pickone(build.class),
+  skill: rng.pickone(build.skill),
+  armor: rng.pickone(build.armor),
+  weapon: rng.pickone(build.weapon),
+  offhand: rng.pickone(build.offhand),
+  footwear: rng.pickone(build.footwear),
+  headgear: rng.pickone(build.headgear),
+  charm: rng.pickone(build.charm),
+  consumable: rng.pickone(build.consumable),
+  ...buildOverride,
+});
+
 export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partial<Build>): [Player, PlayerStats] => {
   const rng = new Chance();
   return [{
@@ -17,20 +32,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
       name: randomName(),
       age: rng.age(),
     },
-    build: {
-      debug: build.debug[DEBUG ? 1 : 0],
-      basic: rng.pickone(build.basic),
-      class: rng.pickone(build.class),
-      skill: rng.pickone(build.skill),
-      armor: rng.pickone(build.armor),
-      weapon: rng.pickone(build.weapon),
-      offhand: rng.pickone(build.offhand),
-      footwear: rng.pickone(build.footwear),
-      headgear: rng.pickone(build.headgear),
-      charm: rng.pickone(build.charm),
-      consumable: rng.pickone(build.consumable),
-      ...buildOverride,
-    }
+    build: randomBuild(rng, buildOverride)
   }, {
     hp: makeStat(10),
     stamina: makeStat(6),

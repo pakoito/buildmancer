@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "plugins": [
-      {
-        "transform": "typescript-is/lib/transform-inline/transformer"
-      }
-    ],
+    "plugins": [],
     "target": "es5",
     "lib": [
       "dom",

@@ -5,7 +5,7 @@ import useScroll from "../hooks/useScroll";
 import { Build, Item, Player, PlayerStats, safeEntries } from "../utils/types";
 import { build, randomEnemy, randomName, randomPlayer } from "../utils/data";
 import { Set } from 'immutable';
-import { buildPlayer } from "src/utils/playGame";
+import { buildPlayer } from "../utils/playGame";
 
 const systemBuildKeys: Set<keyof Build> = Set(['debug', 'basic']);
 
