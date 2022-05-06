@@ -10,13 +10,8 @@ export function extractFunction({ effects }: Effect): ReduceFun {
     callEffectFun(effectFunRepo, index, parameters)(origin, ...acc), [play, startState]);
 }
 
-const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
-  // TODO check direction of the fold
-  (funs.length > 1
-    ? funs.reduce((acc, value) => (params) => (origin, play, oldState) => {
-      const [newPlay, newState] = acc(params)(origin, play, oldState);
-      return value(params)(origin, newPlay, newState);
-    }) : funs[0]) as EffectFun<T>;
+const effectFun = <T>(fun: ParametrizedFun<T>): EffectFun<T> =>
+  ((params) => (origin, play, oldState) => fun(params)(origin, play, oldState)) as EffectFun<T>;
 
 const applyPoison = (play: Play, currentState: Snapshot, { target, turns }: ReduceFunctionT['Reduce:PoisonBOT']) =>
   pipe(
@@ -73,8 +68,13 @@ const engineFunctions = {
     () => (_, play, currentState) => [play, { ...currentState, player: { ...currentState.player, hp: { ...currentState.player.hp, current: 0 } } }]
   ),
   'Utility:Cleanup': effectFun(
-    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false }, stun: { active: false } }))],
-    () => (_origin, play, currentState) => [play, currentState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false }, stun: { active: false } })), currentState)],
+    () => (_origin, play, currentState) => [play,
+      pipe(
+        actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false }, stun: { active: false } })),
+        (newState) =>
+          newState.enemies.reduce((acc, v, idx) => actions.changeStatusMonster(acc, idx as MonsterTarget, (o) => ({ ...o, armor: { amount: 0 }, bleed: { turns: Math.max(o.bleed.turns - 1, 0) }, dodge: { active: false }, stun: { active: false } })), currentState)
+      )
+    ],
   ),
 }
 
