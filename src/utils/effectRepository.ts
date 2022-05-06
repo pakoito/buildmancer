@@ -1,7 +1,7 @@
 import { Opaque } from "type-fest";
 import { allRanges, enemies, makeStat } from "./data";
 import { callEffectFun, Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, FunIndex, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Status, Target } from "./types";
-import { clamp } from "./zFunDump";
+import { clamp, pipe } from "./zFunDump";
 
 // #region Effect funs
 
@@ -18,6 +18,17 @@ const effectFun = <T>(...funs: Nel<ParametrizedFun<T>>): EffectFun<T> =>
       return value(params)(origin, newPlay, newState);
     }) : funs[0]) as EffectFun<T>;
 
+const applyPoison = (play: Play, currentState: Snapshot, { target, turns }: ReduceFunctionT['Reduce:PoisonBOT']) =>
+  pipe(
+    target === 'Player'
+      ? actions.changeStatPlayer(currentState, ({ hp }) => ({ hp: { ...hp, current: Math.max(0, hp.current - 1) } }))
+      : actions.changeStatMonster(currentState, currentState.target, ({ hp }) => ({ hp: { ...hp, current: Math.max(0, hp.current - 1) } })),
+    (newState) =>
+      turns > 0
+        ? actions.addBotEffect(newState, 'Player', { display: `Poison ${target === 'Player' ? 'Player' : play.enemies[target]!!.lore.name + "[" + (target + 1)} + "]"`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])] })
+        : newState
+  )
+
 type SystemFunctionT = {
   'Utility:Cleanup': undefined;
   'Debug:GGWP': undefined;
@@ -29,10 +40,16 @@ type BasicFunctionT = {
   'Basic:Attack': { amount: number };
   'Basic:Stamina': { amount: number };
 }
+export type EffectTarget = 'Player' | 'Monster';
 type StatusFunctionT = {
-  'Effect:Poison': { target: Target; lifespan: number };
+  'Effect:Poison': { target: EffectTarget; turns: number };
   'Effect:Dodge': undefined;
   'Effect:Armor': { amount: number };
+  'Effect:Stun': undefined;
+  'Effect:Bleed': { target: EffectTarget; turns: number };
+  'Effect:Defence': { target: EffectTarget; amount: number };
+  'Effect:Speed': { target: EffectTarget; amount: number };
+  'Effect:Attack': { target: EffectTarget; amount: number };
 }
 type MonsterFunctionT = {
   'Monster:Summon': { enemy: number };
@@ -42,11 +59,10 @@ type MonsterFunctionT = {
 }
 type ItemFunctionT = {
   'Wand:MagicBolt': undefined;
-  'Axe:Chop': undefined;
-  'Axe:Cut': undefined;
-  'Axe:Bleed': undefined;
-  'Hook:GetHere': undefined;
   'BootsOfFlight:EOT': undefined;
+}
+type ReduceFunctionT = {
+  'Reduce:PoisonBOT': { target: Target; turns: number };
 }
 
 const engineFunctions = {
@@ -80,18 +96,64 @@ const effectFunRepo: EffectFunctionRepository = {
   // #endregion BASIC
   // #region EFFECTS
   'Effect:Dodge': effectFun(
-    () => (_origin, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, dodge: { active: true } }))]
+    () => (_origin, play, currentState) => [play,
+      origin === 'Player'
+        ? actions.changeStatusPlayer(currentState, (o) => ({ ...o, dodge: { active: true } }))
+        : actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, dodge: { active: true } }))
+    ]
   ),
   'Effect:Armor': effectFun(
-    () => (_, play, currentState) => [play, actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: 3 } }))]
+    ({ amount }) => (_, play, currentState) => [play,
+      origin === 'Player'
+        ? actions.changeStatusPlayer(currentState, (o) => ({ ...o, armor: { amount: amount } }))
+        : actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, armor: { amount: amount } }))
+    ]
+  ),
+  'Effect:Stun': effectFun(
+    () => (origin, play, currentState) => [play,
+      origin === 'Player'
+        ? actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, stun: { active: true } }))
+        : actions.changeStatusPlayer(currentState, (o) => ({ ...o, stun: { active: true } }))
+    ]
+  ),
+  'Effect:Bleed': effectFun(
+    ({ target, turns }) => (_, play, currentState) => [play,
+      target !== 'Player'
+        ? actions.changeStatusPlayer(currentState, (o) => ({ ...o, bleed: { turns: turns } }))
+        : actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, bleed: { turns: turns } }))
+    ]
   ),
   'Effect:Poison': effectFun(
-    ({ target }) => (origin, play, currentState) => [play, target === 'Player' ? actions.attackPlayer(currentState, 1) : actions.attackMonster(currentState, target, 1)],
-    (params) => (origin, play, currentState) => [play,
-      (params.target !== 'Player' && currentState.enemies[params.target]!!.hp.current > 0)
-        && (params.lifespan > 0)
-        ? actions.addEotEffect(currentState, origin, { display: `Poison ${play.enemies[params.target]!!.lore.name} [${params.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Effect:Poison', { ...params, lifespan: params.lifespan - 1 }])] })
-        : currentState],
+    ({ target, turns }) => (_, play, currentState) => [play,
+      pipe(target === 'Player' ? 'Player' as Target : currentState.target, (gameTarget) =>
+        applyPoison(play, currentState, { target: gameTarget, turns })
+      )
+    ],
+  ),
+  'Reduce:PoisonBOT': effectFun(
+    (params) => (_, play, currentState) =>
+      [play, applyPoison(play, currentState, params)],
+  ),
+  'Effect:Attack': effectFun(
+    ({ target, amount }) => (_, play, currentState) => [play,
+      target === 'Player'
+        ? actions.changeStatPlayer(currentState, ({ attack }) => ({ attack: { ...attack, current: Math.min(attack.current + amount, attack.max) } }))
+        : actions.changeStatMonster(currentState, currentState.target, ({ attack }) => ({ attack: { ...attack, current: Math.min(attack.current + amount, attack.max) } }))
+    ]
+  ),
+  'Effect:Speed': effectFun(
+    ({ target, amount }) => (_, play, currentState) => [play,
+      target === 'Player'
+        ? actions.changeStatPlayer(currentState, ({ speed }) => ({ speed: { ...speed, current: Math.min(speed.current + amount, speed.max) } }))
+        : actions.changeStatMonster(currentState, currentState.target, ({ speed }) => ({ speed: { ...speed, current: Math.min(speed.current + amount, speed.max) } }))
+    ]
+  ),
+  'Effect:Defence': effectFun(
+    ({ target, amount }) => (_, play, currentState) => [play,
+      target === 'Player'
+        ? actions.changeStatPlayer(currentState, ({ defence }) => ({ defence: { ...defence, current: Math.min(defence.current + amount, defence.max) } }))
+        : actions.changeStatMonster(currentState, currentState.target, ({ defence }) => ({ defence: { ...defence, current: Math.min(defence.current + amount, defence.max) } }))
+    ]
   ),
   // #endregion EFFECTS
   // #region MONSTERS
@@ -109,22 +171,6 @@ const effectFunRepo: EffectFunctionRepository = {
   ),
   // #endregion MONSTERS
   // #region ITEMS
-  'Axe:Chop': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)]
-  ),
-  'Axe:Cut': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
-    () => (origin, play, currentState) => [play,
-      actions.addEotEffect(currentState, origin, { display: `Poison ${play.enemies[currentState.target]!!.lore.name} [${currentState.target + 1}]`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Effect:Poison', { target: currentState.target, lifespan: 2 }])] })]
-  ),
-  'Axe:Bleed': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 2)],
-    () => (_, play, currentState) => [play, actions.changeStatusMonster(currentState, currentState.target, (o) => ({ ...o, bleed: { turns: o.bleed.turns + 5 } }))]
-  ),
-  'Hook:GetHere': effectFun(
-    () => (_, play, currentState) => [play, actions.attackMonster(currentState, currentState.target, 3)],
-    () => (_origin, play, currentState) => [play, actions.changeDistance(currentState, currentState.target, -1)]
-  ),
   'BootsOfFlight:EOT': effectFun(
     () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, 2), currentState)]
   ),
@@ -141,7 +187,7 @@ const effectFunRepo: EffectFunctionRepository = {
   // #endregion ITEMS
 };
 
-export type EffectFunctionT = SystemFunctionT & BasicFunctionT & StatusFunctionT & MonsterFunctionT & ItemFunctionT;
+export type EffectFunctionT = SystemFunctionT & BasicFunctionT & StatusFunctionT & ReduceFunctionT & MonsterFunctionT & ItemFunctionT;
 
 export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
 export type ParametrizedFun<T> = (params: T) => ReduceFun;
@@ -182,6 +228,11 @@ const updatePlayerStat = <T extends keyof PlayerStats>(curr: Snapshot, key: T, m
 const actions = {
   attackPlayer,
   attackMonster,
+  changeStatPlayer: updatePlayer,
+  changeStatMonster: (curr: Snapshot, target: MonsterTarget, f: (stats: EnemyStats) => Partial<EnemyStats>): Snapshot => ({
+    ...curr,
+    enemies: updateMonster(curr.enemies, target, f),
+  }),
   changeStatusPlayer: (curr: Snapshot, updateStatus: (oldStatus: Status) => Status): Snapshot => ({
     ...curr,
     player: { ...curr.player, status: updateStatus(curr.player.status) }
