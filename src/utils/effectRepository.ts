@@ -1,6 +1,6 @@
 import { Opaque } from "type-fest";
 import { allRanges, enemies, makeStat } from "./data";
-import { callEffectFun, Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, FunIndex, MonsterTarget, Nel, Play, PlayerStats, Snapshot, Status, Target } from "./types";
+import { callEffectFun, Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, FunIndex, MonsterTarget, Play, PlayerStats, Snapshot, Status, Target } from "./types";
 import { clamp, pipe } from "./zFunDump";
 
 // #region Effect funs
