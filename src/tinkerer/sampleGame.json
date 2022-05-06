@@ -13,9 +13,9 @@
   "footwear": 0,
   "charm": 0,
   "player": {
-    "hp": 25,
-    "stamina": 5,
-    "staminaPerTurn": 1,
+    "hp": 10,
+    "stamina": 6,
+    "staminaPerTurn": 2,
     "speed": 0,
     "attack": 0,
     "defence": 0

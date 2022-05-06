@@ -277,16 +277,16 @@ function attackPlayer(curr: Snapshot, amount: number): Snapshot {
 
 export type StatsFunIndex = keyof typeof statsRepository;
 export const statsRepository = {
-  '+Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current + 10) }, enemies],
+  '+Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current + 3) }, enemies],
   '+StaPerTurn': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 1) }, enemies],
-  '+Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current + 3) }, enemies],
+  '+Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current + 2) }, enemies],
   '+Attack': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, attack: makeStat(player.attack.current + 1) }, enemies],
   '+Speed': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, speed: makeStat(player.speed.current + 1) }, enemies],
   '+Defence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, defence: makeStat(player.defence.current + 1) }, enemies],
 
-  '-Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current - 10) }, enemies],
+  '-Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, hp: makeStat(player.hp.current - 3) }, enemies],
   '-StaPerTurn': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current - 1) }, enemies],
-  '-Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current - 3) }, enemies],
+  '-Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, stamina: makeStat(player.stamina.current - 2) }, enemies],
   '-Attack': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, attack: makeStat(player.attack.current - 1) }, enemies],
   '-Speed': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, speed: makeStat(player.speed.current - 1) }, enemies],
   '-Defence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [{ ...player, defence: makeStat(player.defence.current - 1) }, enemies],

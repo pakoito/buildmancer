@@ -32,8 +32,8 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
       ...buildOverride,
     }
   }, {
-    hp: makeStat(25),
-    stamina: makeStat(10),
+    hp: makeStat(10),
+    stamina: makeStat(6),
     staminaPerTurn: makeStat(2),
     speed: makeStat(0),
     attack: makeStat(0),
@@ -64,7 +64,7 @@ const weapons: Item[] = [
       {
         display: "Chop",
         tooltip: "Chop",
-        effects: [effectFunCall("Axe:Chop")],
+        effects: [effectFunCall(["Basic:Attack", { amount: 3 }])],
         priority: 2,
         stamina: 2,
         range: makeRange(0, 1),
