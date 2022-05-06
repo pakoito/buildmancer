@@ -48,9 +48,9 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   await pouch.bulkDocs(docs).catch(e => console.log(JSON.stringify(e)));
 }
 
-const start = async ({ json, iterations, seed, output, db }: minimist.ParsedArgs) => {
+const start = async ({ json, iterations, output, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed, iterations })}\n${paramsRender(params)}\n==========\n`);
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed: params.seed, iterations })}\n${paramsRender(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
   const results = tinker(makeGame(params), iterations, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
