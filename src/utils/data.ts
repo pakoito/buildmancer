@@ -470,21 +470,6 @@ export const build: BuildRepository = {
           range: makeRange(0, 1),
         }
       ]
-
-    },
-    {
-      display: "Mage",
-      passives: ["+StaPerTurn", "+Stamina", "-Health", "-Speed"],
-      effects: [
-        {
-          display: "Just having a thought",
-          tooltip: "Restores stamina for the next action",
-          priority: 4,
-          stamina: 0,
-          range: selfRange,
-          effects: [effectFunCall(['Basic:Stamina', { amount: 999 }])]
-        },
-      ]
     },
     {
       display: "Rogue",
@@ -503,6 +488,34 @@ export const build: BuildRepository = {
     {
       display: "Berserk",
       passives: ["+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
+    },
+    {
+      display: "Mage",
+      passives: ["+StaPerTurn", "+Stamina", "-Health", "-Speed"],
+      effects: [
+        {
+          display: "Just having a thought",
+          tooltip: "Restores stamina for the next action",
+          priority: 4,
+          stamina: 0,
+          range: selfRange,
+          effects: [effectFunCall(['Basic:Stamina', { amount: 999 }])]
+        },
+      ]
+    },
+    {
+      display: "Cleric",
+      passives: ["+Defence", "+Stamina"],
+      effects: [
+        {
+          display: "Minor Healing",
+          tooltip: "Restores some HP",
+          effects: [effectFunCall(["Basic:HP", { amount: 2 }])],
+          priority: 4,
+          stamina: 5,
+          range: selfRange,
+        }
+      ]
     },
   ],
   skill: [

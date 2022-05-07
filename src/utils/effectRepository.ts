@@ -34,6 +34,7 @@ type BasicFunctionT = {
   'Basic:Move': { amount: number };
   'Basic:Attack': { amount: number };
   'Basic:Stamina': { amount: number };
+  'Basic:HP': { amount: number };
 }
 export type EffectTarget = 'Player' | 'Monster';
 type StatusFunctionT = {
@@ -92,6 +93,9 @@ const effectFunRepo: EffectFunctionRepository = {
   ),
   'Basic:Stamina': effectFun(
     ({ amount }) => (_origin, play, currentState) => [play, actions.modifyPlayerStamina(currentState, amount)]
+  ),
+  'Basic:HP': effectFun(
+    ({ amount }) => (_origin, play, currentState) => [play, actions.changeStatPlayer(currentState, ({ hp }) => ({ hp: { ...hp, current: clamp(hp.current + amount, 0, hp.max) } }))]
   ),
   // #endregion BASIC
   // #region EFFECTS
