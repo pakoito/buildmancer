@@ -58,7 +58,6 @@ export const defaultStatus: Status = {
 }
 
 
-// TODO
 const weapons: Item[] = [
   {
     display: "Sword",
@@ -502,7 +501,7 @@ export const build: BuildRepository = {
     },
     {
       display: "Berserk",
-      passives: ["+Attack", "+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
+      passives: ["+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
     },
   ],
   skill: [
