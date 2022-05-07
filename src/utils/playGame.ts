@@ -25,10 +25,10 @@ export const turnRng = (play: Play, turn: number): ((min: number, max: number) =
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
-  Object.values(player.build).flatMap((s) => s.passives ?? []).map(i => statsRepository[i]);
+  safeEntries(player.build).flatMap(([_k, s]) => s.passives ?? []).map(i => statsRepository[i]);
 
 export const playerActions = (player: Player, inventoryStats: InventoryStats): InventoryEffect[] =>
-  Object.values(player.build).flatMap((s) => (inventoryStats[s.display] ?? { used: 0 }).used < (s.amount ?? 999) ? s.effects ?? [] : []);
+  safeEntries(player.build).flatMap(([_k, s]) => (inventoryStats[s.display] ?? { used: 0 }).used < (s.amount ?? 999) ? s.effects ?? [] : []);
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.bot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
