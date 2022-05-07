@@ -114,6 +114,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
             <PlayerCard
               player={player}
               playerStats={playerStats}
+              inventoryStats={inventoryStats}
               disabledSkills={disabledSkills}
               setDisabledSkills={setDisabledSkills}
               onClickEffect={(idx) => handlePlayerEffect(idx)}

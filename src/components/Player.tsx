@@ -1,19 +1,21 @@
 import React from "react";
 import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
-import { DisabledSkills, Player, PlayerStats, safeEntries } from "../utils/types";
+import { DisabledSkills, InventoryStats, Player, PlayerStats, safeEntries } from "../utils/types";
 import { Set } from 'immutable';
 import { clamp } from "../utils/zFunDump";
+import { playerActions } from "../utils/playGame";
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,
   player: Player;
   playerStats: PlayerStats;
+  inventoryStats: InventoryStats;
   canAct: boolean;
   lastAction: string | undefined;
   onClickEffect: (index: number) => void;
   disabledSkills: DisabledSkills;
   setDisabledSkills: (skills: DisabledSkills) => void;
-}> = ({ selectedButtons, player, playerStats, onClickEffect, canAct, lastAction, disabledSkills, setDisabledSkills }) => {
+}> = ({ selectedButtons, player, playerStats, inventoryStats, onClickEffect, canAct, lastAction, disabledSkills, setDisabledSkills, }) => {
   const passives = safeEntries(player.build)
     .map(([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const);
 
@@ -63,8 +65,7 @@ const PlayerCard: React.FC<{
     </>)}
     {canAct && (<Card.Body>
       <Stack direction="horizontal" gap={2}>
-        {Object.values(player.build)
-          .flatMap((a) => a.effects ?? [])
+        {playerActions(player, inventoryStats)
           .map((e, idx) => (<OverlayTrigger
             key={e.display}
             placement="top"
