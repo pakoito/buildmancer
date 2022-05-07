@@ -23,7 +23,7 @@ const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () 
     if (e.target?.fileData?.files[0] != null) {
       const reader = new FileReader();
       reader.onloadend = (ev: ProgressEvent<FileReader>) => {
-        const result = ev.target?.result as string;
+        const result = ev.target?.result as string | undefined;
         if (result != null) {
           load(result);
         } else {
