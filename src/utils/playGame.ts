@@ -240,5 +240,5 @@ export const scoreGame = (play: Play): number => {
   const staminaLoss = Math.max(0, firstState.player.stamina.max - lastState.player.stamina.current) / firstState.player.hp.max; // 0-1
   const enemies = lastState.enemies.length; // 1-5
 
-  return enemies * ((500 * hpLoss) + (150 * staminaLoss) + (500 - (turns * 10)));
+  return Math.floor(enemies * ((500 * hpLoss) + (150 * staminaLoss) + (500 - (turns * 10))));
 }

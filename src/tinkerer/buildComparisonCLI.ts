@@ -5,7 +5,7 @@ import { enemies, randomEnemy, randomPlayer } from '../utils/data';
 import tinker, { defaultTinkererOptions } from './tinkerer';
 import { Build, Enemies, EnemiesStats, Enemy, EnemyStats, Play, safeEntries } from '../utils/types';
 import { pipe, rangeArr } from '../utils/zFunDump';
-import { makeGameNew } from '../utils/playGame';
+import { makeGameNew, scoreGame } from '../utils/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
@@ -51,7 +51,9 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
   const winner: [number, number] = scores.reduce(([player, lead], score, idx) => score > lead ? [idx, score] : [player, lead], [0, 0]);
   const scoresPerGame: { [k: number]: { total: number, [k: number]: number } } = results.reduce((acc, ga, idx) => ({ ...acc, [idx]: ga.reduce((acc, encounter, idx) => ({ ...acc, [gauntlet[idx][0]]: Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0) }), { total: scores[idx] }) }), {});
   console.log(`\n==========\nSCORES\n==========\n${prettyjson.render(scoresPerGame)}\n==========\n`);
-  console.log(`\n==========\nWINNER\n==========\n${prettyjson.render({ Player: winner[0] })}\n\n${prettyjson.render(safeEntries(players[winner[0]]).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}))}\n\n${prettyjson.render(scoresPerGame[winner[0]])}\n==========\n`);
+  const pointsPerGame: { [k: number]: { total: number, [k: number]: number } } = results.reduce((acc, ga, idx) => ({ ...acc, [idx]: ga.reduce((acc, encounter, idx) => pipe(Seq(encounter).take(topScores).reduce((acc, result) => acc + scoreGame(result.phenotype), 0), points => ({ ...acc, total: acc.total + points, [gauntlet[idx][0]]: points })), { total: 0 }) }), {});
+  console.log(`\n==========\nPOINTS\n==========\n${prettyjson.render(pointsPerGame)}\n==========\n`);
+  console.log(`\n==========\nWINNER\n==========\n${prettyjson.render({ Player: winner[0] })}\n\n${prettyjson.render(safeEntries(players[winner[0]]).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}))}\n\n${prettyjson.render(scoresPerGame[winner[0]])}\n\n${prettyjson.render(pointsPerGame[winner[0]])}\n==========\n`);
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
