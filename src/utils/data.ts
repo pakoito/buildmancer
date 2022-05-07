@@ -526,12 +526,12 @@ export const build: BuildRepository = {
     {
       display: "Cleric",
       passives: ["+Defence", "+Stamina"],
-      amount: 5,
+      amount: 3,
       effects: [
         {
           display: "Minor Healing",
           tooltip: "Restores some HP",
-          effects: [effectFunCall(["Basic:HP", { amount: 2 }])],
+          effects: [effectFunCall(["Basic:HP", { amount: 5 }])],
           priority: 3,
           stamina: 3,
           range: selfRange,
@@ -776,7 +776,7 @@ export const build: BuildRepository = {
           display: "Healing!",
           tooltip: "Restores some HP",
           effects: [
-            effectFunCall(["Basic:HP", { amount: 2 }]),
+            effectFunCall(["Basic:HP", { amount: 4 }]),
             effectFunCall(["Inventory:Consume", { target: "Healing Potion" }])
           ],
           priority: 4,
