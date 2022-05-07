@@ -462,7 +462,7 @@ export const build: BuildRepository = {
       passives: ["+Attack", "+Defence", "+Stamina"],
       effects: [
         {
-          display: "Strategic Kick",
+          display: "Well placed kick",
           tooltip: "Last resource attack",
           effects: [effectFunCall(["Basic:Attack", { amount: 2 }])],
           priority: 2,
@@ -476,7 +476,7 @@ export const build: BuildRepository = {
       passives: ["+Speed", "+Speed", "-Attack", "-Stamina"],
       effects: [
         {
-          display: "Strategic retreat",
+          display: "Strategic Retreat",
           tooltip: "Jump backwards",
           effects: [effectFunCall(["Basic:Move", { amount: 999 }])],
           priority: 2,
@@ -488,10 +488,30 @@ export const build: BuildRepository = {
     {
       display: "Berserk",
       passives: ["+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
+      amount: 1,
+      effects: [
+        {
+          display: "All or Nothing!",
+          tooltip: "Deals massive damage and leaves you weakened",
+          priority: 2,
+          stamina: 0,
+          range: makeRange(0, 1, 2),
+          effects: [
+            effectFunCall(['Basic:Move', { amount: -5 }]),
+            effectFunCall(['Basic:Attack', { amount: 2 }]),
+            effectFunCall(['Basic:Attack', { amount: 2 }]),
+            effectFunCall(['Basic:Attack', { amount: 2 }]),
+            effectFunCall(['Basic:Attack', { amount: 2 }]),
+            effectFunCall(['Effect:Defence', { target: 'Player', amount: -3 }]),
+            effectFunCall(['Effect:Speed', { target: 'Player', amount: -1 }]),
+          ]
+        },
+      ]
     },
     {
       display: "Mage",
       passives: ["+StaPerTurn", "+Stamina", "-Health", "-Speed"],
+      amount: 2,
       effects: [
         {
           display: "Just having a thought",
@@ -506,6 +526,7 @@ export const build: BuildRepository = {
     {
       display: "Cleric",
       passives: ["+Defence", "+Stamina"],
+      amount: 5,
       effects: [
         {
           display: "Minor Healing",
