@@ -1,20 +1,17 @@
-import React, { useState } from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
 import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from "./utils/types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import Game from "./components/Game";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import { makeGameNew, makeGameNextLevel, handlePlayerEffect, PlayState, playState, setDisabledSkills, setSelected } from "./utils/playGame";
-import tinkerer from "./tinkerer/tinkerer";
-import { Seq } from "immutable";
-import { previousState, randomEnemy, randomPlayer } from "./utils/data";
+import { makeGameNew, makeGameNextLevel, PlayState } from "./utils/playGame";
+import { randomEnemy, randomPlayer } from "./utils/data";
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from "./stateMachines/menuStateMachine";
 import Menu from "./components/menus/Menu";
-import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import SingleGame from "./components/menus/SingleGame";
+import LoadScreen from "./components/menus/LoadScreen";
 
 function App() {
   const [state, send] = useMachine(gameMenuMachine, { devTools: true });
@@ -163,106 +160,6 @@ function App() {
     default:
       return <>{JSON.stringify(state.value)}</>;
   }
-}
-
-const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () => void }) => {
-  const [loadError, setLoadError] = useState<string | undefined>();
-  const onFormSubmit = (e: any) => {
-    e.preventDefault();
-    const load = (data: string) => {
-      try {
-        const play = JSON.parse(data) as Play;
-        onLoad(play);
-      } catch (e) {
-        setLoadError("Failed to Load");
-      }
-    }
-    if (e.target?.fileData?.files[0] != null) {
-      const reader = new FileReader();
-      reader.onloadend = (ev: ProgressEvent<FileReader>) => {
-        const result = ev.target?.result as string;
-        if (result != null) {
-          load(result);
-        } else {
-          setLoadError("Failed to read file");
-        }
-      };
-      reader.readAsText(e.target.fileData.files[0])
-    } else if (e.target?.rawData?.value != null) {
-      load(e.target.rawData.value);
-    }
-  };
-  return <Form onSubmit={onFormSubmit}>
-    <Col>
-      <Row>
-        {loadError && (<Alert variant={'danger'}>{loadError}</Alert>)}
-      </Row>
-      <Row>
-        <Form.Group>
-          <Form.Label>Load File</Form.Label>
-          <Form.Control type="file" name="fileData" accept=".json" />
-          <Form.Text muted>Select the file to load</Form.Text>
-        </Form.Group>
-      </Row>
-      <Row>
-        <Form.Group>
-          <Form.Label>Load</Form.Label>
-          <Form.Control name="rawData" as="textarea" rows={3} placeholder="Save Data" />
-          <Form.Text muted>Paste the text of your savegame here</Form.Text>
-          <br />
-        </Form.Group>
-      </Row>
-      <Button variant="primary" type="submit">Load</Button>
-    </Col>
-    <Button onClick={onMenu}>MAIN MENU</Button>
-  </Form>;
-}
-
-const SingleGame = ({ play, timeTravel, onGameEnd, onMenu }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void, onMenu: () => void }) => {
-  const [game, setGame] = React.useState<Play>(play);
-  const [redo, setRedo] = React.useState<Snapshot[]>([]);
-
-  React.useEffect(() => {
-    setGame(play);
-  }, [play]);
-
-  React.useEffect(() => {
-    const gameState = playState(game);
-    const hasEnded = gameState !== 'playing';
-    if (hasEnded) {
-      onGameEnd(gameState, game);
-    }
-  }, [game]);
-
-  const timeTravelObj = timeTravel ? {
-    redo: redo.length > 0 ? (() => {
-      const newRedo = [...redo];
-      const latest = newRedo.pop() as Snapshot;
-      setRedo(newRedo);
-      setGame({ ...game, states: [...game.states, latest] });
-    }) : undefined,
-    undo: () => {
-      setRedo([...redo, previousState(game)]);
-      setGame({ ...game, states: [game.states[0], ...game.states.slice(1, -1)] });
-    }
-  } : undefined;
-
-  return (<Game
-    game={game}
-    timeTravel={timeTravelObj}
-    onMenu={onMenu}
-    setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
-    setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
-    handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
-    solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
-    hint={(iterations) =>
-      setGame({
-        ...game,
-        states: [...game.states, Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
-      })
-    }
-  />
-  );
 }
 
 export default App;
