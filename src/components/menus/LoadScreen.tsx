@@ -50,9 +50,9 @@ const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () 
             <Form.Text muted>Paste the text of your savegame here</Form.Text>
           </Form.Group>
         </Row>
+        <br />
         <Button variant="primary" type="submit">Load</Button>
       </Col>
-      <br />
       <br />
       <Button onClick={onMenu}>MAIN MENU</Button>
     </Container>
