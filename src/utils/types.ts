@@ -65,8 +65,7 @@ export interface EnemyStats {
   status: Status
 };
 export type InventoryStats = {
-  // FIXME not the real values
-  [k in Build['consumable']['display']]: { used: number }
+  [k in Item['display']]: { used: number }
 };
 
 export type Priorities = 5;
