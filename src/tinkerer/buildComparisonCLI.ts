@@ -47,7 +47,7 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
 
 
   const results = players.map(p => playGauntlet(iterations, playerSeed, p, gauntlet));
-  const scores: number[] = results.map(ph => ph.reduce((acc, gaunlet) => acc + Seq(gaunlet).take(topScores).reduce((acc, result) => acc + result.score, 0), 0));
+  const scores: number[] = Seq(results).map(gaunlet => Seq(gaunlet).reduce((acc, encounter) => acc + Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0), 0)).toArray();
   const winner: [number, number] = scores.reduce(([lead, player], score, idx) => score > lead ? [score, idx] : [lead, player], [0, 0]);
 
   console.log(`\n==========\nWINNER\n==========\n${winner[1]} with score ${winner[0]}\n\n${prettyjson.render(safeEntries(players[winner[1]]).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}))}\n==========\n`);
