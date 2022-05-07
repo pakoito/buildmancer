@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Col, Row, Alert, Button, Container } from "react-bootstrap";
-import { Play } from "src/utils/types";
+import { Play } from "../../utils/types";
+import { playSchema } from "../../utils/typesSchemas";
 
 const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () => void }) => {
   const [loadError, setLoadError] = React.useState<string | undefined>();
@@ -8,10 +9,15 @@ const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () 
     e.preventDefault();
     const load = (data: string) => {
       try {
-        const play = JSON.parse(data) as Play;
-        onLoad(play);
+        const playRaw = JSON.parse(data);
+        try {
+          playSchema.parse(playRaw);
+          onLoad(playRaw as Play);
+        } catch (e) {
+          setLoadError("Failed to Load - Invalid Data");
+        }
       } catch (e) {
-        setLoadError("Failed to Load");
+        setLoadError("Failed to Load - Bad Data");
       }
     }
     if (e.target?.fileData?.files[0] != null) {

@@ -1,9 +1,9 @@
 import { Seq } from "immutable";
 import React from "react";
-import tinkerer from "src/tinkerer/tinkerer";
-import { previousState } from "src/utils/data";
-import { PlayState, playState, setSelected, setDisabledSkills, handlePlayerEffect } from "src/utils/playGame";
-import { Play, Snapshot } from "src/utils/types";
+import tinkerer from "../../tinkerer/tinkerer";
+import { previousState } from "../../utils/data";
+import { PlayState, playState, setSelected, setDisabledSkills, handlePlayerEffect } from "../../utils/playGame";
+import { Play, Snapshot } from "../../utils/types";
 import Game from "../Game";
 
 const SingleGame = ({ play, timeTravel, onGameEnd, onMenu }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void, onMenu: () => void }) => {
