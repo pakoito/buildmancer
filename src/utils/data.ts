@@ -504,6 +504,7 @@ export const build: BuildRepository = {
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Effect:Defence', { target: 'Player', amount: -3 }]),
             effectFunCall(['Effect:Speed', { target: 'Player', amount: -1 }]),
+            effectFunCall(['Inventory:Consume', { target: "All or Nothing!" }]),
           ]
         },
       ]
@@ -519,7 +520,10 @@ export const build: BuildRepository = {
           priority: 4,
           stamina: 0,
           range: selfRange,
-          effects: [effectFunCall(['Basic:Stamina', { amount: 999 }])]
+          effects: [
+            effectFunCall(['Basic:Stamina', { amount: 999 }]),
+            effectFunCall(['Inventory:Consume', { target: "Just having a thought" }]),
+          ]
         },
       ]
     },
@@ -531,7 +535,10 @@ export const build: BuildRepository = {
         {
           display: "Minor Healing",
           tooltip: "Restores some HP",
-          effects: [effectFunCall(["Basic:HP", { amount: 5 }])],
+          effects: [
+            effectFunCall(["Basic:HP", { amount: 5 }]),
+            effectFunCall(['Inventory:Consume', { target: "Minor Healing" }]),
+          ],
           priority: 3,
           stamina: 3,
           range: selfRange,
