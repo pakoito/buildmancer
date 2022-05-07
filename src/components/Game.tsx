@@ -179,6 +179,7 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
               <b>Turn {idx}</b><br />
               Player: {JSON.stringify(s.player, null, 2)}<br />
               Enemies: {JSON.stringify(s.enemies, null, 2)}<br />
+              Inventory?: {JSON.stringify(s.inventory, null, 2)}<br />
               Target [{s.target}]<br />
               Bot?: {JSON.stringify(s.bot, null, 2)}<br />
               Eot?: {JSON.stringify(s.eot, null, 2)}<br />
