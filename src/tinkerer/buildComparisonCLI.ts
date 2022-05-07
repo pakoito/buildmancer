@@ -45,11 +45,10 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
   console.log(`\n==========\nPLAYERS\n==========\n${prettyjson.render(players.reduce((acc, player, idx) => ({ ...acc, [idx]: safeEntries(player).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}) }), {}))}\n==========\n`);
   console.log(`\n==========\nGAUNTLET\n==========\n${prettyjson.render(gauntlet.reduce((acc, [seed, e]) => ({ ...acc, [seed]: e.map(b => b[0].lore.name) }), {}))}\n==========\n`);
 
-
   const results = players.map(p => playGauntlet(iterations, playerSeed, p, gauntlet));
+
   const scores: number[] = Seq(results).map(gauntlet => Seq(gauntlet).reduce((acc, encounter) => acc + Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0), 0)).toArray();
   const winner: [number, number] = scores.reduce(([player, lead], score, idx) => score > lead ? [idx, score] : [player, lead], [0, 0]);
-
   const scoresPerGame: { [k: number]: { total: number, [k: number]: number } } = results.reduce((acc, ga, idx) => ({ ...acc, [idx]: ga.reduce((acc, encounter, idx) => ({ ...acc, [gauntlet[idx][0]]: Seq(encounter).take(topScores).reduce((acc, result) => acc + result.score, 0) }), { total: scores[idx] }) }), {});
   console.log(`\n==========\nSCORES\n==========\n${prettyjson.render(scoresPerGame)}\n==========\n`);
   console.log(`\n==========\nWINNER\n==========\n${prettyjson.render({ Player: winner[0] })}\n\n${prettyjson.render(safeEntries(players[winner[0]]).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}))}\n\n${prettyjson.render(scoresPerGame[winner[0]])}\n==========\n`);
