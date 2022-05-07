@@ -43,11 +43,17 @@ export interface Typegen0 {
     | "survival.player"
     | "survival.play"
     | "survival.defeat"
+    | "load"
+    | "load.load"
+    | "load.play"
+    | "load.win"
+    | "load.lose"
     | {
         quick?: "play" | "win" | "lose";
         single?: "player" | "encounter" | "play" | "win" | "lose";
         arcade?: "player" | "play" | "victory" | "defeat";
         survival?: "player" | "play" | "defeat";
+        load?: "load" | "play" | "win" | "lose";
       };
   tags: never;
 }

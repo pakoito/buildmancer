@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { assign, createMachine, interpret } from 'xstate';
 import { inspect } from '@xstate/inspect/lib/server.js';
-import { scoreGame } from './utils/playGame';
+import { scoreGame } from '../utils/playGame';
 
 const isDebug = process && process.env['SMD'] === '1';
 
@@ -142,6 +142,26 @@ const puzzle = {
   ...toMenu,
 };
 
+const load = {
+  initial: 'load',
+  states: {
+    load: {
+      on: {
+        LOAD: { target: 'play' }
+      }
+    },
+    play: {
+      on: {
+        WIN: { target: 'win' },
+        LOSE: { target: 'lose' }
+      }
+    },
+    win: { type: 'final' as const },
+    lose: { type: 'final' as const },
+  },
+  ...toMenu,
+}
+
 const makeArcadeContext = () => ({
   victories: 0,
   score: 0,
@@ -172,6 +192,7 @@ export const gameMenuMachine = createMachine({
         SINGLE: { target: 'single' },
         ARCADE: { target: 'arcade' },
         SURVIVAL: { target: 'survival' },
+        LOAD: { target: 'load' },
         // PUZZLE: { target: 'puzzle' },
         // LEADERBOARDS: { target: 'leaderboards' },
       }
@@ -188,6 +209,9 @@ export const gameMenuMachine = createMachine({
     survival: {
       ...survival,
     },
+    load: {
+      ...load,
+    }
     // puzzle: {
     //   ...puzzle,
     // },

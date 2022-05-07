@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 // import { readString } from "react-papaparse";
 import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from "./utils/types";
@@ -12,8 +12,9 @@ import tinkerer from "./tinkerer/tinkerer";
 import { Seq } from "immutable";
 import { previousState, randomEnemy, randomPlayer } from "./utils/data";
 import { useMachine } from '@xstate/react';
-import { gameMenuMachine } from "./menuStateMachine";
+import { gameMenuMachine } from "./stateMachines/menuStateMachine";
 import Menu from "./components/menus/Menu";
+import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 
 function App() {
   const [state, send] = useMachine(gameMenuMachine, { devTools: true });
@@ -137,9 +138,84 @@ function App() {
         onClick={send}
       />;
     }
+    // LOAD
+    case state.matches({ load: 'load' }): {
+      return <LoadScreen
+        onLoad={(game) => send('LOAD', { game })}
+        onMenu={onMenu}
+      />;
+    }
+    case state.matches({ load: 'play' }): {
+      return <SingleGame
+        play={event.game}
+        onMenu={onMenu}
+        timeTravel={true}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ load: 'win' }):
+    case state.matches({ load: 'lose' }):
+      return <Menu
+        title={`${event.result} in ${event.game.states.length - 1} turns`}
+        states={["MENU"]}
+        onClick={send}
+      />;
     default:
       return <>{JSON.stringify(state.value)}</>;
   }
+}
+
+const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () => void }) => {
+  const [loadError, setLoadError] = useState<string | undefined>();
+  const onFormSubmit = (e: any) => {
+    e.preventDefault();
+    const load = (data: string) => {
+      try {
+        const play = JSON.parse(data) as Play;
+        onLoad(play);
+      } catch (e) {
+        setLoadError("Failed to Load");
+      }
+    }
+    if (e.target?.fileData?.files[0] != null) {
+      const reader = new FileReader();
+      reader.onloadend = (ev: ProgressEvent<FileReader>) => {
+        const result = ev.target?.result as string;
+        if (result != null) {
+          load(result);
+        } else {
+          setLoadError("Failed to read file");
+        }
+      };
+      reader.readAsText(e.target.fileData.files[0])
+    } else if (e.target?.rawData?.value != null) {
+      load(e.target.rawData.value);
+    }
+  };
+  return <Form onSubmit={onFormSubmit}>
+    <Col>
+      <Row>
+        {loadError && (<Alert variant={'danger'}>{loadError}</Alert>)}
+      </Row>
+      <Row>
+        <Form.Group>
+          <Form.Label>Load File</Form.Label>
+          <Form.Control type="file" name="fileData" accept=".json" />
+          <Form.Text muted>Select the file to load</Form.Text>
+        </Form.Group>
+      </Row>
+      <Row>
+        <Form.Group>
+          <Form.Label>Load</Form.Label>
+          <Form.Control name="rawData" as="textarea" rows={3} placeholder="Save Data" />
+          <Form.Text muted>Paste the text of your savegame here</Form.Text>
+          <br />
+        </Form.Group>
+      </Row>
+      <Button variant="primary" type="submit">Load</Button>
+    </Col>
+    <Button onClick={onMenu}>MAIN MENU</Button>
+  </Form>;
 }
 
 const SingleGame = ({ play, timeTravel, onGameEnd, onMenu }: { play: Play; timeTravel: boolean, onGameEnd: (state: PlayState, play: Play) => void, onMenu: () => void }) => {
