@@ -160,6 +160,7 @@ export interface Item {
   bot?: Nel<Effect>;
   eot?: Nel<Effect>;
   effects?: Nel<InventoryEffect>;
+  amount?: number
   //[key: string]: any;
 };
 

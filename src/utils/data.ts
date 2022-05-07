@@ -511,8 +511,8 @@ export const build: BuildRepository = {
           display: "Minor Healing",
           tooltip: "Restores some HP",
           effects: [effectFunCall(["Basic:HP", { amount: 2 }])],
-          priority: 4,
-          stamina: 5,
+          priority: 3,
+          stamina: 3,
           range: selfRange,
         }
       ]
@@ -746,10 +746,62 @@ export const build: BuildRepository = {
       tooltip: "Increases your maximum defence",
     },
   ],
-  // TODO
   consumable: [
     {
       display: "Potion",
+      amount: 3,
+      effects: [
+        {
+          display: "Healing!",
+          tooltip: "Restores some HP",
+          effects: [effectFunCall(["Basic:HP", { amount: 2 }])],
+          priority: 4,
+          stamina: 5,
+          range: selfRange,
+        }
+      ]
+    },
+    {
+      display: "Pot of Razors",
+      amount: 2,
+      effects: [
+        {
+          display: "Throw pot",
+          tooltip: "Causes bleeding",
+          effects: [effectFunCall(["Effect:Bleed", { target: 'Monster', turns: 3 }])],
+          priority: 4,
+          stamina: 5,
+          range: selfRange,
+        }
+      ]
+    },
+    {
+      display: "Life Bubble",
+      amount: 1,
+      effects: [
+        {
+          display: "Activate Bubble",
+          tooltip: "Protects against a single source of damage this turn",
+          effects: [effectFunCall("Effect:Dodge")],
+          priority: 1,
+          stamina: 1,
+          range: selfRange,
+        }
+      ]
+    },
+    {
+      display: "Pet Rock",
+      amount: 3,
+      effects: [
+        {
+          display: "Rock, to me!",
+          tooltip: "Reduces damage",
+          effects: [effectFunCall(["Effect:Armor", { amount: 3 }])],
+          priority: 2,
+          stamina: 3,
+          range: selfRange,
+        }
+      ]
     },
   ],
 };
