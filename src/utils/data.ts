@@ -9,6 +9,8 @@ export const previousState = (play: Play): Snapshot => play.states[play.states.l
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 
+export const randomName = () => names[Math.floor(Math.random() * names.length)];
+
 export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) => ({
   debug: build.debug[DEBUG ? 1 : 0],
   basic: rng.pickone(build.basic),
@@ -49,14 +51,13 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new 
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
-export const makeStat = (amount: number): Stat => ({ current: amount, max: amount });
+export const makeStat = (amount: number, max: number = amount): Stat => ({ current: amount, max });
 export const defaultStatus: Status = {
   dodge: { active: false },
   armor: { amount: 0 },
   bleed: { turns: 0 },
   stun: { active: false },
 }
-
 
 const weapons: Item[] = [
   {
@@ -466,14 +467,14 @@ export const build: BuildRepository = {
           effects: [effectFunCall(["Basic:Attack", { amount: 2 }])],
           priority: 2,
           stamina: 1,
-          range: makeRange(1),
+          range: makeRange(0, 1),
         }
       ]
 
     },
     {
       display: "Mage",
-      passives: ["+StaPerTurn", "+Stamina", "-Health"],
+      passives: ["+StaPerTurn", "+Stamina", "-Health", "-Speed"],
       effects: [
         {
           display: "Just having a thought",
@@ -492,8 +493,8 @@ export const build: BuildRepository = {
         {
           display: "Strategic retreat",
           tooltip: "Jump backwards",
-          effects: [effectFunCall(["Basic:Move", { amount: 4 }])],
-          priority: 4,
+          effects: [effectFunCall(["Basic:Move", { amount: 999 }])],
+          priority: 2,
           stamina: 1,
           range: selfRange,
         }
@@ -523,7 +524,7 @@ export const build: BuildRepository = {
       effects: [
         {
           display: "Dodge",
-          tooltip: "Avoid 1 enemy attack",
+          tooltip: "Avoid one enemy attack",
           effects: [effectFunCall("Effect:Dodge")],
           priority: 2,
           stamina: 4,
@@ -538,7 +539,7 @@ export const build: BuildRepository = {
           display: "Dodge this!",
           tooltip: "Throws a stone",
           effects: [effectFunCall(["Basic:Attack", { amount: 2 }])],
-          priority: 4,
+          priority: 3,
           stamina: 3,
           range: makeRange(3, 4),
         }
@@ -626,7 +627,6 @@ export const build: BuildRepository = {
       passives: ["+Speed"],
     },
   ],
-  // TODO
   headgear: [
     {
       display: "Helm",
@@ -741,8 +741,6 @@ export const build: BuildRepository = {
   ],
 };
 
-export const randomName = () => names[Math.floor(Math.random() * names.length)];
-
 export const enemies: [Enemy, EnemyStats][] = [
   [{
     lore: {
@@ -757,8 +755,8 @@ export const enemies: [Enemy, EnemyStats][] = [
     ],
     effects: [
       { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange(0, 1) },
-      { display: "Roar", tooltip: "Swipe", priority: 1, effects: [effectFunCall(["Basic:Stamina", { amount: -5 }])], range: allRanges },
-      { display: "Jump", tooltip: "Swipe", priority: 2, effects: [effectFunCall(["Monster:Move", { amount: -4 }])], range: makeRange(2, 3, 4) },
+      { display: "Roar", tooltip: "Roar", priority: 1, effects: [effectFunCall(["Basic:Stamina", { amount: -5 }])], range: allRanges },
+      { display: "Jump", tooltip: "Jump", priority: 2, effects: [effectFunCall(["Monster:Move", { amount: -4 }])], range: makeRange(2, 3, 4) },
     ],
   }, {
     hp: makeStat(25),
