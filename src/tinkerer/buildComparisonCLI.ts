@@ -9,7 +9,6 @@ import { makeGameNew, scoreGame } from '../utils/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
-import { type } from 'os';
 
 type Seed = number | string;
 
