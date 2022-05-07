@@ -40,7 +40,7 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
 
   const playerSeed: string = seed ?? defaultTinkererOptions.playerSeed;
   const topScores: number = takeTop ?? 5;
-  const config = { players: players.length, playerSeed, iterations, topScores };
+  const config = { players: players.length, encounters: gauntlet.length, playerSeed, iterations, topScores };
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n==========\n`);
   console.log(`\n==========\nPLAYERS\n==========\n${prettyjson.render(players.reduce((acc, player, idx) => ({ ...acc, [idx]: safeEntries(player).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}) }), {}))}\n==========\n`);
   console.log(`\n==========\nGAUNTLET\n==========\n${prettyjson.render(gauntlet.reduce((acc, [_, e], idx) => ({ ...acc, [idx]: e.map(b => b[0].lore.name) }), {}))}\n==========\n`);
