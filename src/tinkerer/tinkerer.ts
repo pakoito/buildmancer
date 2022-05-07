@@ -30,7 +30,6 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
   const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
   const range = rangeArr(iter);
   const rand = new Chance(options.playerSeed);
-  const actions = playerActions(play.player);
   const config: GeneticAlgorithmConfig<Play> = {
     mutationFunction: (oldPlay) => {
       const latestState = previousState(oldPlay);
@@ -44,6 +43,7 @@ export default function tinkerer(play: Play, iter: number, optionsOverride?: Par
         newPlay = setSelected(newPlay, rand.natural({ min: 0, max: previousState(newPlay).enemies.length - 1 }) as MonsterTarget);
       }
       const latest = previousState(newPlay);
+      const actions = playerActions(play.player, latest.inventory);
       const unavailable = actions.map((a, idx) => [a, idx] as const).filter(([a, _]) => a.stamina > latest.player.stamina.current).map(([_, idx]) => idx);
       newPlay = handlePlayerEffect(
         newPlay,

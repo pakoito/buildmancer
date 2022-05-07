@@ -93,7 +93,7 @@ function App() {
             encounter = [[...encounter[0], otherEnemy[0]], [...encounter[1], otherEnemy[1]]];
           }
           const firstState: Snapshot = game.states[0];
-          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, firstState.player, encounter[0] as Enemies, encounter[1] as EnemiesStats, 50, state.context.survivalContext.seed) });
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, firstState.player, encounter[0] as Enemies, encounter[1] as EnemiesStats, {}, 50, state.context.survivalContext.seed) });
         }}
       />;
     }
@@ -124,7 +124,7 @@ function App() {
         onGameEnd={(result, game) => {
           const encounter = randomEnemy();
           const lastState: Snapshot = game.states[event.game.states.length - 1];
-          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, lastState.player, [encounter[0]], [encounter[1]], 50, state.context.survivalContext.seed) });
+          send(result === 'win' ? 'WIN' : 'LOSE', { result, game: makeGameNextLevel(game.player, lastState.player, [encounter[0]], [encounter[1]], lastState.inventory, 50, state.context.survivalContext.seed) });
         }}
       />;
     }

@@ -64,6 +64,10 @@ export interface EnemyStats {
   distance: UpTo<Subtract<Distances, 1>>,
   status: Status
 };
+export type InventoryStats = {
+  // FIXME not the real values
+  [k in Build['consumable']['display']]: { used: number }
+};
 
 export type Priorities = 5;
 export type Distances = 5;
@@ -81,6 +85,7 @@ export type DisabledSkills = (keyof BuildRepository)[];
 export interface Snapshot {
   player: PlayerStats;
   enemies: EnemiesStats;
+  inventory: InventoryStats;
   target: MonsterTarget;
   lastAttacks: EffectSummary[];
   bot?: Nel<[Target, Effect]>;

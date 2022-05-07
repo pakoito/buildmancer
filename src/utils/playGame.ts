@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase, InventoryStats } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
@@ -27,8 +27,8 @@ export const turnRng = (play: Play, turn: number): ((min: number, max: number) =
 export const playerPassives = (player: Player): StatsFun[] =>
   Object.values(player.build).flatMap((s) => s.passives ?? []).map(i => statsRepository[i]);
 
-export const playerActions = (player: Player): InventoryEffect[] =>
-  Object.values(player.build).flatMap((s) => s.effects ?? []);
+export const playerActions = (player: Player, inventoryStats: InventoryStats): InventoryEffect[] =>
+  Object.values(player.build).flatMap((s) => (inventoryStats[s.display] ?? { used: 0 }).used < (s.amount ?? 999) ? s.effects ?? [] : []);
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.bot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
@@ -51,16 +51,17 @@ export const buildPlayer = (player: Player, playerStats: PlayerStats, enemiesSta
 
 export function makeGameNew(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = buildPlayer(player, playerStats, enemiesStats);
-  return makeGameNextLevel(player, playerGameStats, enemies, enemyGameStats, turns, seed, randPerTurn);
+  return makeGameNextLevel(player, playerGameStats, enemies, enemyGameStats, {}, turns, seed, randPerTurn);
 }
 
-export function makeGameNextLevel(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
+export function makeGameNextLevel(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, inventoryStats: InventoryStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   return {
     player,
     enemies,
     states: [{
       player: playerStats,
       enemies: enemiesStats,
+      inventory: inventoryStats,
       target: 0,
       lastAttacks: [],
       disabledSkills: []
@@ -151,7 +152,7 @@ const effectDead: Effect =
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   const lastTurnState = previousState(play);
-  const usedSkill = playerActions(play.player)[index];
+  const usedSkill = playerActions(play.player, lastTurnState.inventory)[index];
   const bot = lastTurnState.bot ?? [];
   const eot = lastTurnState.eot ?? [];
 

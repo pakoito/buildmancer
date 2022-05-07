@@ -27,13 +27,13 @@ const monsterHotkeys = ["q", "w", "e", "r", "t", "y"];
 
 const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveGame, timeTravel, hint, onMenu }: GameProps): JSX.Element => {
   const { player, enemies } = game;
-  const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills } = previousState(game);
+  const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills, inventory: inventoryStats } = previousState(game);
   const [isLogShown, setShowLog] = useState(false);
 
   const handleCloseLog = () => setShowLog(false);
   const handleShowLog = () => setShowLog(true);
 
-  const playerSkills = playerActions(player);
+  const playerSkills = playerActions(player, inventoryStats);
   const monsterHealth = enemiesStats.reduce((acc, m) => m.hp.current + acc, 0);
   const isPlayerAlive = playerStats.hp.current > 0;
   const areMonstersAlive = monsterHealth > 0;
