@@ -12,10 +12,10 @@ const start = async (args: minimist.ParsedArgs) => {
   const { encounters, population, output, iter, iterPergame, top } = args;
 
   const encountersFinal: number | number[][] = encounters ?? 100;
-  const populationFinal = population ?? 100;
-  const iterFinal = iter ?? 100;
-  const iterPergameFinal = iterPergame ?? 100;
-  const topFinal = top ?? 10;
+  const populationFinal: number = population ?? 100;
+  const iterFinal: number = iter ?? 100;
+  const iterPergameFinal: number = iterPergame ?? 100;
+  const topFinal: number = top ?? 10;
 
   const playerPop = rangeArr(populationFinal).map((_) => randomPlayer()[0]);
   const gauntlet: [Seed, EnemyInfo[]][] = Array.isArray(encountersFinal)

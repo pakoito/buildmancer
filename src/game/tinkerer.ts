@@ -67,7 +67,7 @@ export function findBestPlay(play: Play, iter: number, optionsOverride?: Partial
   for (let i = 0; i < turns; i++) {
     gen = gen.evolve();
   }
-  return gen.scoredPopulation();
+  return Seq(gen.scoredPopulation()).sortBy(a => 1000 / a.score).toArray();
 }
 
 export const findBestBuild = (players: Player[], enemies: [Seed, EnemyInfo[]][], iter: number, gameIter: number, populationTotal?: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Player>[] => {
@@ -75,10 +75,13 @@ export const findBestBuild = (players: Player[], enemies: [Seed, EnemyInfo[]][],
   const rng = new Chance(options.playerSeed);
   const config: GeneticAlgorithmConfig<Player> = {
     mutationFunction: (player: Player) => {
-      const toChange = rng.pickone(Object.keys(player)) as keyof typeof build;
+      const toChange = rng.pickone(Object.keys(player.build)) as keyof typeof build;
       return {
         ...player,
-        [toChange]: rng.pickone(build[toChange]),
+        build: {
+          ...player.build,
+          [toChange]: rng.pickone(build[toChange]),
+        }
       };
     },
     fitnessFunction: (player: Player) =>
@@ -96,5 +99,5 @@ export const findBestBuild = (players: Player[], enemies: [Seed, EnemyInfo[]][],
     gen = gen.evolve();
   }
 
-  return gen.scoredPopulation();
+  return Seq(gen.scoredPopulation()).sortBy(a => 1000 / a.score).toArray();
 }

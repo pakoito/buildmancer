@@ -73,13 +73,12 @@
     "lsm": "open https://statecharts.io/inspect?server=localhost:8888",
     "wsm": "powershell.exe /c 'start https://statecharts.io/inspect?server=localhost:8888'",
     "sm": "SMD=1 node --experimental-specifier-resolution=node --loader ts-node/esm src/menuStateMachine.ts",
-    "smoke": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts --json='src/cli/sampleGame.json' --iterations=5 --seed=paco",
-    "smokeCompare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/buildComparisonCLI.ts --builds=src/cli/samplebuilds.json --encounterCount=5 --iterations=5",
-    "tinker": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts --json='src/cli/sampleGame.json' --iterations=$BM_ITER --seed=$BM_SEED",
-    "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts --json='src/cli/sampleGame.json'",
-    "analyse": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/dataAnalysisCLI.ts --json='src/cli/sampleGame.json'",
+    "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts",
     "compare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/buildComparisonCLI.ts",
-    "findBest": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts"
+    "best": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts",
+    "smokePlay": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts --json='src/cli/sampleGame.json' --iterations=5 --seed=paco",
+    "smokeCompare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/buildComparisonCLI.ts --builds=src/cli/samplebuilds.json --encounterCount=5 --iterations=5",
+    "smokeBest": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts --encounters=2 --population=5 --iter=5 --iterPerGame=5"
   },
   "eslintConfig": {
     "extends": [

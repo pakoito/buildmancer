@@ -900,7 +900,7 @@ export const enemies: EnemyRepository = [
       { display: "Swipe", tooltip: "Swipe", priority: 3, effects: [effectFunCall(["Monster:Attack", { amount: 3 }])], range: makeRange(0, 1) },
       { display: "Retreat", tooltip: "Jump", priority: 3, effects: [effectFunCall(["Monster:Move", { amount: 5 }])], range: allRanges },
       { display: "Summon Smol", tooltip: "Summon Smol", priority: 4, effects: [effectFunCall(["Monster:Summon", { enemy: 4 }])], range: makeRange(2, 3, 4) },
-      { display: "Spit", tooltip: "Summon Smol", priority: 4, effects: [effectFunCall(["Monster:Attack", { amount: 2 }])], range: makeRange(2, 3, 4) },
+      { display: "Spit", tooltip: "Ranged attack", priority: 4, effects: [effectFunCall(["Monster:Attack", { amount: 2 }])], range: makeRange(2, 3, 4) },
     ],
     rolls: [
       [1, 1, 1, 0, 0],
