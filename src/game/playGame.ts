@@ -15,20 +15,14 @@ function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: S
   const monsterRng =
     rangeArr(turns)
       .map(_ => rangeArr(randPerTurn)
-        .map(_ => monsterChance.floating({ min: 0, max: 1, fixed: 2 })));
+        // If max === 1, the rng function fails
+        .map(_ => monsterChance.floating({ min: 0, max: 0.9999, fixed: 4 })));
   return monsterRng as RNG;
 }
 
 export const turnRng = (play: Play, turn: number): ((min: number, max: number) => number) => {
   const turnRng = [...play.rng[turn]];
-  return (min: number, max: number) => {
-    let rng = turnRng.pop()!!
-    // GOOD CODE SECTION
-    if (rng >= 1) {
-      rng = 0.9999;
-    }
-    return Math.floor(((max - min) * rng) + min);
-  };
+  return (min: number, max: number) => Math.floor(((max - min) * turnRng.pop()!!) + min);
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
