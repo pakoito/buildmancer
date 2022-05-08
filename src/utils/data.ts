@@ -22,11 +22,11 @@ export const defaultStatus: Status = {
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
 export const dummyEnemy: [Enemy, EnemyStats] = [{
   lore: {
-    name: "Training Dummy",
+    name: "🤖 Dummy 🤖",
   },
   effects: [
     {
-      display: "Approve your life choices",
+      display: "Approve of your life choices",
       tooltip: "You're doing great!",
       priority: 4,
       effects: [effectFunCall(["Monster:Attack", { amount: 0 }])],
