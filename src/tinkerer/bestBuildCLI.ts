@@ -11,7 +11,7 @@ const start = async (args: minimist.ParsedArgs) => {
 
   const { encounters, population, output, iter, iterPergame, top } = args;
 
-  const encountersFinal: number | [number, number][] = encounters ?? 100;
+  const encountersFinal: number | number[][] = encounters ?? 100;
   const populationFinal = population ?? 100;
   const iterFinal = iter ?? 100;
   const iterPergameFinal = iterPergame ?? 100;
