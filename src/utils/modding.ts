@@ -55,11 +55,10 @@ export const globals = (): Globals =>
   globalThis.__buildmancer;
 
 export const updateGlobals = (p: Partial<Globals>) => {
-  // @ts-ignore
-  globalThis.__buildmancer = ({
+  const theThis = (globalThis as unknown) as { __buildmancer: Globals };
+  theThis.__buildmancer = ({
     ...globalsDefault,
-    // @ts-ignore
-    ...(globalThis.__buildmancer ?? {}),
+    ...(theThis.__buildmancer ?? {}),
     ...p,
   });
 }
