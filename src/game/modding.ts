@@ -1,3 +1,4 @@
+import { allRanges } from "./data";
 import { EffectFunctionRepository } from "./effectRepository";
 import { BuildRepository, effectFunCall, Enemy, EnemyInfo, EnemyRepository, EnemyStats, Play } from "./types";
 
@@ -25,7 +26,8 @@ const globalsDefault: Globals = {
         tooltip: "You're doing great!",
         priority: 4,
         effects: [effectFunCall(["Monster:Attack", { amount: 0 }])],
-        range: []
+        dodgeable: true,
+        range: allRanges
       },
     ],
     rolls: [

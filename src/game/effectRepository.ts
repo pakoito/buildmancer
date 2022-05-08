@@ -21,7 +21,7 @@ const applyPoison = (play: Play, currentState: Snapshot, { target, turns }: Redu
       : actions.changeStatMonster(currentState, currentState.target, ({ hp }) => ({ hp: { ...hp, current: Math.max(0, hp.current - 1) } })),
     (newState) =>
       turns > 0
-        ? actions.addBotEffect(newState, 'Player', { display: `Poison ${target === 'Player' ? 'Player' : play.enemies[target]!!.lore.name + "[" + (target + 1)} + "]"`, tooltip: '', range: allRanges, priority: 4, effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])] })
+        ? actions.addBotEffect(newState, 'Player', { display: `Poison ${target === 'Player' ? 'Player' : play.enemies[target]!!.lore.name + "[" + (target + 1)} + "]"`, tooltip: '', range: allRanges, priority: 4, dodgeable: false, effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])] })
         : newState
   )
 
