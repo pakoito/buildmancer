@@ -77,7 +77,7 @@ export function makeGameNextLevel(player: Player, playerStats: PlayerStats, enem
   };
 }
 
-const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: boolean, phase: EffectPhase): [Play, Snapshot] =>
+const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, phase: EffectPhase): [Play, Snapshot] =>
   Seq(funs)
     .sortBy(([origin, a]) => {
       if (a == null) {
@@ -122,7 +122,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
         return [oldPlay, newState];
       }
 
-      const monsterDodged = dodgeable && origin === 'Player' && targetMonster.status.dodge.active;
+      const monsterDodged = effect.dodgeable && origin === 'Player' && targetMonster.status.dodge.active;
       if (monsterDodged) {
         const newState: Snapshot = {
           ...oldState,
@@ -132,7 +132,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
         return [oldPlay, newState];
       }
 
-      const playerDodged = dodgeable && origin !== 'Player' && oldState.player.status.dodge.active;
+      const playerDodged = effect.dodgeable && origin !== 'Player' && oldState.player.status.dodge.active;
       if (playerDodged) {
         const newState: Snapshot = {
           ...oldState,
@@ -148,13 +148,13 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
     }, [p, s]);
 
 const applyEffectStamina = (amount: number): Effect =>
-  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:Stamina', { amount }])], range: allRanges, priority: 0 });
+  ({ display: `${amount >= 0 ? '+' : ''}${amount} 💪`, tooltip: `Use ${amount} stamina`, effects: [effectFunCall(['Basic:Stamina', { amount }])], range: allRanges, priority: 0, dodgeable: false, });
 
 const effectEotCleanup: Effect =
-  ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0 });
+  ({ display: 'Cleanup', tooltip: 'Cleanup', effects: [effectFunCall('Utility:Cleanup')], range: allRanges, priority: 0, dodgeable: false, });
 
 const effectDead: Effect =
-  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges };
+  { display: "⚰", tooltip: "⚰", priority: 4, effects: [effectFunCall("Monster:Dead")], range: allRanges, dodgeable: false, };
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {
 
@@ -178,14 +178,14 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // Stamina
   const [preBotPlay, preBotState] =
-    reduceFuns([['Player', applyEffectStamina(lastTurnState.player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, false, 'MAIN');
+    reduceFuns([['Player', applyEffectStamina(lastTurnState.player.staminaPerTurn.current - usedSkill.stamina)]], play, initialState, 'MAIN');
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, false, 'BOT');
+  const [postBotPlay, postBotState] = reduceFuns(bot, preBotPlay, preBotState, 'BOT');
   // Player & Monster effects
   const entitiesBot: [Target, Effect][] = [...playerBotEffects(postBotPlay.player, postBotState.disabledSkills), ...enemiesBotEffects(postBotPlay.enemies)];
-  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, false, 'BOT');
+  const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(entitiesBot, postBotPlay, postBotState, 'BOT');
 
   // Turn
   const rand = turnRng(postEntitiesBotPlay, postEntitiesBotPlay.states.length);
@@ -212,16 +212,16 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .map(a => [...a]);
 
   const [newPlay, newState] =
-    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, true, 'MAIN');
+    reduceFuns(turnFunctions, postEntitiesBotPlay, postEntitiesBotState, 'MAIN');
 
   // EOT
   // Player & Monster effects
   const entitiesEot = [...playerEotEffects(newPlay.player, newState.disabledSkills), ...enemiesEotEffects(newPlay.enemies)];
-  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, false, 'EOT');
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, false, 'EOT');
+  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
   // Cleanup
-  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, effectEotCleanup]], postEotPlay, postEotState, false, 'EOT');
+  const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, effectEotCleanup]], postEotPlay, postEotState, 'EOT');
 
   const endOfTurn: Play = {
     ...postCleanup,
