@@ -16,7 +16,7 @@ export type GeneticAlgorithmConfig<T> = {
   mutationFunction?(phenotype: T): T;
   crossoverFunction?(p1: T, p2: T): [T, T];
   fitnessFunction(phenotype: T): number;
-  doesABeatBFunction?(a: T, b: T): boolean
+  doesABeatBFunction?(a: T, b: T): boolean;
   population: T[];
   populationSize: number;
 };

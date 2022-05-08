@@ -8,7 +8,6 @@ import { enemies, randomEnemy, randomPlayer } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';
 
 const start = async (args: minimist.ParsedArgs) => {
-
   const { encounters, players, output, iter, iterPergame, top } = args;
 
   const encountersFinal: number | number[][] = encounters ?? 100;
@@ -19,24 +18,62 @@ const start = async (args: minimist.ParsedArgs) => {
 
   const playerPop = rangeArr(populationFinal).map((_) => randomPlayer()[0]);
   const gauntlet: [Seed, EnemyInfo[]][] = Array.isArray(encountersFinal)
-    ? encountersFinal.map(e => [Math.random(), e.map(ee => enemies[ee])])
-    : rangeArr(encountersFinal).map(_ =>
-      pipe(Math.random() * 6, (roll) =>
-        [Math.random(), [randomEnemy(), ...(roll > 3 ? [randomEnemy()] : []), ...(roll > 5 ? [randomEnemy()] : [])]]
-      )
-    );
+    ? encountersFinal.map((e) => [Math.random(), e.map((ee) => enemies[ee])])
+    : rangeArr(encountersFinal).map((_) =>
+        pipe(Math.random() * 6, (roll) => [
+          Math.random(),
+          [
+            randomEnemy(),
+            ...(roll > 3 ? [randomEnemy()] : []),
+            ...(roll > 5 ? [randomEnemy()] : []),
+          ],
+        ])
+      );
 
-  const config = { encounters: encountersFinal, population: populationFinal, iter: iterFinal, iterPergame: iterFinal, top: topFinal };
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n==========\n`);
+  const config = {
+    encounters: encountersFinal,
+    population: populationFinal,
+    iter: iterFinal,
+    iterPergame: iterFinal,
+    top: topFinal,
+  };
+  console.log(
+    `\n==========\nCONFIG\n==========\n${prettyjson.render(
+      config
+    )}\n==========\n`
+  );
 
-  const results = findBestBuild(playerPop, gauntlet, iterFinal, iterPergameFinal);
+  const results = findBestBuild(
+    playerPop,
+    gauntlet,
+    iterFinal,
+    iterPergameFinal
+  );
 
-  console.log(`\n==========\nPLAYERS\n==========\n${prettyjson.render(Seq(results).take(topFinal).reduce((acc, { score, phenotype: player }, idx) => ({ ...acc, [idx]: safeEntries(player.build).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), { score, name: player.lore.name }) }), {}))}\n==========\n`);
+  console.log(
+    `\n==========\nPLAYERS\n==========\n${prettyjson.render(
+      Seq(results)
+        .take(topFinal)
+        .reduce(
+          (acc, { score, phenotype: player }, idx) => ({
+            ...acc,
+            [idx]: safeEntries(player.build).reduce(
+              (acc, [k, v]) => ({ ...acc, [k]: v.display }),
+              { score, name: player.lore.name }
+            ),
+          }),
+          {}
+        )
+    )}\n==========\n`
+  );
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
-    writeFileSync(output, JSON.stringify({ config, results, playerPop, gauntlet }, null, 2));
+    writeFileSync(
+      output,
+      JSON.stringify({ config, results, playerPop, gauntlet }, null, 2)
+    );
   }
-}
+};
 
 start(minimist(process.argv.slice(2)));

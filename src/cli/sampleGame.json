@@ -1,7 +1,5 @@
 {
-  "enemies": [
-    1
-  ],
+  "enemies": [1],
   "basic": 0,
   "class": 0,
   "weapon": 0,

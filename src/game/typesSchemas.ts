@@ -59,25 +59,12 @@ export const playSchema = z.object({
       rolls: z.array(z.array(z.number())),
     })
   ),
-  states: z.array(z.object({
-    player: z.object({
-      hp: z.object({ current: z.number(), max: z.number() }),
-      stamina: z.object({ current: z.number(), max: z.number() }),
-      staminaPerTurn: z.object({ current: z.number(), max: z.number() }),
-      speed: z.object({ current: z.number(), max: z.number() }),
-      attack: z.object({ current: z.number(), max: z.number() }),
-      defence: z.object({ current: z.number(), max: z.number() }),
-      status: z.object({
-        dodge: z.object({ active: z.boolean() }),
-        armor: z.object({ amount: z.number() }),
-        bleed: z.object({ turns: z.number() }),
-        stun: z.object({ active: z.boolean() }),
-      }),
-    }),
-    enemies: z.array(
-      z.object({
+  states: z.array(
+    z.object({
+      player: z.object({
         hp: z.object({ current: z.number(), max: z.number() }),
-        distance: z.number(),
+        stamina: z.object({ current: z.number(), max: z.number() }),
+        staminaPerTurn: z.object({ current: z.number(), max: z.number() }),
         speed: z.object({ current: z.number(), max: z.number() }),
         attack: z.object({ current: z.number(), max: z.number() }),
         defence: z.object({ current: z.number(), max: z.number() }),
@@ -87,12 +74,27 @@ export const playSchema = z.object({
           bleed: z.object({ turns: z.number() }),
           stun: z.object({ active: z.boolean() }),
         }),
-      })
-    ),
-    target: z.number(),
-    lastAttacks: z.array(z.unknown()),
-    disabledSkills: z.array(z.unknown()),
-  })),
+      }),
+      enemies: z.array(
+        z.object({
+          hp: z.object({ current: z.number(), max: z.number() }),
+          distance: z.number(),
+          speed: z.object({ current: z.number(), max: z.number() }),
+          attack: z.object({ current: z.number(), max: z.number() }),
+          defence: z.object({ current: z.number(), max: z.number() }),
+          status: z.object({
+            dodge: z.object({ active: z.boolean() }),
+            armor: z.object({ amount: z.number() }),
+            bleed: z.object({ turns: z.number() }),
+            stun: z.object({ active: z.boolean() }),
+          }),
+        })
+      ),
+      target: z.number(),
+      lastAttacks: z.array(z.unknown()),
+      disabledSkills: z.array(z.unknown()),
+    })
+  ),
   rng: z.array(z.array(z.number())),
   turns: z.number(),
   id: z.string(),

@@ -8,16 +8,16 @@ const isDebug = process && process.env['SMD'] === '1';
 if (isDebug) {
   inspect({
     server: new WebSocket.Server({
-      port: 8888
-    })
+      port: 8888,
+    }),
   });
 }
 
 const toMenu = {
   on: {
     MENU: { target: 'main' },
-  }
-}
+  },
+};
 
 const quick = {
   initial: 'play',
@@ -26,8 +26,8 @@ const quick = {
       entry: ['reset'],
       on: {
         WIN: { target: 'win' },
-        LOSE: { target: 'lose' }
-      }
+        LOSE: { target: 'lose' },
+      },
     },
     win: { type: 'final' as const },
     lose: { type: 'final' as const },
@@ -41,19 +41,19 @@ const single = {
     player: {
       entry: ['reset'],
       on: {
-        PLAYER: { target: 'encounter' }
-      }
+        PLAYER: { target: 'encounter' },
+      },
     },
     encounter: {
       on: {
-        ENCOUNTER: { target: 'play' }
-      }
+        ENCOUNTER: { target: 'play' },
+      },
     },
     play: {
       on: {
         WIN: { target: 'win' },
-        LOSE: { target: 'lose' }
-      }
+        LOSE: { target: 'lose' },
+      },
     },
     win: { type: 'final' as const },
     lose: { type: 'final' as const },
@@ -67,17 +67,21 @@ const arcade = {
     player: {
       entry: ['reset'],
       on: {
-        PLAYER: { target: 'play' }
-      }
+        PLAYER: { target: 'play' },
+      },
     },
     play: {
       on: {
         WIN: [
           { target: 'victory', cond: 'isFinal' },
-          { target: 'play', actions: ['bumpVictories', 'bumpScore'], internal: true },
+          {
+            target: 'play',
+            actions: ['bumpVictories', 'bumpScore'],
+            internal: true,
+          },
         ],
-        LOSE: { target: 'defeat' }
-      }
+        LOSE: { target: 'defeat' },
+      },
     },
     victory: {
       type: 'final' as const,
@@ -95,20 +99,20 @@ const survival = {
     player: {
       entry: ['reset'],
       on: {
-        PLAYER: { target: 'play' }
-      }
+        PLAYER: { target: 'play' },
+      },
     },
     play: {
       on: {
         WIN: { target: 'play', actions: ['bumpVictories'] },
-        LOSE: { target: 'defeat' }
-      }
+        LOSE: { target: 'defeat' },
+      },
     },
     defeat: {
       type: 'final' as const,
       on: {
         // ACK: { target: '#menus.leaderboards' }
-      }
+      },
     },
   },
   ...toMenu,
@@ -119,24 +123,24 @@ const puzzle = {
   states: {
     puzzle: {
       on: {
-        PLAYER: { target: 'player' }
-      }
+        PLAYER: { target: 'player' },
+      },
     },
     player: {
       on: {
-        SELECTED: { target: 'play' }
-      }
+        SELECTED: { target: 'play' },
+      },
     },
     play: {
       on: {
         COMPLETE: { target: 'complete' },
-      }
+      },
     },
     complete: {
       on: {
         NEXT: { target: 'player' },
         SELECT: { target: 'puzzle' },
-      }
+      },
     },
   },
   ...toMenu,
@@ -147,20 +151,20 @@ const load = {
   states: {
     load: {
       on: {
-        LOAD: { target: 'play' }
-      }
+        LOAD: { target: 'play' },
+      },
     },
     play: {
       on: {
         WIN: { target: 'win' },
-        LOSE: { target: 'lose' }
-      }
+        LOSE: { target: 'lose' },
+      },
     },
     win: { type: 'final' as const },
     lose: { type: 'final' as const },
   },
   ...toMenu,
-}
+};
 
 const training = {
   initial: 'player',
@@ -168,20 +172,20 @@ const training = {
     player: {
       entry: ['reset'],
       on: {
-        PLAYER: { target: 'play' }
-      }
+        PLAYER: { target: 'play' },
+      },
     },
     play: {
       on: {
         WIN: { target: 'win' },
-        LOSE: { target: 'lose' }
-      }
+        LOSE: { target: 'lose' },
+      },
     },
     win: { type: 'final' as const },
     lose: { type: 'final' as const },
   },
   ...toMenu,
-}
+};
 
 const makeArcadeContext = () => ({
   victories: 0,
@@ -201,68 +205,83 @@ const makeGameContext = () => ({
   singleContext: makeSingleContext(),
 });
 
-export const gameMenuMachine = createMachine({
-  tsTypes: {} as import("./menuStateMachine.typegen").Typegen0,
-  id: 'menus',
-  initial: 'main',
-  context: makeGameContext(),
-  states: {
-    main: {
-      on: {
-        QUICK: { target: 'quick' },
-        SINGLE: { target: 'single' },
-        TRAINING: { target: 'training' },
-        ARCADE: { target: 'arcade' },
-        SURVIVAL: { target: 'survival' },
-        LOAD: { target: 'load' },
-        // PUZZLE: { target: 'puzzle' },
-        // LEADERBOARDS: { target: 'leaderboards' },
-      }
+export const gameMenuMachine = createMachine(
+  {
+    tsTypes: {} as import('./menuStateMachine.typegen').Typegen0,
+    id: 'menus',
+    initial: 'main',
+    context: makeGameContext(),
+    states: {
+      main: {
+        on: {
+          QUICK: { target: 'quick' },
+          SINGLE: { target: 'single' },
+          TRAINING: { target: 'training' },
+          ARCADE: { target: 'arcade' },
+          SURVIVAL: { target: 'survival' },
+          LOAD: { target: 'load' },
+          // PUZZLE: { target: 'puzzle' },
+          // LEADERBOARDS: { target: 'leaderboards' },
+        },
+      },
+      quick: {
+        ...quick,
+      },
+      single: {
+        ...single,
+      },
+      arcade: {
+        ...arcade,
+      },
+      survival: {
+        ...survival,
+      },
+      load: {
+        ...load,
+      },
+      training: {
+        ...training,
+      },
+      // puzzle: {
+      //   ...puzzle,
+      // },
+      // leaderboards: {
+      //   ...toMenu,
+      // }
     },
-    quick: {
-      ...quick,
-    },
-    single: {
-      ...single,
-    },
-    arcade: {
-      ...arcade,
-    },
-    survival: {
-      ...survival,
-    },
-    load: {
-      ...load,
-    },
-    training: {
-      ...training,
-    }
-    // puzzle: {
-    //   ...puzzle,
-    // },
-    // leaderboards: {
-    //   ...toMenu,
-    // }
   },
-}, {
-  guards: {
-    isFinal: ({ arcadeContext: { victories } }) => victories + 1 >= 7,
-  },
-  actions: {
-    bumpVictories: assign({
-      arcadeContext: ({ arcadeContext }, _event) => ({ ...arcadeContext, victories: arcadeContext.victories + 1, seed: Math.random() }),
-      survivalContext: ({ survivalContext }, _event) => ({ ...survivalContext, victories: survivalContext.victories + 1, seed: Math.random() }),
-    }),
-    bumpScore: assign({
-      arcadeContext: ({ arcadeContext }, { game }) => ({ ...arcadeContext, score: arcadeContext.score + scoreGame(game), seed: Math.random() }),
-    }),
-    reset: assign({
-      survivalContext: (c, e) => makeSurvivalContext(),
-      arcadeContext: (c, e) => makeArcadeContext(),
-      singleContext: (c, e) => makeSingleContext(),
-    }),
+  {
+    guards: {
+      isFinal: ({ arcadeContext: { victories } }) => victories + 1 >= 7,
+    },
+    actions: {
+      bumpVictories: assign({
+        arcadeContext: ({ arcadeContext }, _event) => ({
+          ...arcadeContext,
+          victories: arcadeContext.victories + 1,
+          seed: Math.random(),
+        }),
+        survivalContext: ({ survivalContext }, _event) => ({
+          ...survivalContext,
+          victories: survivalContext.victories + 1,
+          seed: Math.random(),
+        }),
+      }),
+      bumpScore: assign({
+        arcadeContext: ({ arcadeContext }, { game }) => ({
+          ...arcadeContext,
+          score: arcadeContext.score + scoreGame(game),
+          seed: Math.random(),
+        }),
+      }),
+      reset: assign({
+        survivalContext: (c, e) => makeSurvivalContext(),
+        arcadeContext: (c, e) => makeArcadeContext(),
+        singleContext: (c, e) => makeSingleContext(),
+      }),
+    },
   }
-});
+);
 
 if (isDebug) {
   interpret(gameMenuMachine, { devTools: true })

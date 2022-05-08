@@ -1,6 +1,12 @@
-import { allRanges } from "./data";
-import { EffectFunctionRepository } from "./effectRepository";
-import { BuildRepository, effectFunCall, EnemyInfo, EnemyRepository, Play } from "./types";
+import { allRanges } from './data';
+import { EffectFunctionRepository } from './effectRepository';
+import {
+  BuildRepository,
+  effectFunCall,
+  EnemyInfo,
+  EnemyRepository,
+  Play,
+} from './types';
 
 export type Globals = {
   debug: boolean;
@@ -11,58 +17,55 @@ export type Globals = {
   ingame?: {
     game: Play;
     forceUpdate: () => void;
-  }
+  };
 };
 
 const globalsDefault: Globals = {
   debug: false,
-  trainingEnemy: [{
-    lore: {
-      name: "🤖 Dummy 🤖",
-    },
-    effects: [
-      {
-        display: "Approve of your life choices",
-        tooltip: "You're doing great!",
-        priority: 4,
-        effects: [effectFunCall(["Monster:Attack", { amount: 0 }])],
-        dodgeable: true,
-        range: allRanges
+  trainingEnemy: [
+    {
+      lore: {
+        name: '🤖 Dummy 🤖',
       },
-    ],
-    rolls: [
-      [0],
-      [0],
-      [0],
-      [0],
-      [0],
-    ]
-  }, {
-    hp: { current: 300, max: 300 },
-    distance: 0,
-    speed: { current: 0, max: 0 },
-    attack: { current: 0, max: 0 },
-    defence: { current: 0, max: 0 },
-    status: {
-      dodge: { active: false },
-      armor: { amount: 0 },
-      bleed: { turns: 0 },
-      stun: { active: false },
+      effects: [
+        {
+          display: 'Approve of your life choices',
+          tooltip: "You're doing great!",
+          priority: 4,
+          effects: [effectFunCall(['Monster:Attack', { amount: 0 }])],
+          dodgeable: true,
+          range: allRanges,
+        },
+      ],
+      rolls: [[0], [0], [0], [0], [0]],
     },
-  }],
-}
+    {
+      hp: { current: 300, max: 300 },
+      distance: 0,
+      speed: { current: 0, max: 0 },
+      attack: { current: 0, max: 0 },
+      defence: { current: 0, max: 0 },
+      status: {
+        dodge: { active: false },
+        armor: { amount: 0 },
+        bleed: { turns: 0 },
+        stun: { active: false },
+      },
+    },
+  ],
+};
 
 export const globals = (): Globals =>
   // @ts-ignore
   globalThis.__buildmancer;
 
 export const updateGlobals = (p: Partial<Globals>) => {
-  const theThis = (globalThis as unknown) as { __buildmancer: Globals };
-  theThis.__buildmancer = ({
+  const theThis = globalThis as unknown as { __buildmancer: Globals };
+  theThis.__buildmancer = {
     ...globalsDefault,
     ...(theThis.__buildmancer ?? {}),
     ...p,
-  });
-}
+  };
+};
 
 updateGlobals({});
