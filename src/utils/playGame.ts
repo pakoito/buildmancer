@@ -30,7 +30,7 @@ export const playerPassives = (player: Player): StatsFun[] =>
 export const playerActions = (player: Player, inventoryStats: InventoryStats): InventoryEffect[] =>
   safeEntries(player.build)
     .flatMap(([_k, i]) => (i.effects ?? []))
-    .filter(e => (inventoryStats[e.display]?.used ?? 0) < (e.amount ?? 999));
+    .filter(e => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0));
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.bot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
@@ -166,7 +166,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     inventory: {
       ...lastTurnState.inventory,
       [usedSkill.display]: {
-        used: 1 + lastTurnState.inventory[usedSkill.display]?.used ?? 0
+        used: 1 + (lastTurnState.inventory[usedSkill.display]?.used ?? 0)
       }
     }
   };
