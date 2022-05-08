@@ -54,7 +54,6 @@ type MonsterFunctionT = {
   'Monster:Move': { amount: number };
 }
 type ItemFunctionT = {
-  'Inventory:Consume': { target: Build['consumable']['display'] },
   'Wand:MagicBolt': undefined;
   'BootsOfFlight:EOT': undefined;
 }
@@ -176,9 +175,6 @@ const effectFunRepo: EffectFunctionRepository = {
   ),
   // #endregion MONSTERS
   // #region ITEMS
-  'Inventory:Consume': effectFun(
-    ({ target }) => (_, play, currentState) => [play, { ...currentState, inventory: { ...currentState.inventory, [target]: { used: (currentState.inventory[target]?.used ?? 0) + 1 } } }]
-  ),
   'BootsOfFlight:EOT': effectFun(
     () => (_, play, currentState) => [play, currentState.enemies.reduce((s, _m, idx) => actions.changeDistance(s, idx as MonsterTarget, 2), currentState)]
   ),

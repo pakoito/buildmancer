@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase, InventoryStats } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase, InventoryStats, Item } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
@@ -28,7 +28,9 @@ export const playerPassives = (player: Player): StatsFun[] =>
   safeEntries(player.build).flatMap(([_k, s]) => s.passives ?? []).map(i => statsRepository[i]);
 
 export const playerActions = (player: Player, inventoryStats: InventoryStats): InventoryEffect[] =>
-  safeEntries(player.build).flatMap(([_k, s]) => (inventoryStats[s.display] ?? { used: 0 }).used < (s.amount ?? 999) ? s.effects ?? [] : []);
+  safeEntries(player.build)
+    .flatMap(([_k, i]) => (i.effects ?? []))
+    .filter(e => (inventoryStats[e.display]?.used ?? 0) < (e.amount ?? 999));
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies.flatMap((e, idx) => (e.bot ?? []).map(eff => [idx as MonsterTarget, eff] as const))
@@ -161,6 +163,12 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     lastAttacks: [],
     bot: undefined,
     eot: undefined,
+    inventory: {
+      ...lastTurnState.inventory,
+      [usedSkill.display]: {
+        used: 1 + lastTurnState.inventory[usedSkill.display]?.used ?? 0
+      }
+    }
   };
 
   // Stamina

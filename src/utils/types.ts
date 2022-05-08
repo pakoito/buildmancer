@@ -134,6 +134,7 @@ export interface Effect {
 };
 export interface InventoryEffect extends Effect {
   stamina: UpTo<Subtract<Staminas, 1>>;
+  amount?: number;
 };
 
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
@@ -164,7 +165,6 @@ export interface Item {
   bot?: Nel<Effect>;
   eot?: Nel<Effect>;
   effects?: Nel<InventoryEffect>;
-  amount?: number
   //[key: string]: any;
 };
 

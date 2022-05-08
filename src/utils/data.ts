@@ -488,7 +488,6 @@ export const build: BuildRepository = {
     {
       display: "Berserk",
       passives: ["+Attack", "+Attack", "+Attack", "-Defence", "-Defence", "-Health"],
-      amount: 1,
       effects: [
         {
           display: "All or Nothing!",
@@ -496,6 +495,7 @@ export const build: BuildRepository = {
           priority: 2,
           stamina: 0,
           range: makeRange(0, 1, 2),
+          amount: 1,
           effects: [
             effectFunCall(['Basic:Move', { amount: -5 }]),
             effectFunCall(['Basic:Attack', { amount: 2 }]),
@@ -504,7 +504,6 @@ export const build: BuildRepository = {
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Effect:Defence', { target: 'Player', amount: -3 }]),
             effectFunCall(['Effect:Speed', { target: 'Player', amount: -1 }]),
-            effectFunCall(['Inventory:Consume', { target: "All or Nothing!" }]),
           ]
         },
       ]
@@ -512,17 +511,16 @@ export const build: BuildRepository = {
     {
       display: "Mage",
       passives: ["+StaPerTurn", "+Stamina", "-Health", "-Speed"],
-      amount: 2,
       effects: [
         {
           display: "Just having a thought",
           tooltip: "Restores stamina for the next action",
           priority: 4,
+          amount: 2,
           stamina: 0,
           range: selfRange,
           effects: [
             effectFunCall(['Basic:Stamina', { amount: 999 }]),
-            effectFunCall(['Inventory:Consume', { target: "Just having a thought" }]),
           ]
         },
       ]
@@ -530,14 +528,13 @@ export const build: BuildRepository = {
     {
       display: "Cleric",
       passives: ["+Defence", "+Stamina"],
-      amount: 3,
       effects: [
         {
           display: "Minor Healing",
           tooltip: "Restores some HP",
+          amount: 3,
           effects: [
             effectFunCall(["Basic:HP", { amount: 5 }]),
-            effectFunCall(['Inventory:Consume', { target: "Minor Healing" }]),
           ],
           priority: 3,
           stamina: 3,
@@ -777,31 +774,29 @@ export const build: BuildRepository = {
   consumable: [
     {
       display: "Healing Potion",
-      amount: 3,
       effects: [
         {
           display: "Healing!",
           tooltip: "Restores some HP",
           effects: [
             effectFunCall(["Basic:HP", { amount: 4 }]),
-            effectFunCall(["Inventory:Consume", { target: "Healing Potion" }])
           ],
           priority: 4,
           stamina: 5,
+          amount: 3,
           range: selfRange,
         }
       ]
     },
     {
       display: "Pot of Razors",
-      amount: 2,
       effects: [
         {
           display: "Throw pot",
           tooltip: "Causes bleeding",
+          amount: 2,
           effects: [
             effectFunCall(["Effect:Bleed", { target: 'Monster', turns: 3 }]),
-            effectFunCall(["Inventory:Consume", { target: "Pot of Razors" }])
           ],
           priority: 4,
           stamina: 5,
@@ -811,34 +806,32 @@ export const build: BuildRepository = {
     },
     {
       display: "Life Bubble",
-      amount: 1,
       effects: [
         {
           display: "Activate Bubble",
           tooltip: "Protects against a single source of damage this turn",
           effects: [
             effectFunCall("Effect:Dodge"),
-            effectFunCall(["Inventory:Consume", { target: "Life Bubble" }])
           ],
           priority: 1,
           stamina: 1,
+          amount: 1,
           range: selfRange,
         }
       ]
     },
     {
       display: "Pet Rock",
-      amount: 3,
       effects: [
         {
           display: "Rock, to me!",
           tooltip: "Reduces damage",
           effects: [
             effectFunCall(["Effect:Armor", { amount: 3 }]),
-            effectFunCall(["Inventory:Consume", { target: "Pet Rock" }])
           ],
           priority: 2,
           stamina: 3,
+          amount: 3,
           range: selfRange,
         }
       ]
