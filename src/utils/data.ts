@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { globals, updateGlobals } from "./modding";
-import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository } from "./types";
+import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository, EnemyInfo } from "./types";
 
 
 export const startState = (play: Play): Snapshot => play.states[0];
@@ -19,8 +19,8 @@ export const defaultStatus: Status = {
   stun: { active: false },
 }
 
-export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
-export const dummyEnemy = (): [Enemy, EnemyStats] => globals().trainingEnemy;
+export const randomEnemy = (): EnemyInfo => new Chance().pickone(enemies);
+export const dummyEnemy = (): EnemyInfo => globals().trainingEnemy;
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 

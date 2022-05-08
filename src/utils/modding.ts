@@ -1,9 +1,9 @@
 import { EffectFunctionRepository } from "./effectRepository";
-import { BuildRepository, effectFunCall, Enemy, EnemyRepository, EnemyStats, Play } from "./types";
+import { BuildRepository, effectFunCall, Enemy, EnemyInfo, EnemyRepository, EnemyStats, Play } from "./types";
 
 export type Globals = {
   debug: boolean;
-  trainingEnemy: [Enemy, EnemyStats];
+  trainingEnemy: EnemyInfo;
   build?: BuildRepository;
   effects?: EffectFunctionRepository;
   enemies?: EnemyRepository;

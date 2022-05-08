@@ -3,19 +3,19 @@ import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
 import { enemies, randomEnemy, randomPlayer } from '../utils/data';
 import { findBestPlay, defaultTinkererOptions } from '../utils/tinkerer';
-import { Build, Enemies, EnemiesStats, Enemy, EnemyStats, Play, safeEntries, Seed } from '../utils/types';
+import { Build, Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, Play, safeEntries, Seed } from '../utils/types';
 import { pipe, rangeArr } from '../utils/zFunDump';
 import { makeGameNew, scoreGame } from '../utils/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
 
-const makeGame = (p: Build, e: [Enemy, EnemyStats][], seed: Seed) =>
+const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
   pipe(randomPlayer(undefined, p), ([player, playerStats]) =>
     makeGameNew(player, playerStats, e.map(([enemy, _]) => enemy) as Enemies, e.map(([_, enemyStats]) => enemyStats) as EnemiesStats, 50, seed)
   );
 
-const playGauntlet = (iterations: number, playerSeed: string, p: Build, gauntlet: [Seed, [Enemy, EnemyStats][]][]): ScoredPhenotype<Play>[][] =>
+const playGauntlet = (iterations: number, playerSeed: string, p: Build, gauntlet: [Seed, EnemyInfo[]][]): ScoredPhenotype<Play>[][] =>
   gauntlet.reduce((acc, [seed, enemies]) =>
     [...acc, findBestPlay(makeGame(p, enemies, seed), iterations, { playerSeed })],
     [] as ScoredPhenotype<Play>[][]);
@@ -27,7 +27,7 @@ const start = async ({ builds, encounters, encounterCount, iterations, output, t
     return;
   }
   const enc: number[][] | undefined = encounters;
-  const gauntlet: [Seed, [Enemy, EnemyStats][]][] = enc != null
+  const gauntlet: [Seed, EnemyInfo[]][] = enc != null
     ? enc.map(e => [Math.random(), e.map(ee => enemies[ee])])
     : rangeArr(encounterCount).map(_ =>
       pipe(Math.random() * 6, (roll) =>

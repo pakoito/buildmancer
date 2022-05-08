@@ -1,11 +1,11 @@
 import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
-import { Player, Enemies, Enemy, EnemiesStats, EnemyStats, Build } from "../utils/types";
+import { Player, Enemies, EnemiesStats, Build, EnemyInfo } from "../utils/types";
 import { enemies, randomEnemy } from "../utils/data";
 
 const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void }) => {
-  const [encounter, setEncounter] = React.useState<[Enemy, EnemyStats][]>([]);
+  const [encounter, setEncounter] = React.useState<EnemyInfo[]>([]);
   const onFormSubmit = (e: any) => {
     e.preventDefault();
     const enemies = encounter.map(a => a[0]);

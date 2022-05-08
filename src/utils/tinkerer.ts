@@ -1,7 +1,7 @@
 import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { handlePlayerEffect, makeGameNew, playerActions, setSelected } from './playGame';
 import Chance from 'chance';
-import { Enemies, EnemiesStats, Enemy, EnemyStats, MonsterTarget, Play, Player, Seed } from './types';
+import { Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, MonsterTarget, Play, Player, Seed } from './types';
 import { build, enemies, playerStatsDefault, previousState, randomEnemy, randomPlayer } from './data';
 import { Seq } from 'immutable';
 import { pipe, rangeArr } from './zFunDump';
@@ -16,7 +16,6 @@ export const defaultTinkererOptions = {
 
 export function findBestPlay(play: Play, iter: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Play>[] {
   const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
-  const range = rangeArr(iter);
   const rand = new Chance(options.playerSeed);
   const config: GeneticAlgorithmConfig<Play> = {
     mutationFunction: (oldPlay) => {
@@ -59,7 +58,7 @@ export function findBestPlay(play: Play, iter: number, optionsOverride?: Partial
       }
       return fitness;
     },
-    population: range.map((_) => play),
+    population: rangeArr(iter).map((_) => play),
     populationSize: iter,
   }
 
@@ -71,17 +70,9 @@ export function findBestPlay(play: Play, iter: number, optionsOverride?: Partial
   return gen.scoredPopulation();
 }
 
-export const findBestBuild = (encounters: number[][] | number, initialPop: number, iter: number, gameIter: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Player>[] => {
+export const findBestBuild = (players: Player[], enemies: [Seed, EnemyInfo[]][], iter: number, gameIter: number, populationTotal?: number, optionsOverride?: Partial<TinkererOptions>): ScoredPhenotype<Player>[] => {
   const options: TinkererOptions = { ...defaultTinkererOptions, ...optionsOverride };
   const rng = new Chance(options.playerSeed);
-  const population = rangeArr(initialPop).map((_) => randomPlayer()[0]);
-  const gauntlet: [Seed, [Enemy, EnemyStats][]][] = Array.isArray(encounters)
-    ? encounters.map(e => [Math.random(), e.map(ee => enemies[ee])])
-    : rangeArr(encounters).map(_ =>
-      pipe(Math.random() * 6, (roll) =>
-        [Math.random(), [randomEnemy(), ...(roll > 3 ? [randomEnemy()] : []), ...(roll > 5 ? [randomEnemy()] : [])]]
-      )
-    );
   const config: GeneticAlgorithmConfig<Player> = {
     mutationFunction: (player: Player) => {
       const toChange = rng.pickone(Object.keys(player)) as keyof typeof build;
@@ -91,13 +82,13 @@ export const findBestBuild = (encounters: number[][] | number, initialPop: numbe
       };
     },
     fitnessFunction: (player: Player) =>
-      Seq(gauntlet).flatMap(g =>
+      Seq(enemies).flatMap(g =>
         Seq(
           findBestPlay(makeGameNew(player, playerStatsDefault, g[1].map(a => a[0]) as Enemies, g[1].map(a => a[1]) as EnemiesStats, optionsOverride?.turns ?? 50, g[0]), gameIter, optionsOverride)
         ).take(2)
       ).reduce((acc, v) => acc + v.score, 0),
-    population,
-    populationSize: population.length,
+    population: players,
+    populationSize: populationTotal ?? players.length,
   }
 
   let gen = new GeneticAlgorithmConstructor<Player>(config);
