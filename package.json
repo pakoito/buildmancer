@@ -78,7 +78,7 @@
     "best": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts",
     "smokePlay": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts --json='src/cli/sampleGame.json' --iterations=5 --seed=paco",
     "smokeCompare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/buildComparisonCLI.ts --builds=src/cli/samplebuilds.json --encounterCount=5 --iterations=5",
-    "smokeBest": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts --encounters=2 --population=5 --iter=5 --iterPerGame=5"
+    "smokeBest": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestBuildCLI.ts --encounters=2 --players=5 --iter=5 --iterPerGame=5"
   },
   "eslintConfig": {
     "extends": [

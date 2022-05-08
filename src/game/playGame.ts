@@ -1,4 +1,4 @@
-import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase, InventoryStats } from "./types";
+import { Enemies, Player, Snapshot, MonsterTarget, Target, InventoryEffect, EnemiesStats, PlayerStats, Play, RNG, StatsFun, Effect, PlayerTarget, effectFunCall, DisabledSkills, safeEntries, EffectPhase, InventoryStats, Seed } from "./types";
 import { Seq, Set } from "immutable";
 import { allRanges, previousState } from "./data";
 import { Chance } from "chance";
@@ -10,7 +10,7 @@ import { clamp, rangeArr } from "./zFunDump";
 /**
  * @returns min inclusive, max exclusive rand
  */
-function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: string | number): RNG {
+function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: Seed): RNG {
   const monsterChance = new Chance(monsterSeed);
   const monsterRng =
     rangeArr(turns)
@@ -21,7 +21,7 @@ function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: s
 
 export const turnRng = (play: Play, turn: number): ((min: number, max: number) => number) => {
   const turnRng = [...play.rng[turn]];
-  return (min: number, max: number) => Math.floor(((max - min) * turnRng.pop()!!) + min);
+  return (min: number, max: number) => Math.ceil(((max - min) * turnRng.pop()!!) + min) - 1;
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
@@ -51,7 +51,7 @@ export const playerEotEffects = (player: Player, d: DisabledSkills): [PlayerTarg
 export const buildPlayer = (player: Player, playerStats: PlayerStats, enemiesStats: EnemiesStats): [PlayerStats, EnemiesStats] =>
   playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats]);
 
-export function makeGameNew(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 50): Play {
+export function makeGameNew(player: Player, playerStats: PlayerStats, enemies: Enemies, enemiesStats: EnemiesStats, turns: number, seed: number | string, randPerTurn: number = 20): Play {
   const [playerGameStats, enemyGameStats] = buildPlayer(player, playerStats, enemiesStats);
   return makeGameNextLevel(player, playerGameStats, enemies, enemyGameStats, {}, turns, seed, randPerTurn);
 }
@@ -80,7 +80,7 @@ const reduceFuns = (funs: [Target, Effect][], p: Play, s: Snapshot, dodgeable: b
   Seq(funs)
     .sortBy(([origin, a]) => {
       if (a == null) {
-        console.log(`Error in ${phase} by ${origin === 'Player' ? 'Player' : p.enemies[origin]?.lore.name}`);
+        throw new Error(`Error in ${phase} by ${origin === 'Player' ? 'Player' : p.enemies[origin]?.lore.name}`);
       }
       const priorityBonus = origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
       return clamp(a.priority - priorityBonus, 0, 4);
@@ -195,13 +195,13 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
       } else {
         const rolls = e.rolls[stats.distance];
         const roll = rand(0, e.rolls[stats.distance].length);
-        if (isNaN(roll)) {
-          throw new Error('Out of RNG exception');
-        }
+        // if (isNaN(roll)) {
+        //   throw new Error('Out of RNG exception');
+        // }
         const effect = e.effects[rolls[roll]];
-        if (effect == null) {
-          throw new Error(`Rolled outside the table ${JSON.stringify({ roll, rolls, effects: e.effects })}`);
-        }
+        // if (effect == null) {
+        //   throw new Error(`Rolled outside the table ${JSON.stringify({ roll, rolls, effects: e.effects })}`);
+        // }
         return [idx as Target, effect] as const;
       }
     })

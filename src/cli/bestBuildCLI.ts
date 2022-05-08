@@ -9,10 +9,10 @@ import { pipe, rangeArr } from '../game/zFunDump';
 
 const start = async (args: minimist.ParsedArgs) => {
 
-  const { encounters, population, output, iter, iterPergame, top } = args;
+  const { encounters, players, output, iter, iterPergame, top } = args;
 
   const encountersFinal: number | number[][] = encounters ?? 100;
-  const populationFinal: number = population ?? 100;
+  const populationFinal: number = players ?? 100;
   const iterFinal: number = iter ?? 100;
   const iterPergameFinal: number = iterPergame ?? 100;
   const topFinal: number = top ?? 10;
@@ -26,7 +26,8 @@ const start = async (args: minimist.ParsedArgs) => {
       )
     );
 
-  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ encounters: encountersFinal, population: populationFinal, iter: iterFinal, iterPergame: iterFinal, top: topFinal })}\n==========\n`);
+  const config = { encounters: encountersFinal, population: populationFinal, iter: iterFinal, iterPergame: iterFinal, top: topFinal };
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n==========\n`);
 
   const results = findBestBuild(playerPop, gauntlet, iterFinal, iterPergameFinal);
 
@@ -34,7 +35,7 @@ const start = async (args: minimist.ParsedArgs) => {
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
-    writeFileSync(output, JSON.stringify({ args, results }, null, 2));
+    writeFileSync(output, JSON.stringify({ config, results, playerPop, gauntlet }, null, 2));
   }
 }
 
