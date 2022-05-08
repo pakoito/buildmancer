@@ -158,6 +158,9 @@ export type Build = {
   [k in keyof BuildRepository]: Item
 };
 
+export type EnemyInfo = [Enemy, EnemyStats];
+export type EnemyRepository = EnemyInfo[];
+
 export interface Item {
   display: string;
   tooltip?: string;

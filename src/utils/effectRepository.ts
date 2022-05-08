@@ -1,5 +1,6 @@
 import { Opaque } from "type-fest";
 import { allRanges, enemies, makeStat } from "./data";
+import { updateGlobals } from "./modding";
 import { Build, callEffectFun, Effect, effectFunCall, Enemies, EnemiesStats, Enemy, EnemyStats, FunIndex, MonsterTarget, Play, PlayerStats, Snapshot, Status, Target } from "./types";
 import { clamp, pipe } from "./zFunDump";
 
@@ -348,3 +349,5 @@ export const statsRepository = {
 }
 
 // #endregion
+
+updateGlobals({ effects: effectFunRepo });

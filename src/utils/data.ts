@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import globals from "./modding";
-import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository } from "./types";
+import globals, { updateGlobals } from "./modding";
+import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository } from "./types";
 
 
 export const startState = (play: Play): Snapshot => play.states[0];
@@ -840,7 +840,7 @@ export const build: BuildRepository = {
   ],
 };
 
-export const enemies: [Enemy, EnemyStats][] = [
+export const enemies: EnemyRepository = [
   [{
     lore: {
       name: "Sacapuntas",
@@ -1160,3 +1160,5 @@ const names = [
   "Tisette",
   "Partha",
 ]
+
+updateGlobals({ build, enemies });

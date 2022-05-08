@@ -1,6 +1,15 @@
-import { effectFunCall, Enemy, EnemyStats, Play } from "./types";
+import { EffectFunctionRepository } from "./effectRepository";
+import { BuildRepository, effectFunCall, Enemy, EnemyRepository, EnemyStats, Play } from "./types";
 
-export type Globals = { debug: boolean; dummyEnemy: [Enemy, EnemyStats]; currentPlay?: Play; forceUpdate?: () => void };
+export type Globals = {
+  debug: boolean;
+  dummyEnemy: [Enemy, EnemyStats];
+  build?: BuildRepository;
+  effects?: EffectFunctionRepository;
+  enemies?: EnemyRepository;
+  currentPlay?: Play;
+  forceUpdate?: () => void
+};
 
 const globalsDefault: Globals = {
   debug: false,
