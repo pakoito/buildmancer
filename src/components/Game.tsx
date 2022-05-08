@@ -35,12 +35,12 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
 
   useEffect(() => {
     if (globals().debug) {
-      updateGlobals({ currentPlay: game, forceUpdate });
+      updateGlobals({ ingame: { game: game, forceUpdate } });
     } else {
-      updateGlobals({ currentPlay: undefined, forceUpdate: undefined });
+      updateGlobals({ ingame: undefined });
     }
     return () => {
-      updateGlobals({ currentPlay: undefined, forceUpdate: undefined })
+      updateGlobals({ ingame: undefined });
     }
   }, [game, forceUpdate]);
 

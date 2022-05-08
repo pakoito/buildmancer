@@ -3,17 +3,19 @@ import { BuildRepository, effectFunCall, Enemy, EnemyRepository, EnemyStats, Pla
 
 export type Globals = {
   debug: boolean;
-  dummyEnemy: [Enemy, EnemyStats];
+  trainingEnemy: [Enemy, EnemyStats];
   build?: BuildRepository;
   effects?: EffectFunctionRepository;
   enemies?: EnemyRepository;
-  currentPlay?: Play;
-  forceUpdate?: () => void
+  ingame?: {
+    game: Play;
+    forceUpdate: () => void;
+  }
 };
 
 const globalsDefault: Globals = {
   debug: false,
-  dummyEnemy: [{
+  trainingEnemy: [{
     lore: {
       name: "🤖 Dummy 🤖",
     },
