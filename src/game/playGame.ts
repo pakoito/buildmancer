@@ -200,7 +200,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
         }
         const effect = e.effects[rolls[roll]];
         if (effect == null) {
-          throw new Error(`Rolled outside the table ${JSON.stringify({ roll, rolls })}`);
+          throw new Error(`Rolled outside the table ${JSON.stringify({ roll, rolls, effects: e.effects })}`);
         }
         return [idx as Target, effect] as const;
       }

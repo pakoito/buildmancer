@@ -20,7 +20,7 @@ const start = async (args: minimist.ParsedArgs) => {
   const playerPop = rangeArr(populationFinal).map((_) => randomPlayer()[0]);
   const gauntlet: [Seed, EnemyInfo[]][] = Array.isArray(encountersFinal)
     ? encountersFinal.map(e => [Math.random(), e.map(ee => enemies[ee])])
-    : rangeArr(encounters).map(_ =>
+    : rangeArr(encountersFinal).map(_ =>
       pipe(Math.random() * 6, (roll) =>
         [Math.random(), [randomEnemy(), ...(roll > 3 ? [randomEnemy()] : []), ...(roll > 5 ? [randomEnemy()] : [])]]
       )
@@ -30,7 +30,7 @@ const start = async (args: minimist.ParsedArgs) => {
 
   const results = findBestBuild(playerPop, gauntlet, iterFinal, iterPergameFinal);
 
-  console.log(`\n==========\nPLAYERS\n==========\n${prettyjson.render(Seq(results).take(topFinal).reduce((acc, { score, phenotype: player }, idx) => ({ ...acc, [idx]: safeEntries(player.build).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), { score }) }), {}))}\n==========\n`);
+  console.log(`\n==========\nPLAYERS\n==========\n${prettyjson.render(Seq(results).take(topFinal).reduce((acc, { score, phenotype: player }, idx) => ({ ...acc, [idx]: safeEntries(player.build).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), { score, name: player.lore.name }) }), {}))}\n==========\n`);
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
