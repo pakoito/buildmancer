@@ -7,7 +7,47 @@ export const DEBUG = true;
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
 
+export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new Set(number)] as Ranges;
+export const allRanges = makeRange(0, 1, 2, 3, 4);
+export const selfRange = allRanges;
+
+export const makeStat = (amount: number, max: number = amount): Stat => ({ current: amount, max });
+export const defaultStatus: Status = {
+  dodge: { active: false },
+  armor: { amount: 0 },
+  bleed: { turns: 0 },
+  stun: { active: false },
+}
+
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
+export const dummyEnemy: [Enemy, EnemyStats] = [{
+  lore: {
+    name: "Training Dummy",
+  },
+  effects: [
+    {
+      display: "Approve your life choices",
+      tooltip: "You're doing great!",
+      priority: 4,
+      effects: [effectFunCall(["Monster:Attack", { amount: 0 }])],
+      range: makeRange()
+    },
+  ],
+  rolls: [
+    [0],
+    [0],
+    [0],
+    [0],
+    [0],
+  ]
+}, {
+  hp: makeStat(300),
+  distance: 0,
+  speed: makeStat(0),
+  attack: makeStat(0),
+  defence: makeStat(0),
+  status: defaultStatus,
+}];
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 
@@ -45,18 +85,6 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
     status: defaultStatus,
     ...statsOverride,
   }];
-}
-
-export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) => [...new Set(number)] as Ranges;
-export const allRanges = makeRange(0, 1, 2, 3, 4);
-export const selfRange = allRanges;
-
-export const makeStat = (amount: number, max: number = amount): Stat => ({ current: amount, max });
-export const defaultStatus: Status = {
-  dodge: { active: false },
-  armor: { amount: 0 },
-  bleed: { turns: 0 },
-  stun: { active: false },
 }
 
 const weapons: Item[] = [

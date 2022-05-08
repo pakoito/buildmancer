@@ -48,12 +48,18 @@ export interface Typegen0 {
     | "load.play"
     | "load.win"
     | "load.lose"
+    | "training"
+    | "training.player"
+    | "training.play"
+    | "training.win"
+    | "training.lose"
     | {
         quick?: "play" | "win" | "lose";
         single?: "player" | "encounter" | "play" | "win" | "lose";
         arcade?: "player" | "play" | "victory" | "defeat";
         survival?: "player" | "play" | "defeat";
         load?: "load" | "play" | "win" | "lose";
+        training?: "player" | "play" | "win" | "lose";
       };
   tags: never;
 }

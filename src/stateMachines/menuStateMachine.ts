@@ -162,6 +162,27 @@ const load = {
   ...toMenu,
 }
 
+const training = {
+  initial: 'player',
+  states: {
+    player: {
+      entry: ['reset'],
+      on: {
+        PLAYER: { target: 'play' }
+      }
+    },
+    play: {
+      on: {
+        WIN: { target: 'win' },
+        LOSE: { target: 'lose' }
+      }
+    },
+    win: { type: 'final' as const },
+    lose: { type: 'final' as const },
+  },
+  ...toMenu,
+}
+
 const makeArcadeContext = () => ({
   victories: 0,
   score: 0,
@@ -190,6 +211,7 @@ export const gameMenuMachine = createMachine({
       on: {
         QUICK: { target: 'quick' },
         SINGLE: { target: 'single' },
+        TRAINING: { target: 'training' },
         ARCADE: { target: 'arcade' },
         SURVIVAL: { target: 'survival' },
         LOAD: { target: 'load' },
@@ -211,6 +233,9 @@ export const gameMenuMachine = createMachine({
     },
     load: {
       ...load,
+    },
+    training: {
+      ...training,
     }
     // puzzle: {
     //   ...puzzle,

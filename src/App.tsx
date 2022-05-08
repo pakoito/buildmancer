@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
 import { makeGameNew, makeGameNextLevel, PlayState } from "./utils/playGame";
-import { randomEnemy, randomPlayer } from "./utils/data";
+import { dummyEnemy, randomEnemy, randomPlayer } from "./utils/data";
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from "./stateMachines/menuStateMachine";
 import Menu from "./components/menus/Menu";
@@ -65,6 +65,36 @@ function App() {
     case state.matches({ single: 'lose' }):
       return <Menu
         title={`${event.result} in ${event.game.states.length - 1} turns`}
+        states={["MENU"]}
+        onClick={send}
+      />;
+    // TRAINING
+    case state.matches({ training: 'player' }):
+      return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
+    case state.matches({ training: 'play' }): {
+      const player = event.player;
+      const encounter = dummyEnemy;
+      return <SingleGame
+        play={makeGameNew(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        onMenu={onMenu}
+        timeTravel={true}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ training: 'play' }): {
+      const player = randomPlayer();
+      const encounter = dummyEnemy;
+      return <SingleGame
+        play={makeGameNew(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
+        onMenu={onMenu}
+        timeTravel={true}
+        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
+      />;
+    }
+    case state.matches({ training: 'win' }):
+    case state.matches({ training: 'lose' }):
+      return <Menu
+        title={`You have dealt a lot of damage! Well done 💯`}
         states={["MENU"]}
         onClick={send}
       />;
