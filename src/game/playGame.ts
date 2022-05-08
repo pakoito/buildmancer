@@ -21,7 +21,14 @@ function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: S
 
 export const turnRng = (play: Play, turn: number): ((min: number, max: number) => number) => {
   const turnRng = [...play.rng[turn]];
-  return (min: number, max: number) => Math.ceil(((max - min) * turnRng.pop()!!) + min) - 1;
+  return (min: number, max: number) => {
+    let rng = turnRng.pop()!!
+    // GOOD CODE SECTION
+    if (rng >= 1) {
+      rng = 0.9999;
+    }
+    return Math.floor(((max - min) * rng) + min);
+  };
 }
 
 export const playerPassives = (player: Player): StatsFun[] =>
