@@ -94,6 +94,7 @@ export interface Snapshot {
 export type RNG = Opaque<number[][], 'RNG'>;
 
 export type VersionString = "1";
+export type Seed = number | string;
 export interface Play {
   states: Nel<Snapshot>;
   player: Player;
@@ -101,7 +102,7 @@ export interface Play {
   rng: RNG;
   turns: number;
   id: string;
-  seed: string | number;
+  seed: Seed;
   version: VersionString;
 };
 

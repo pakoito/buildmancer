@@ -78,7 +78,8 @@
     "tinker": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json' --iterations=$BM_ITER --seed=$BM_SEED",
     "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/tinkererCLI.ts --json='src/tinkerer/sampleGame.json'",
     "analyse": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/dataAnalysisCLI.ts --json='src/tinkerer/sampleGame.json'",
-    "compare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/buildComparisonCLI.ts"
+    "compare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/buildComparisonCLI.ts",
+    "findBest": "node --experimental-specifier-resolution=node --loader ts-node/esm src/tinkerer/bestBuildCLI.ts"
   },
   "eslintConfig": {
     "extends": [

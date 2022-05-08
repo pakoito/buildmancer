@@ -39,6 +39,16 @@ export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) 
   ...buildOverride,
 });
 
+export const playerStatsDefault: PlayerStats = {
+  hp: makeStat(10),
+  stamina: makeStat(6),
+  staminaPerTurn: makeStat(2),
+  speed: makeStat(0),
+  attack: makeStat(0),
+  defence: makeStat(0),
+  status: defaultStatus,
+};
+
 export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partial<Build>): [Player, PlayerStats] => {
   const rng = new Chance();
   return [{
@@ -49,13 +59,7 @@ export const randomPlayer = (statsOverride?: PlayerStats, buildOverride?: Partia
     },
     build: randomBuild(rng, buildOverride)
   }, {
-    hp: makeStat(10),
-    stamina: makeStat(6),
-    staminaPerTurn: makeStat(2),
-    speed: makeStat(0),
-    attack: makeStat(0),
-    defence: makeStat(0),
-    status: defaultStatus,
+    ...playerStatsDefault,
     ...statsOverride,
   }];
 }

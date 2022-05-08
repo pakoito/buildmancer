@@ -1,14 +1,15 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { build, enemies } from '../utils/data';
-import tinker, { gameRender } from './tinkerer';
+import { build, enemies, previousState } from '../utils/data';
+import { findBestPlay } from '../utils/tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
 import { Play } from '../utils/types';
+import { Seq } from 'immutable';
 
 PouchDb.plugin(pouchFind);
 
@@ -52,7 +53,7 @@ const start = async ({ json, iterations, output, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render({ seed: params.seed, iterations })}\n${paramsRender(params)}\n==========\n`);
   const gameOptions = params.gameOptions || {};
-  const results = tinker(makeGame(params), iterations, gameOptions);
+  const results = findBestPlay(makeGame(params), iterations, gameOptions);
   console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
   if (output != null) {
     console.log(`Writing to ${output}...`);
@@ -62,6 +63,17 @@ const start = async ({ json, iterations, output, db }: minimist.ParsedArgs) => {
     console.log(`Storing in ${db}...`);
     await writeToDb(db, results);
   }
+}
+
+const gameRender = (results: ScoredPhenotype<Play>[]): string => {
+  const best: ScoredPhenotype<Play> = Seq(results).maxBy(a => a.score)!!;
+  const lastState = previousState(best.phenotype);
+  return `BEST BY ${best.score} in ${best.phenotype.states.length - 1} turns\n` +
+    prettyjson.render([
+      lastState.lastAttacks.map(({ origin, display, phase }) => [origin === 'Player' ? 'Player' : `${best.phenotype.enemies[origin]!!.lore.name} [${origin}]`, display, phase]),
+      Seq(best.phenotype.enemies).zip(Seq(lastState.enemies)).flatMap(([enemy, stats], idx) => [`[${idx}] ${enemy.lore.name}`, stats]).toArray(),
+      lastState.player,
+    ]);
 }
 
 start(minimist(process.argv.slice(2)));

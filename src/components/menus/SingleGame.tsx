@@ -1,6 +1,6 @@
 import { Seq } from "immutable";
 import React from "react";
-import tinkerer from "../../tinkerer/tinkerer";
+import { findBestPlay } from "../../utils/tinkerer";
 import { previousState } from "../../utils/data";
 import { PlayState, playState, setSelected, setDisabledSkills, handlePlayerEffect } from "../../utils/playGame";
 import { Play, Snapshot } from "../../utils/types";
@@ -42,11 +42,11 @@ const SingleGame = ({ play, timeTravel, onGameEnd, onMenu }: { play: Play; timeT
     setSelected={(idx) => { setRedo([]); setGame(setSelected(game, idx)); }}
     setDisabledSkills={(disabled) => { setRedo([]); setGame(setDisabledSkills(game, disabled)) }}
     handlePlayerEffect={(idx) => { setRedo([]); setGame(handlePlayerEffect(game, idx)); }}
-    solveGame={(iterations) => setGame(Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
+    solveGame={(iterations) => setGame(Seq(findBestPlay(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype)}
     hint={(iterations) =>
       setGame({
         ...game,
-        states: [...game.states, Seq(tinkerer(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
+        states: [...game.states, Seq(findBestPlay(game, iterations, { turns: game.turns - game.states.length })).maxBy(a => a.score)!!.phenotype.states[game.states.length]]
       })
     }
   />
