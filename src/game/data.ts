@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
 import { globals, updateGlobals } from "./modding";
-import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository, EnemyInfo } from "./types";
+import { Build, Distances, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository, EnemyInfo } from "./types";
 
 
 export const startState = (play: Play): Snapshot => play.states[0];

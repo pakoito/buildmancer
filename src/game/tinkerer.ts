@@ -1,8 +1,8 @@
 import GeneticAlgorithmConstructor, { GeneticAlgorithmConfig, ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { handlePlayerEffect, makeGameNew, playerActions, setSelected } from './playGame';
 import Chance from 'chance';
-import { Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, MonsterTarget, Play, Player, Seed } from './types';
-import { build, enemies, playerStatsDefault, previousState, randomEnemy, randomPlayer } from './data';
+import { Enemies, EnemiesStats, EnemyInfo, MonsterTarget, Play, Player, Seed } from './types';
+import { build, playerStatsDefault, previousState } from './data';
 import { Seq } from 'immutable';
 import { rangeArr } from './zFunDump';
 

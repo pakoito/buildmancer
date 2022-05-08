@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
 import { enemies, randomEnemy, randomPlayer } from '../game/data';
 import { findBestPlay, defaultTinkererOptions } from '../game/tinkerer';
-import { Build, Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, Play, safeEntries, Seed } from '../game/types';
+import { Build, Enemies, EnemiesStats, EnemyInfo, Play, safeEntries, Seed } from '../game/types';
 import { pipe, rangeArr } from '../game/zFunDump';
 import { makeGameNew, scoreGame } from '../game/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';

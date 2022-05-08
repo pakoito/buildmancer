@@ -2,7 +2,7 @@ import minimist from 'minimist';
 import { writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
 import { findBestBuild } from '../game/tinkerer';
-import { Enemy, EnemyInfo, EnemyStats, safeEntries, Seed } from '../game/types';
+import { EnemyInfo, safeEntries, Seed } from '../game/types';
 import { Seq } from 'immutable';
 import { enemies, randomEnemy, randomPlayer } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';

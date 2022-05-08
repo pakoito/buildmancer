@@ -1,6 +1,6 @@
 import { allRanges } from "./data";
 import { EffectFunctionRepository } from "./effectRepository";
-import { BuildRepository, effectFunCall, Enemy, EnemyInfo, EnemyRepository, EnemyStats, Play } from "./types";
+import { BuildRepository, effectFunCall, EnemyInfo, EnemyRepository, Play } from "./types";
 
 export type Globals = {
   debug: boolean;

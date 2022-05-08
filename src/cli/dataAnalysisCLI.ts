@@ -5,8 +5,6 @@ import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import { assert } from 'console';
 import { GameConfig, makeGame } from './tinkererTools';
-// @ts-ignore
-import { toIndexableString } from 'pouchdb-collate';
 
 PouchDb.plugin(pouchFind);
 
