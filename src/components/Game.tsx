@@ -34,14 +34,8 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
   const forceUpdate = useForceRerender();
 
   useEffect(() => {
-    if (globals().debug) {
-      updateGlobals({ ingame: { game: game, forceUpdate } });
-    } else {
-      updateGlobals({ ingame: undefined });
-    }
-    return () => {
-      updateGlobals({ ingame: undefined });
-    }
+    updateGlobals({ ingame: { game, forceUpdate } });
+    return () => updateGlobals({ ingame: undefined });
   }, [game, forceUpdate]);
 
   const handleCloseLog = () => setShowLog(false);
