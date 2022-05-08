@@ -65,5 +65,3 @@ export const updateGlobals = (p: Partial<Globals>) => {
 }
 
 updateGlobals({});
-
-export default globals;

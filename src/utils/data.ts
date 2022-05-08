@@ -1,6 +1,6 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
-import globals, { updateGlobals } from "./modding";
+import { globals, updateGlobals } from "./modding";
 import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository, EnemyRepository } from "./types";
 
 
