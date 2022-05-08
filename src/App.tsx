@@ -72,18 +72,8 @@ function App() {
     case state.matches({ training: 'player' }):
       return <PlayerBuilder onSave={(player, playerStats) => { send('PLAYER', { player: [player, playerStats] }); }} />;
     case state.matches({ training: 'play' }): {
-      const player = event.player;
-      const encounter = dummyEnemy;
-      return <SingleGame
-        play={makeGameNew(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
-        onMenu={onMenu}
-        timeTravel={true}
-        onGameEnd={(result, game) => { send(result === 'win' ? 'WIN' : 'LOSE', { result, game }) }}
-      />;
-    }
-    case state.matches({ training: 'play' }): {
       const player = randomPlayer();
-      const encounter = dummyEnemy;
+      const encounter = dummyEnemy();
       return <SingleGame
         play={makeGameNew(player[0], player[1], [encounter[0]], [encounter[1]], 50, state.context.singleContext.seed)}
         onMenu={onMenu}

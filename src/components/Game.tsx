@@ -10,7 +10,9 @@ import { Seq, Set } from "immutable";
 import { previousState } from "../utils/data";
 import { Button } from "react-bootstrap";
 import saveAs from 'file-saver';
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import globals, { updateGlobals } from "src/utils/modding";
+import { useForceRerender } from "src/hooks/useForceRerender";
 
 export type GameProps = {
   game: Play;
@@ -29,6 +31,18 @@ const Game = ({ handlePlayerEffect, setSelected, setDisabledSkills, game, solveG
   const { player, enemies } = game;
   const { player: playerStats, enemies: enemiesStats, target, lastAttacks, disabledSkills, inventory: inventoryStats } = previousState(game);
   const [isLogShown, setShowLog] = useState(false);
+  const forceUpdate = useForceRerender();
+
+  useEffect(() => {
+    if (globals().debug) {
+      updateGlobals({ currentPlay: game, forceUpdate });
+    } else {
+      updateGlobals({ currentPlay: undefined, forceUpdate: undefined });
+    }
+    return () => {
+      updateGlobals({ currentPlay: undefined, forceUpdate: undefined })
+    }
+  }, [game, forceUpdate]);
 
   const handleCloseLog = () => setShowLog(false);
   const handleShowLog = () => setShowLog(true);

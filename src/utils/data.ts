@@ -1,8 +1,8 @@
 import { Chance } from "chance";
 import { Subtract } from "type-fest/source/internal";
+import globals from "./modding";
 import { Build, Distances, Enemy, EnemyStats, Item, Player, PlayerStats, Ranges, Snapshot, UpTo, Play, effectFunCall, Stat, Status, BuildRepository } from "./types";
 
-export const DEBUG = true;
 
 export const startState = (play: Play): Snapshot => play.states[0];
 export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
@@ -20,39 +20,12 @@ export const defaultStatus: Status = {
 }
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
-export const dummyEnemy: [Enemy, EnemyStats] = [{
-  lore: {
-    name: "🤖 Dummy 🤖",
-  },
-  effects: [
-    {
-      display: "Approve of your life choices",
-      tooltip: "You're doing great!",
-      priority: 4,
-      effects: [effectFunCall(["Monster:Attack", { amount: 0 }])],
-      range: makeRange()
-    },
-  ],
-  rolls: [
-    [0],
-    [0],
-    [0],
-    [0],
-    [0],
-  ]
-}, {
-  hp: makeStat(300),
-  distance: 0,
-  speed: makeStat(0),
-  attack: makeStat(0),
-  defence: makeStat(0),
-  status: defaultStatus,
-}];
+export const dummyEnemy = (): [Enemy, EnemyStats] => globals().dummyEnemy;
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 
 export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) => ({
-  debug: build.debug[DEBUG ? 1 : 0],
+  debug: build.debug[globals().debug ? 1 : 0],
   basic: rng.pickone(build.basic),
   class: rng.pickone(build.class),
   skill: rng.pickone(build.skill),

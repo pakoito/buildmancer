@@ -207,10 +207,12 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
   // Cleanup
   const [postCleanup, postCleanupState] = reduceFuns([['Player' as Target, effectEotCleanup]], postEotPlay, postEotState, false, 'EOT');
 
-  return {
+  const endOfTurn: Play = {
     ...postCleanup,
     states: [...postCleanup.states, postCleanupState],
   };
+
+  return endOfTurn;
 };
 
 export const setSelected = (play: Play, target: MonsterTarget): Play => {
