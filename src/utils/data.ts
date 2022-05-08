@@ -20,7 +20,7 @@ export const defaultStatus: Status = {
 }
 
 export const randomEnemy = (): [Enemy, EnemyStats] => new Chance().pickone(enemies);
-export const dummyEnemy = (): [Enemy, EnemyStats] => globals().dummyEnemy;
+export const dummyEnemy = (): [Enemy, EnemyStats] => globals().trainingEnemy;
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 

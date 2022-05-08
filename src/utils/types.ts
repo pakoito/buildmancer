@@ -27,7 +27,6 @@ type LT<A extends number, B extends number> =
   ? EQ<A, B> extends true
   ? false
   : (A extends 0 ? true : false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   : LT<Subtract<A, 1>, Subtract<B, 1>>;
 
 export type TupleUpTo<T, N extends number> =

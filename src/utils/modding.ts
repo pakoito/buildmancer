@@ -50,7 +50,7 @@ const globalsDefault: Globals = {
   }],
 }
 
-export const globals = () =>
+export const globals = (): Globals =>
   // @ts-ignore
   globalThis.__buildmancer;
 

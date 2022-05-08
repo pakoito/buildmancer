@@ -9,7 +9,8 @@ const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () 
     try {
       const playRaw = JSON.parse(data);
       try {
-        playSchema.parse(playRaw);
+        // FIXME update schema
+        //playSchema.parse(playRaw);
         onLoad(playRaw as Play);
       } catch (e) {
         setLoadError("Failed to Load - Invalid Data");
