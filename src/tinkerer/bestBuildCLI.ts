@@ -1,11 +1,11 @@
 import minimist from 'minimist';
 import { writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { findBestBuild } from '../utils/tinkerer';
-import { Enemy, EnemyInfo, EnemyStats, safeEntries, Seed } from '../utils/types';
+import { findBestBuild } from '../game/tinkerer';
+import { Enemy, EnemyInfo, EnemyStats, safeEntries, Seed } from '../game/types';
 import { Seq } from 'immutable';
-import { enemies, randomEnemy, randomPlayer } from '../utils/data';
-import { pipe, rangeArr } from '../utils/zFunDump';
+import { enemies, randomEnemy, randomPlayer } from '../game/data';
+import { pipe, rangeArr } from '../game/zFunDump';
 
 const start = async (args: minimist.ParsedArgs) => {
 

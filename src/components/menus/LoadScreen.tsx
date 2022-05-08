@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Col, Row, Alert, Button, Container } from "react-bootstrap";
-import { Play } from "../../utils/types";
-import { playSchema } from "../../utils/typesSchemas";
+import { Play } from "../../game/types";
+import { playSchema } from "../../game/typesSchemas";
 
 const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () => void }) => {
   const [loadError, setLoadError] = React.useState<string | undefined>();

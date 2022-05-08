@@ -2,10 +2,10 @@ import React from "react";
 import { Container, Row, Form, Button, ButtonGroup, Navbar } from "react-bootstrap";
 import useScroll from "../hooks/useScroll";
 
-import { Build, Item, Player, PlayerStats, safeEntries } from "../utils/types";
-import { build, randomEnemy, randomName, randomPlayer } from "../utils/data";
+import { Build, Item, Player, PlayerStats, safeEntries } from "../game/types";
+import { build, randomEnemy, randomName, randomPlayer } from "../game/data";
 import { Set } from 'immutable';
-import { buildPlayer } from "../utils/playGame";
+import { buildPlayer } from "../game/playGame";
 
 const systemBuildKeys: Set<keyof Build> = Set(['debug', 'basic']);
 

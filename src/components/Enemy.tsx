@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, OverlayTrigger, Popover } from "react-bootstrap";
-import { Enemy, Effect, EnemyStats } from "../utils/types";
+import { Enemy, Effect, EnemyStats } from "../game/types";
 import { Seq } from "immutable";
 
 const skillPercents = (effects: Effect[]) =>

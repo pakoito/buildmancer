@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, ButtonGroup, Form, Button, Navbar } from "react-bootstrap";
 
-import { Player, Enemies, EnemiesStats, Build, EnemyInfo } from "../utils/types";
-import { enemies, randomEnemy } from "../utils/data";
+import { Player, Enemies, EnemiesStats, Build, EnemyInfo } from "../game/types";
+import { enemies, randomEnemy } from "../game/data";
 
 const EncounterBuilder = ({ player, onSave }: { player: Player, onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void }) => {
   const [encounter, setEncounter] = React.useState<EnemyInfo[]>([]);

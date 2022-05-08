@@ -1,11 +1,11 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { enemies, randomEnemy, randomPlayer } from '../utils/data';
-import { findBestPlay, defaultTinkererOptions } from '../utils/tinkerer';
-import { Build, Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, Play, safeEntries, Seed } from '../utils/types';
-import { pipe, rangeArr } from '../utils/zFunDump';
-import { makeGameNew, scoreGame } from '../utils/playGame';
+import { enemies, randomEnemy, randomPlayer } from '../game/data';
+import { findBestPlay, defaultTinkererOptions } from '../game/tinkerer';
+import { Build, Enemies, EnemiesStats, Enemy, EnemyInfo, EnemyStats, Play, safeEntries, Seed } from '../game/types';
+import { pipe, rangeArr } from '../game/zFunDump';
+import { makeGameNew, scoreGame } from '../game/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';

@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { assign, createMachine, interpret } from 'xstate';
 import { inspect } from '@xstate/inspect/lib/server.js';
-import { scoreGame } from '../utils/playGame';
+import { scoreGame } from '../game/playGame';
 
 const isDebug = process && process.env['SMD'] === '1';
 

@@ -1,17 +1,17 @@
 import { Container, Row, Col, Card, Modal, ButtonGroup } from "react-bootstrap";
 
-import { DisabledSkills, MonsterTarget, Play } from "../utils/types";
+import { DisabledSkills, MonsterTarget, Play } from "../game/types";
 
 import EnemyCard from "./Enemy";
 import PlayerCard from "./Player";
 import usePressedKeys from "../hooks/usePressedKeys";
-import { playerActions } from "../utils/playGame";
+import { playerActions } from "../game/playGame";
 import { Seq, Set } from "immutable";
-import { previousState } from "../utils/data";
+import { previousState } from "../game/data";
 import { Button } from "react-bootstrap";
 import saveAs from 'file-saver';
 import { useCallback, useEffect, useState } from "react";
-import { globals, updateGlobals } from "../utils/modding";
+import { globals, updateGlobals } from "../game/modding";
 import { useForceRerender } from "../hooks/useForceRerender";
 
 export type GameProps = {

@@ -1,12 +1,12 @@
 import "./App.css";
 // import { readString } from "react-papaparse";
-import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from "./utils/types";
+import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from "./game/types";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import PlayerBuilder from "./components/PlayerBuilder";
 import EncounterBuilder from "./components/EncounterBuilder";
-import { makeGameNew, makeGameNextLevel, PlayState } from "./utils/playGame";
-import { dummyEnemy, randomEnemy, randomPlayer } from "./utils/data";
+import { makeGameNew, makeGameNextLevel, PlayState } from "./game/playGame";
+import { dummyEnemy, randomEnemy, randomPlayer } from "./game/data";
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from "./stateMachines/menuStateMachine";
 import Menu from "./components/menus/Menu";

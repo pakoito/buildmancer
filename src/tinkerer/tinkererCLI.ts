@@ -1,14 +1,14 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { build, enemies, previousState } from '../utils/data';
-import { findBestPlay } from '../utils/tinkerer';
+import { build, enemies, previousState } from '../game/data';
+import { findBestPlay } from '../game/tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
-import { Play } from '../utils/types';
+import { Play } from '../game/types';
 import { Seq } from 'immutable';
 
 PouchDb.plugin(pouchFind);

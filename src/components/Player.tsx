@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, Button, Stack, ToggleButton, ButtonGroup, Popover, OverlayTrigger } from "react-bootstrap";
-import { DisabledSkills, InventoryStats, Player, PlayerStats, safeEntries } from "../utils/types";
+import { DisabledSkills, InventoryStats, Player, PlayerStats, safeEntries } from "../game/types";
 import { Set } from 'immutable';
-import { clamp } from "../utils/zFunDump";
-import { playerActions } from "../utils/playGame";
+import { clamp } from "../game/zFunDump";
+import { playerActions } from "../game/playGame";
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>,

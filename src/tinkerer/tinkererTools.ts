@@ -1,8 +1,8 @@
-import { makeGameNew } from "../utils/playGame";
-import { Build, Enemies, EnemiesStats, Play } from "../utils/types";
-import { build, defaultStatus, enemies, makeStat } from "../utils/data";
-import { TinkererOptions } from "../utils/tinkerer";
-import { rangeArr } from "../utils/zFunDump";
+import { makeGameNew } from "../game/playGame";
+import { Build, Enemies, EnemiesStats, Play } from "../game/types";
+import { build, defaultStatus, enemies, makeStat } from "../game/data";
+import { TinkererOptions } from "../game/tinkerer";
+import { rangeArr } from "../game/zFunDump";
 
 export const makeBuild = (gameConfig: BuildConfig): Build => ({
   debug: build.debug[0],
