@@ -72,6 +72,7 @@ export function makeGameNextLevel(player: Player, playerStats: PlayerStats, enem
     turns,
     id: toIndexableString([player, enemies, turns, seed]),
     seed,
+    version: "1",
   };
 }
 
