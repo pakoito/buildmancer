@@ -251,7 +251,15 @@ const effectFunRepo: EffectFunctionRepository = {
       ? actions.changeStatPlayer(currentState, (s) => ({
           hp: {
             ...s.hp,
-            current: Math.min(s.hp.max, s.hp.current + (stats.hp ?? 0)),
+            current: clamp(s.hp.current + (stats.hp ?? 0), 0, s.hp.max),
+          },
+          stamina: {
+            ...s.stamina,
+            current: clamp(
+              s.stamina.current + (stats.stamina ?? 0),
+              0,
+              s.stamina.max
+            ),
           },
           speed: {
             ...s.speed,
@@ -274,13 +282,6 @@ const effectFunRepo: EffectFunctionRepository = {
               s.attack.current + (stats.attack ?? 0)
             ),
           },
-          stamina: {
-            ...s.stamina,
-            current: Math.min(
-              s.stamina.max,
-              s.stamina.current + (stats.stamina ?? 0)
-            ),
-          },
           staminaPerTurn: {
             ...s.staminaPerTurn,
             current: Math.min(
@@ -295,7 +296,7 @@ const effectFunRepo: EffectFunctionRepository = {
           (s) => ({
             hp: {
               ...s.hp,
-              current: Math.min(s.hp.current + (stats.hp ?? 0), s.hp.max),
+              current: clamp(s.hp.current + (stats.hp ?? 0), 0, s.hp.max),
             },
             speed: {
               ...s.speed,
