@@ -4,10 +4,10 @@ import {
   makeRange,
   makeStat,
   selfRange,
-} from './data';
-import { effectFunCall, EnemyRepository } from './types';
+} from '../makeGame';
+import { effectFunCall, EnemyRepository } from '../types';
 
-export const enemies: EnemyRepository = [
+const enemies: EnemyRepository = [
   [
     {
       lore: {
@@ -345,3 +345,5 @@ export const enemies: EnemyRepository = [
     },
   ],
 ];
+
+export default enemies;

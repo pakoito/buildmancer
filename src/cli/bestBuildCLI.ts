@@ -4,8 +4,9 @@ import prettyjson from 'prettyjson';
 import { findBestBuild } from '../game/tinkerer';
 import { EnemyInfo, safeEntries, Seed } from '../game/types';
 import { Seq } from 'immutable';
-import { enemies, randomEnemy, randomPlayer } from '../game/data';
+import { enemies } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';
+import { randomPlayer, randomEnemy } from 'src/game/makeGame';
 
 const start = async (args: minimist.ParsedArgs) => {
   const { encounters, players, output, iter, iterPergame, top } = args;

@@ -8,11 +8,11 @@ import {
   Navbar,
 } from 'react-bootstrap';
 import useScroll from '../hooks/useScroll';
-
 import { Build, Item, Player, PlayerStats, safeEntries } from '../game/types';
-import { build, randomEnemy, randomName, randomPlayer } from '../game/data';
+import { build } from '../game/data';
 import { Set } from 'immutable';
 import { buildPlayer } from '../game/playGame';
+import { randomPlayer, randomEnemy, randomName } from '../game/makeGame';
 
 const systemBuildKeys: Set<keyof Build> = Set(['debug', 'basic']);
 

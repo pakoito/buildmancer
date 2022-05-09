@@ -18,9 +18,10 @@ import {
   Player,
   Seed,
 } from './types';
-import { build, playerStatsDefault, previousState } from './data';
+import { build, previousState } from './data';
 import { Seq } from 'immutable';
 import { rangeArr } from './zFunDump';
+import { playerStatsDefault } from './makeGame';
 
 export type TinkererOptions = typeof defaultTinkererOptions & {
   turns?: number;

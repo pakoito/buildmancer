@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { enemies, randomEnemy, randomPlayer } from '../game/data';
+import { enemies } from '../game/data';
 import { findBestPlay, defaultTinkererOptions } from '../game/tinkerer';
 import {
   Build,
@@ -17,6 +17,7 @@ import { makeGameNew, scoreGame } from '../game/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
+import { randomPlayer, randomEnemy } from 'src/game/makeGame';
 
 const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
   pipe(randomPlayer(undefined, p), ([player, playerStats]) =>

@@ -1,5 +1,6 @@
 import { Opaque } from 'type-fest';
-import { allRanges, enemies, makeStat } from './data';
+import { enemies } from './data';
+import { allRanges, makeStat } from './makeGame';
 import { updateGlobals } from './modding';
 import {
   callEffectFun,

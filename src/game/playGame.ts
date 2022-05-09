@@ -20,12 +20,13 @@ import {
   Seed,
 } from './types';
 import { Seq, Set } from 'immutable';
-import { allRanges, previousState } from './data';
+import { previousState } from './data';
 import { Chance } from 'chance';
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 import { extractFunction, statsRepository } from './effectRepository';
 import { clamp, rangeArr } from './zFunDump';
+import { allRanges } from './makeGame';
 
 /**
  * @returns min inclusive, max exclusive rand

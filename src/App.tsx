@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import PlayerBuilder from './components/PlayerBuilder';
 import EncounterBuilder from './components/EncounterBuilder';
 import { makeGameNew, makeGameNextLevel, PlayState } from './game/playGame';
-import { dummyEnemy, randomEnemy, randomPlayer } from './game/data';
+import { dummyEnemy, randomEnemy, randomPlayer } from './game/makeGame';
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from './stateMachines/menuStateMachine';
 import Menu from './components/menus/Menu';

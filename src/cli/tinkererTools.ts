@@ -1,8 +1,9 @@
 import { makeGameNew } from '../game/playGame';
 import { Build, Enemies, EnemiesStats, Play } from '../game/types';
-import { build, defaultStatus, enemies, makeStat } from '../game/data';
+import { build, enemies } from '../game/data';
 import { TinkererOptions } from '../game/tinkerer';
 import { rangeArr } from '../game/zFunDump';
+import { makeStat, defaultStatus } from '../game/makeGame';
 
 export const makeBuild = (gameConfig: BuildConfig): Build => ({
   debug: build.debug[0],

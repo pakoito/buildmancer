@@ -2,7 +2,8 @@ import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
 
 import { Player, Enemies, EnemiesStats, Build, EnemyInfo } from '../game/types';
-import { enemies, randomEnemy } from '../game/data';
+import { enemies } from '../game/data';
+import { randomEnemy } from '../game/makeGame';
 
 const EncounterBuilder = ({
   player,
