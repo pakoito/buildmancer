@@ -11,16 +11,19 @@ import { randomPlayer, randomEnemy } from '../game/makeGame';
 const start = async ({
   encounters,
   players,
-  output,
+  pop,
   iter,
   iterPergame,
   top,
+  output,
+  debug,
 }: minimist.ParsedArgs) => {
-  const encountersFinal: number | number[][] = encounters ?? 100;
+  const encountersFinal: number | number[][] = encounters ?? 20;
   const populationFinal: number = players ?? 100;
-  const iterFinal: number = iter ?? 100;
-  const iterPergameFinal: number = iterPergame ?? 100;
+  const iterFinal: number = iter ?? 5;
+  const iterPergameFinal: number = iterPergame ?? 5;
   const topFinal: number = top ?? 10;
+  const totalPop = pop ?? populationFinal * 2;
 
   const playerPop = rangeArr(populationFinal).map((_) => randomPlayer()[0]);
   const gauntlet: [Seed, EnemyInfo[]][] = Array.isArray(encountersFinal)
@@ -40,7 +43,7 @@ const start = async ({
     encounters: encountersFinal,
     population: populationFinal,
     iter: iterFinal,
-    iterPergame: iterFinal,
+    iterPergame: iterPergameFinal,
     top: topFinal,
   };
   console.log(
@@ -53,7 +56,9 @@ const start = async ({
     playerPop,
     gauntlet,
     iterFinal,
-    iterPergameFinal
+    iterPergameFinal,
+    totalPop,
+    { debug }
   );
 
   console.log(
