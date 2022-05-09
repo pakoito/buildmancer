@@ -377,8 +377,6 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     .zip(Seq(postEntitiesBotState.enemies))
     .map(([e, stats], idx) => {
       if (stats.hp.current > 0) {
-        return [idx as Target, effectDead] as const;
-      } else {
         const rolls = e.rolls[stats.distance];
         const roll = rand(0, e.rolls[stats.distance].length);
         // if (isNaN(roll)) {
@@ -389,6 +387,8 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
         //   throw new Error(`Rolled outside the table ${JSON.stringify({ roll, rolls, effects: e.effects })}`);
         // }
         return [idx as Target, effect] as const;
+      } else {
+        return [idx as Target, effectDead] as const;
       }
     })
     .concat([['Player' as Target, usedSkill] as const])
