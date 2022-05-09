@@ -5,15 +5,18 @@ import {
   callEffectFun,
   Effect,
   effectFunCall,
+  EffectTarget,
   Enemies,
   EnemiesStats,
   Enemy,
   EnemyStats,
   FunIndex,
+  MonsterStatParameter,
   MonsterTarget,
   Play,
   PlayerStats,
   Snapshot,
+  StatEffectTarget,
   Status,
   Target,
 } from './types';
@@ -83,7 +86,7 @@ type BasicFunctionT = {
   'Basic:Stamina': { amount: number };
   'Basic:HP': { amount: number };
 };
-export type EffectTarget = 'Player' | 'Monster';
+
 type StatusFunctionT = {
   'Effect:Poison': { target: EffectTarget; turns: number };
   'Effect:Dodge': undefined;
@@ -93,7 +96,9 @@ type StatusFunctionT = {
   'Effect:Defence': { target: EffectTarget; amount: number };
   'Effect:Speed': { target: EffectTarget; amount: number };
   'Effect:Attack': { target: EffectTarget; amount: number };
+  'Effect:Stat': StatEffectTarget;
 };
+
 type MonsterFunctionT = {
   'Monster:Summon': { enemy: number };
   'Monster:Dead': undefined;
@@ -199,11 +204,11 @@ const effectFunRepo: EffectFunctionRepository = {
     origin === 'Player'
       ? actions.changeStatusPlayer(currentState, (o) => ({
           ...o,
-          armor: { amount: amount },
+          armor: { amount: o.armor.amount + amount },
         }))
       : actions.changeStatusMonster(currentState, currentState.target, (o) => ({
           ...o,
-          armor: { amount: amount },
+          armor: { amount: o.armor.amount + amount },
         })),
   ]),
   'Effect:Stun': effectFun(() => (origin, play, currentState) => [
@@ -223,11 +228,11 @@ const effectFunRepo: EffectFunctionRepository = {
     target === 'Player'
       ? actions.changeStatusPlayer(currentState, (o) => ({
           ...o,
-          bleed: { turns: turns },
+          bleed: { turns: o.bleed.turns + turns },
         }))
       : actions.changeStatusMonster(currentState, currentState.target, (o) => ({
           ...o,
-          bleed: { turns: turns },
+          bleed: { turns: o.bleed.turns + turns },
         })),
   ]),
   'Effect:Poison': effectFun(({ target, turns }) => (_, play, currentState) => [
@@ -241,6 +246,82 @@ const effectFunRepo: EffectFunctionRepository = {
   'Reduce:PoisonBOT': effectFun((params) => (_, play, currentState) => [
     play,
     applyPoison(play, currentState, params),
+  ]),
+  'Effect:Stat': effectFun((stats) => (origin, play, currentState) => [
+    play,
+    stats.target === 'Player'
+      ? actions.changeStatPlayer(currentState, (s) => ({
+          hp: {
+            ...s.hp,
+            current: Math.min(s.hp.max, s.hp.current + (stats.hp ?? 0)),
+          },
+          speed: {
+            ...s.speed,
+            current: Math.min(
+              s.speed.max,
+              s.speed.current + (stats.speed ?? 0)
+            ),
+          },
+          defence: {
+            ...s.defence,
+            current: Math.min(
+              s.defence.max,
+              s.defence.current + (stats.defence ?? 0)
+            ),
+          },
+          attack: {
+            ...s.attack,
+            current: Math.min(
+              s.attack.max,
+              s.attack.current + (stats.attack ?? 0)
+            ),
+          },
+          stamina: {
+            ...s.stamina,
+            current: Math.min(
+              s.stamina.max,
+              s.stamina.current + (stats.stamina ?? 0)
+            ),
+          },
+          staminaPerTurn: {
+            ...s.staminaPerTurn,
+            current: Math.min(
+              s.staminaPerTurn.max,
+              s.staminaPerTurn.current + (stats.staminaPerTurn ?? 0)
+            ),
+          },
+        }))
+      : actions.changeStatMonster(
+          currentState,
+          origin === 'Player' ? currentState.target : origin,
+          (s) => ({
+            hp: {
+              ...s.hp,
+              current: Math.min(s.hp.current + (stats.hp ?? 0), s.hp.max),
+            },
+            speed: {
+              ...s.speed,
+              current: Math.min(
+                s.speed.current + (stats.speed ?? 0),
+                s.speed.max
+              ),
+            },
+            defence: {
+              ...s.defence,
+              current: Math.min(
+                s.defence.current + (stats.defence ?? 0),
+                s.defence.max
+              ),
+            },
+            attack: {
+              ...s.attack,
+              current: Math.min(
+                s.attack.current + (stats.attack ?? 0),
+                s.attack.max
+              ),
+            },
+          })
+        ),
   ]),
   'Effect:Attack': effectFun(
     ({ target, amount }) =>

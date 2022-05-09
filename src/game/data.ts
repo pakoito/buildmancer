@@ -28,7 +28,7 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) =>
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
-export const makeStat = (amount: number, max: number = amount): Stat => ({
+export const makeStat = (amount: number, max: number = amount + 5): Stat => ({
   current: amount,
   max,
 });
@@ -608,14 +608,16 @@ export const build: BuildRepository = {
   skill: [
     {
       display: 'Sturdy',
-      effects: [
+      bot: [
         {
           display: 'Endure the pain',
-          tooltip: 'Blocks some damage',
-          effects: [effectFunCall(['Effect:Armor', { amount: 2 }])],
+          tooltip: 'Blocks some damage each turn at the cost of stamina',
+          effects: [
+            effectFunCall(['Effect:Armor', { amount: 4 }]),
+            effectFunCall(['Effect:Stat', { target: 'Player', stamina: -2 }]),
+          ],
           priority: 1,
           dodgeable: false,
-          stamina: 2,
           range: selfRange,
         },
       ],
@@ -796,15 +798,18 @@ export const build: BuildRepository = {
     {
       display: 'Boots of Flight',
       tooltip: 'Avoid your enemies',
-      passives: ['-StaPerTurn', '-Defence'],
+      passives: ['-Defence'],
       eot: [
         {
           display: 'Flight!',
-          tooltip: 'Increases distance every turn',
+          tooltip: 'Increases distance at the end of the turn',
           priority: 0,
           dodgeable: false,
           range: allRanges,
-          effects: [effectFunCall('BootsOfFlight:EOT')],
+          effects: [
+            effectFunCall('BootsOfFlight:EOT'),
+            effectFunCall(['Effect:Stat', { target: 'Player', stamina: -2 }]),
+          ],
         },
       ],
     },

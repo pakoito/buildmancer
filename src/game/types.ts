@@ -59,7 +59,7 @@ export interface Status {
   stun: { active: boolean };
   armor: { amount: number };
   bleed: { turns: number };
-};
+}
 export interface PlayerStats {
   hp: Stat;
   stamina: Stat;
@@ -168,6 +168,17 @@ export interface InventoryEffect extends Effect {
 export type MonsterTarget = UpTo<Subtract<MonsterCount, 1>>;
 export type PlayerTarget = 'Player';
 export type Target = MonsterTarget | PlayerTarget;
+
+export type EffectTarget = 'Player' | 'Monster';
+export type PlayerStatParameter = Partial<{
+  [k in keyof Omit<PlayerStats, 'status'>]: number;
+}>;
+export type MonsterStatParameter = Partial<{
+  [k in keyof Omit<EnemyStats, 'status'>]: number;
+}>;
+export type StatEffectTarget =
+  | (PlayerStatParameter & { target: 'Player' })
+  | (MonsterStatParameter & { target: 'Monster' });
 
 export interface BuildRepository {
   debug: Item[];
