@@ -126,7 +126,7 @@ export const enemies: EnemyRepository = [
   [
     {
       lore: {
-        name: 'Mama Purupuru',
+        name: 'Mama Purupuri',
         description: 'Mama can always call one of its little ones to help',
       },
       rolls: [
