@@ -20,13 +20,16 @@ import {
   Seed,
 } from './types';
 import { Seq, Set } from 'immutable';
-import { previousState } from './data';
 import { Chance } from 'chance';
 // @ts-ignore fails on scripts despite having a d.ts file
 import { toIndexableString } from 'pouchdb-collate';
 import { extractFunction, statsRepository } from './effectRepository';
 import { clamp, rangeArr } from './zFunDump';
 import { allRanges } from './makeGame';
+
+export const initialState = (play: Play): Snapshot => play.states[0];
+export const previousState = (play: Play): Snapshot =>
+  play.states[play.states.length - 1];
 
 /**
  * @returns min inclusive, max exclusive rand
@@ -461,7 +464,7 @@ export const setDisabledSkills = (
 export type PlayState = 'win' | 'loss' | 'playing';
 
 export const playState = (play: Play): PlayState => {
-  const state = play.states[play.states.length - 1];
+  const state = previousState(play);
   return state.player.hp.current <= 0
     ? 'loss'
     : state.enemies.reduce((acc, monster) => acc + monster.hp.current, 0) <= 0
@@ -470,8 +473,8 @@ export const playState = (play: Play): PlayState => {
 };
 
 export const scoreGame = (play: Play): number => {
-  const firstState = play.states[0];
-  const lastState = play.states[play.states.length - 1];
+  const firstState = initialState(play);
+  const lastState = previousState(play);
 
   const turns = play.states.length; // 1-50
   const hpLoss =

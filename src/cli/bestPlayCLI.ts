@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { build, enemies, previousState } from '../game/data';
+import { build, enemies } from '../game/data';
 import { findBestPlay } from '../game/tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';
@@ -10,6 +10,7 @@ import { GameConfig, makeGame } from './tinkererTools';
 import hasher from 'object-hash';
 import { Play } from '../game/types';
 import { Seq } from 'immutable';
+import { previousState } from '../game/playGame';
 
 PouchDb.plugin(pouchFind);
 
@@ -38,7 +39,7 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   });
   const docs = await Promise.all(
     results.flatMap(async (r) => {
-      const lastState = r.phenotype.states[r.phenotype.states.length - 1];
+      const lastState = previousState(r.phenotype);
       const playerHp = lastState.player.hp.current;
       const monsterHp = lastState.enemies.reduce(
         (acc, m) => m.hp.current + acc,

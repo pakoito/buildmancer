@@ -6,7 +6,7 @@ import { EnemyInfo, safeEntries, Seed } from '../game/types';
 import { Seq } from 'immutable';
 import { enemies } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';
-import { randomPlayer, randomEnemy } from 'src/game/makeGame';
+import { randomPlayer, randomEnemy } from '../game/makeGame';
 
 const start = async (args: minimist.ParsedArgs) => {
   const { encounters, players, output, iter, iterPergame, top } = args;

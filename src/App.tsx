@@ -12,7 +12,7 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PlayerBuilder from './components/PlayerBuilder';
 import EncounterBuilder from './components/EncounterBuilder';
-import { makeGameNew, makeGameNextLevel, PlayState } from './game/playGame';
+import { initialState, makeGameNew, makeGameNextLevel, PlayState, previousState } from './game/playGame';
 import { dummyEnemy, randomEnemy, randomPlayer } from './game/makeGame';
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from './stateMachines/menuStateMachine';
@@ -204,7 +204,7 @@ function App() {
                 [...encounter[1], otherEnemy[1]],
               ];
             }
-            const firstState: Snapshot = game.states[0];
+            const firstState: Snapshot = initialState(game);
             send(result === 'win' ? 'WIN' : 'LOSE', {
               result,
               game: makeGameNextLevel(
@@ -268,7 +268,7 @@ function App() {
           onGameEnd={(result, game) => {
             const encounter = randomEnemy();
             const lastState: Snapshot =
-              game.states[event.game.states.length - 1];
+              previousState(game);
             send(result === 'win' ? 'WIN' : 'LOSE', {
               result,
               game: makeGameNextLevel(

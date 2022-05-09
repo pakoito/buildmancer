@@ -4,8 +4,10 @@ import GeneticAlgorithmConstructor, {
 } from '../geneticalgorithm/geneticalgorithm';
 import {
   handlePlayerEffect,
+  initialState,
   makeGameNew,
   playerActions,
+  previousState,
   setSelected,
 } from './playGame';
 import Chance from 'chance';
@@ -18,7 +20,7 @@ import {
   Player,
   Seed,
 } from './types';
-import { build, previousState } from './data';
+import { build } from './data';
 import { Seq } from 'immutable';
 import { rangeArr } from './zFunDump';
 import { playerStatsDefault } from './makeGame';
@@ -86,11 +88,12 @@ export function findBestPlay(
         (acc, monster) => acc + monster.hp.current,
         0
       );
+      const startState = initialState(play);
       const playerHealth = latestState.player.hp.current;
       const playerStamina = latestState.player.stamina.current;
-      const startPlayerHealth = play.states[0].player.hp.max;
-      const startPlayerStamina = play.states[0].player.stamina.max;
-      const startMonsterHealth = play.states[0].enemies.reduce(
+      const startPlayerHealth = startState.player.hp.max;
+      const startPlayerStamina = startState.player.stamina.max;
+      const startMonsterHealth = startState.enemies.reduce(
         (acc, monster) => acc + monster.hp.current,
         0
       );

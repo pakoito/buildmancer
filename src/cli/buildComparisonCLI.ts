@@ -17,7 +17,7 @@ import { makeGameNew, scoreGame } from '../game/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
-import { randomPlayer, randomEnemy } from 'src/game/makeGame';
+import { randomPlayer, randomEnemy } from '../game/makeGame';
 
 const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
   pipe(randomPlayer(undefined, p), ([player, playerStats]) =>

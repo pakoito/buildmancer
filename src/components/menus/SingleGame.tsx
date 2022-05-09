@@ -1,7 +1,7 @@
 import { Seq } from 'immutable';
 import React from 'react';
 import { findBestPlay } from '../../game/tinkerer';
-import { previousState } from '../../game/data';
+import { initialState, previousState } from '../../game/playGame';
 import {
   PlayState,
   playState,
@@ -53,7 +53,7 @@ const SingleGame = ({
           setRedo([...redo, previousState(game)]);
           setGame({
             ...game,
-            states: [game.states[0], ...game.states.slice(1, -1)],
+            states: [initialState(game), ...game.states.slice(1, -1)],
           });
         },
       }

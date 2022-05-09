@@ -7,7 +7,7 @@ import PlayerCard from './Player';
 import usePressedKeys from '../hooks/usePressedKeys';
 import { playerActions } from '../game/playGame';
 import { Seq, Set } from 'immutable';
-import { previousState } from '../game/data';
+import { previousState } from '../game/playGame';
 import { Button } from 'react-bootstrap';
 import saveAs from 'file-saver';
 import { useCallback, useEffect, useState } from 'react';
