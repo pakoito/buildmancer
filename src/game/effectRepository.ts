@@ -220,7 +220,7 @@ const effectFunRepo: EffectFunctionRepository = {
   ]),
   'Effect:Bleed': effectFun(({ target, turns }) => (_, play, currentState) => [
     play,
-    target !== 'Player'
+    target === 'Player'
       ? actions.changeStatusPlayer(currentState, (o) => ({
           ...o,
           bleed: { turns: turns },

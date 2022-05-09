@@ -71,7 +71,7 @@ const PlayerCard: React.FC<{
           {playerStats.staminaPerTurn.current})
         </Card.Text>
         {playerStats.status.bleed.turns > 0 && (
-          <Card.Text>` ${playerStats.status.bleed.turns} 🩸`</Card.Text>
+          <Card.Text>{playerStats.status.bleed.turns} 🩸</Card.Text>
         )}
         {lastAction && <Card.Text>Last action: {lastAction}</Card.Text>}
       </Card.Body>

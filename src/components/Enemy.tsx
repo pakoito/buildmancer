@@ -74,8 +74,9 @@ const EnemyCard: React.FC<{
         <br />
         Speed {enemyStats.speed.current}
       </Card.Text>
-      {enemyStats.status.bleed.turns > 0 &&
-        ` ${enemyStats.status.bleed.turns} 🩸`}
+      {enemyStats.status.bleed.turns > 0 && (
+        <Card.Text>{enemyStats.status.bleed.turns} 🩸</Card.Text>
+      )}
       {latestAttack && <Card.Text>Latest attack: {latestAttack}</Card.Text>}
       <Card.Text>
         Next attack prediction:
