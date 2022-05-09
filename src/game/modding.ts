@@ -1,4 +1,3 @@
-import { allRanges } from './data';
 import { EffectFunctionRepository } from './effectRepository';
 import {
   BuildRepository,
@@ -34,7 +33,7 @@ const globalsDefault: Globals = {
           priority: 4,
           effects: [effectFunCall(['Monster:Attack', { amount: 0 }])],
           dodgeable: true,
-          range: allRanges,
+          range: [0, 1, 2, 3, 4],
         },
       ],
       rolls: [[0], [0], [0], [0], [0]],

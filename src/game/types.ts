@@ -54,7 +54,7 @@ export interface Stat {
   current: UpTo<Stat['max']>;
 }
 
-export type Status = {
+export interface Status {
   dodge: { active: boolean };
   stun: { active: boolean };
   armor: { amount: number };
