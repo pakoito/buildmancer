@@ -12,7 +12,13 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PlayerBuilder from './components/PlayerBuilder';
 import EncounterBuilder from './components/EncounterBuilder';
-import { initialState, makeGameNew, makeGameNextLevel, PlayState, previousState } from './game/playGame';
+import {
+  initialState,
+  makeGameNew,
+  makeGameNextLevel,
+  PlayState,
+  previousState,
+} from './game/playGame';
 import { dummyEnemy, randomEnemy, randomPlayer } from './game/makeGame';
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from './stateMachines/menuStateMachine';
@@ -267,8 +273,7 @@ function App() {
           timeTravel={false}
           onGameEnd={(result, game) => {
             const encounter = randomEnemy();
-            const lastState: Snapshot =
-              previousState(game);
+            const lastState: Snapshot = previousState(game);
             send(result === 'win' ? 'WIN' : 'LOSE', {
               result,
               game: makeGameNextLevel(

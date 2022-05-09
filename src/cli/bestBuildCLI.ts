@@ -8,9 +8,14 @@ import { enemies } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';
 import { randomPlayer, randomEnemy } from '../game/makeGame';
 
-const start = async (args: minimist.ParsedArgs) => {
-  const { encounters, players, output, iter, iterPergame, top } = args;
-
+const start = async ({
+  encounters,
+  players,
+  output,
+  iter,
+  iterPergame,
+  top,
+}: minimist.ParsedArgs) => {
   const encountersFinal: number | number[][] = encounters ?? 100;
   const populationFinal: number = players ?? 100;
   const iterFinal: number = iter ?? 100;
