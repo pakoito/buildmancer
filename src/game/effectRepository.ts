@@ -12,7 +12,6 @@ import {
   Enemy,
   EnemyStats,
   FunIndex,
-  MonsterStatParameter,
   MonsterTarget,
   Play,
   PlayerStats,

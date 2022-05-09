@@ -1,5 +1,5 @@
 import { updateGlobals } from './modding';
-import { Snapshot, Play, BuildRepository, EnemyRepository } from './types';
+import { BuildRepository, EnemyRepository } from './types';
 import enemyRepository from './data/enemies';
 import buildRepository from './data/build';
 

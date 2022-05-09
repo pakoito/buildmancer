@@ -11,7 +11,7 @@ import { previousState } from '../game/playGame';
 import { Button } from 'react-bootstrap';
 import saveAs from 'file-saver';
 import { useCallback, useEffect, useState } from 'react';
-import { globals, updateGlobals } from '../game/modding';
+import { updateGlobals } from '../game/modding';
 import { useForceRerender } from '../hooks/useForceRerender';
 
 export type GameProps = {
