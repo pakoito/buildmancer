@@ -93,9 +93,6 @@ type StatusFunctionT = {
   'Effect:Armor': { amount: number };
   'Effect:Stun': undefined;
   'Effect:Bleed': { target: EffectTarget; turns: number };
-  'Effect:Defence': { target: EffectTarget; amount: number };
-  'Effect:Speed': { target: EffectTarget; amount: number };
-  'Effect:Attack': { target: EffectTarget; amount: number };
   'Effect:Stat': StatEffectTarget;
 };
 
@@ -323,74 +320,6 @@ const effectFunRepo: EffectFunctionRepository = {
           })
         ),
   ]),
-  'Effect:Attack': effectFun(
-    ({ target, amount }) =>
-      (_, play, currentState) =>
-        [
-          play,
-          target === 'Player'
-            ? actions.changeStatPlayer(currentState, ({ attack }) => ({
-                attack: {
-                  ...attack,
-                  current: Math.min(attack.current + amount, attack.max),
-                },
-              }))
-            : actions.changeStatMonster(
-                currentState,
-                currentState.target,
-                ({ attack }) => ({
-                  attack: {
-                    ...attack,
-                    current: Math.min(attack.current + amount, attack.max),
-                  },
-                })
-              ),
-        ]
-  ),
-  'Effect:Speed': effectFun(({ target, amount }) => (_, play, currentState) => [
-    play,
-    target === 'Player'
-      ? actions.changeStatPlayer(currentState, ({ speed }) => ({
-          speed: {
-            ...speed,
-            current: Math.min(speed.current + amount, speed.max),
-          },
-        }))
-      : actions.changeStatMonster(
-          currentState,
-          currentState.target,
-          ({ speed }) => ({
-            speed: {
-              ...speed,
-              current: Math.min(speed.current + amount, speed.max),
-            },
-          })
-        ),
-  ]),
-  'Effect:Defence': effectFun(
-    ({ target, amount }) =>
-      (_, play, currentState) =>
-        [
-          play,
-          target === 'Player'
-            ? actions.changeStatPlayer(currentState, ({ defence }) => ({
-                defence: {
-                  ...defence,
-                  current: Math.min(defence.current + amount, defence.max),
-                },
-              }))
-            : actions.changeStatMonster(
-                currentState,
-                currentState.target,
-                ({ defence }) => ({
-                  defence: {
-                    ...defence,
-                    current: Math.min(defence.current + amount, defence.max),
-                  },
-                })
-              ),
-        ]
-  ),
   // #endregion EFFECTS
   // #region MONSTERS
   'Monster:Attack': effectFun(({ amount }) => (_origin, play, currentState) => [

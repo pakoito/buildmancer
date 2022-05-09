@@ -269,7 +269,7 @@ const weapons: Item[] = [
         display: 'Aim for the head!',
         tooltip: 'Cripples the monster',
         effects: [
-          effectFunCall(['Effect:Defence', { target: 'Monster', amount: -1 }]),
+          effectFunCall(['Effect:Stat', { target: 'Monster', defence: -1 }]),
           effectFunCall(['Effect:Bleed', { target: 'Player', turns: 3 }]),
         ],
         priority: 4,
@@ -281,7 +281,7 @@ const weapons: Item[] = [
         display: 'Target the limbs!',
         tooltip: 'Weakens the monster',
         effects: [
-          effectFunCall(['Effect:Attack', { target: 'Monster', amount: -1 }]),
+          effectFunCall(['Effect:Stat', { target: 'Monster', attack: -1 }]),
           effectFunCall(['Effect:Bleed', { target: 'Player', turns: 3 }]),
         ],
         priority: 4,
@@ -350,7 +350,7 @@ const weapons: Item[] = [
         display: 'Go for the ankles',
         tooltip: 'Slows down the enemy',
         effects: [
-          effectFunCall(['Effect:Speed', { target: 'Monster', amount: -1 }]),
+          effectFunCall(['Effect:Stat', { target: 'Monster', speed: -1 }]),
           effectFunCall('Effect:Stun'),
         ],
         priority: 4,
@@ -407,7 +407,7 @@ const weapons: Item[] = [
         tooltip: 'Shoots your strongest arrow and makes you weaker',
         effects: [
           effectFunCall(['Basic:Attack', { amount: 6 }]),
-          effectFunCall(['Effect:Attack', { target: 'Player', amount: -1 }]),
+          effectFunCall(['Effect:Stat', { target: 'Player', attack: -1 }]),
         ],
         priority: 3,
         dodgeable: true,
@@ -566,8 +566,8 @@ export const build: BuildRepository = {
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Basic:Attack', { amount: 2 }]),
-            effectFunCall(['Effect:Defence', { target: 'Player', amount: -3 }]),
-            effectFunCall(['Effect:Speed', { target: 'Player', amount: -1 }]),
+            effectFunCall(['Effect:Stat', { target: 'Player', defence: -3 }]),
+            effectFunCall(['Effect:Stat', { target: 'Player', speed: -1 }]),
           ],
         },
       ],
