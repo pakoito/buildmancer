@@ -270,7 +270,7 @@ const weapons: Item[] = [
         tooltip: 'Cripples the monster',
         effects: [
           effectFunCall(['Effect:Stat', { target: 'Monster', defence: -1 }]),
-          effectFunCall(['Effect:Bleed', { target: 'Player', turns: 3 }]),
+          effectFunCall(['Effect:Bleed', { target: 'Player', turns: 2 }]),
         ],
         priority: 4,
         dodgeable: true,
@@ -282,7 +282,7 @@ const weapons: Item[] = [
         tooltip: 'Weakens the monster',
         effects: [
           effectFunCall(['Effect:Stat', { target: 'Monster', attack: -1 }]),
-          effectFunCall(['Effect:Bleed', { target: 'Player', turns: 3 }]),
+          effectFunCall(['Effect:Bleed', { target: 'Player', turns: 2 }]),
         ],
         priority: 4,
         dodgeable: true,
@@ -566,8 +566,10 @@ export const build: BuildRepository = {
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Basic:Attack', { amount: 2 }]),
             effectFunCall(['Basic:Attack', { amount: 2 }]),
-            effectFunCall(['Effect:Stat', { target: 'Player', defence: -3 }]),
-            effectFunCall(['Effect:Stat', { target: 'Player', speed: -1 }]),
+            effectFunCall([
+              'Effect:Stat',
+              { target: 'Player', defence: -3, speed: -1 },
+            ]),
           ],
         },
       ],
