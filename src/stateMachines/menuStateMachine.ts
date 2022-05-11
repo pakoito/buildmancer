@@ -146,12 +146,12 @@ const puzzle = {
   ...toMenu,
 };
 
-const load = {
-  initial: 'load',
+const replay = {
+  initial: 'replay',
   states: {
-    load: {
+    replay: {
       on: {
-        LOAD: { target: 'play' },
+        REPLAY: { target: 'play' },
       },
     },
     play: {
@@ -219,7 +219,7 @@ export const gameMenuMachine = createMachine(
           TRAINING: { target: 'training' },
           ARCADE: { target: 'arcade' },
           SURVIVAL: { target: 'survival' },
-          LOAD: { target: 'load' },
+          REPLAY: { target: 'replay' },
           // PUZZLE: { target: 'puzzle' },
           // LEADERBOARDS: { target: 'leaderboards' },
         },
@@ -236,8 +236,8 @@ export const gameMenuMachine = createMachine(
       survival: {
         ...survival,
       },
-      load: {
-        ...load,
+      replay: {
+        ...replay,
       },
       training: {
         ...training,

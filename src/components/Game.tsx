@@ -128,7 +128,7 @@ const Game = ({
     const blob = new Blob([JSON.stringify(game)], {
       type: 'application/json;charset=utf-8',
     });
-    saveAs(blob, `buildmancer-${Date.now()}.json`);
+    saveAs(blob, `buildmancer-${Date.now()}.bmreplay`);
   }, [game]);
 
   return (
@@ -221,7 +221,7 @@ const Game = ({
                   [<i>L</i>] Log 🗒
                 </Button>
                 <Button onClick={save}>
-                  [<i>S</i>] Dump to file 📂
+                  [<i>S</i>] Save Replay 📂
                 </Button>
               </ButtonGroup>
             </Row>

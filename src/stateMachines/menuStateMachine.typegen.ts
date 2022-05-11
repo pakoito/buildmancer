@@ -43,11 +43,11 @@ export interface Typegen0 {
     | 'survival.player'
     | 'survival.play'
     | 'survival.defeat'
-    | 'load'
-    | 'load.load'
-    | 'load.play'
-    | 'load.win'
-    | 'load.lose'
+    | 'replay'
+    | 'replay.replay'
+    | 'replay.play'
+    | 'replay.win'
+    | 'replay.lose'
     | 'training'
     | 'training.player'
     | 'training.play'
@@ -58,7 +58,7 @@ export interface Typegen0 {
         single?: 'player' | 'encounter' | 'play' | 'win' | 'lose';
         arcade?: 'player' | 'play' | 'victory' | 'defeat';
         survival?: 'player' | 'play' | 'defeat';
-        load?: 'load' | 'play' | 'win' | 'lose';
+        replay?: 'replay' | 'play' | 'win' | 'lose';
         training?: 'player' | 'play' | 'win' | 'lose';
       };
   tags: never;

@@ -19,10 +19,10 @@ const LoadScreen = ({
         //playSchema.parse(playRaw);
         onLoad(playRaw as Play);
       } catch (e) {
-        setLoadError('Failed to Load - Invalid Data');
+        setLoadError('Failed to load Replay - Invalid Data');
       }
     } catch (e) {
-      setLoadError('Failed to Load - Bad Data');
+      setLoadError('Failed to load Replay - Bad Data');
     }
   };
   const onFormSubmit = (e: any) => {
@@ -34,7 +34,7 @@ const LoadScreen = ({
         if (result != null) {
           load(result);
         } else {
-          setLoadError('Failed to read file');
+          setLoadError('Failed to load Replay - Bad File');
         }
       };
       reader.readAsText(e.target.fileData.files[0]);
@@ -60,22 +60,22 @@ const LoadScreen = ({
           </Row>
           <Row>
             <Form.Group>
-              <Form.Label>Load File</Form.Label>
-              <Form.Control type="file" name="fileData" accept=".json" />
-              <Form.Text muted>Select the file to load</Form.Text>
+              <Form.Label>Load Replay from File</Form.Label>
+              <Form.Control type="file" name="fileData" accept=".bmreplay" />
+              <Form.Text muted>Select the Replay file to load</Form.Text>
             </Form.Group>
           </Row>
           <br />
           <Row>
             <Form.Group>
-              <Form.Label>Load</Form.Label>
+              <Form.Label>Load Replay from Text</Form.Label>
               <Form.Control
                 name="rawData"
                 as="textarea"
                 rows={3}
                 placeholder="Save Data"
               />
-              <Form.Text muted>Paste the text of your savegame here</Form.Text>
+              <Form.Text muted>Paste the text of your Replay here</Form.Text>
             </Form.Group>
           </Row>
           <br />
