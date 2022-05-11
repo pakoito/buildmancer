@@ -300,12 +300,12 @@ function App() {
       );
     }
     // LOAD
-    case state.matches({ load: 'load' }): {
+    case state.matches({ replay: 'replay' }): {
       return (
-        <LoadScreen onLoad={(game) => send('LOAD', { game })} onMenu={onMenu} />
+        <LoadScreen onLoad={(game) => send('REPLAY', { game })} onMenu={onMenu} />
       );
     }
-    case state.matches({ load: 'play' }): {
+    case state.matches({ replay: 'play' }): {
       return (
         <SingleGame
           play={event.game}
@@ -317,8 +317,8 @@ function App() {
         />
       );
     }
-    case state.matches({ load: 'win' }):
-    case state.matches({ load: 'lose' }):
+    case state.matches({ replay: 'win' }):
+    case state.matches({ replay: 'lose' }):
       return (
         <Menu
           title={`${event.result} in ${event.game.states.length - 1} turns`}

@@ -73,7 +73,7 @@ const LoadScreen = ({
                 name="rawData"
                 as="textarea"
                 rows={3}
-                placeholder="Save Data"
+                placeholder="Replay text"
               />
               <Form.Text muted>Paste the text of your Replay here</Form.Text>
             </Form.Group>
