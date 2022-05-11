@@ -22,6 +22,7 @@ export const selfRange = allRanges;
 
 export const makeStat = (amount: number, max: number = amount + 5): Stat => ({
   current: amount,
+  starting: amount,
   max,
 });
 export const defaultStatus: Status = {

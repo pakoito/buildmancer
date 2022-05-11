@@ -530,7 +530,7 @@ function attackMonster(
   return {
     ...curr,
     enemies: updateMonster(curr.enemies, target, ({ status, hp }) => ({
-      hp: { max: hp.max, current: clamp(hp.current - afterBleed, 0, hp.max) },
+      hp: { ...hp, current: clamp(hp.current - afterBleed, 0, hp.max) },
       status: { ...status, armor: { amount: armorSpent } },
     })),
   };
@@ -544,7 +544,7 @@ function attackPlayer(curr: Snapshot, amount: number): Snapshot {
   const armorSpent = armor - (afterDefence - afterArmor);
   const afterBleed = afterArmor + (curr.player.status.bleed.turns > 0 ? 1 : 0);
   return updatePlayer(curr, ({ hp, status }) => ({
-    hp: { max: hp.max, current: clamp(hp.current - afterBleed, 0, hp.max) },
+    hp: { ...hp, current: clamp(hp.current - afterBleed, 0, hp.max) },
     status: { ...status, armor: { amount: status.armor.amount - armorSpent } },
   }));
 }

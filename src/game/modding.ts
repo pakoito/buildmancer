@@ -39,11 +39,11 @@ const globalsDefault: Globals = {
       rolls: [[0], [0], [0], [0], [0]],
     },
     {
-      hp: { current: 300, max: 300 },
+      hp: { current: 300, starting: 300, max: 300 },
       distance: 0,
-      speed: { current: 0, max: 0 },
-      attack: { current: 0, max: 0 },
-      defence: { current: 0, max: 0 },
+      speed: { current: 0, starting: 0, max: 0 },
+      attack: { current: 0, starting: 0, max: 0 },
+      defence: { current: 0, starting: 0, max: 0 },
       status: {
         dodge: { active: false },
         armor: { amount: 0 },

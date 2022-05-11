@@ -51,6 +51,7 @@ export type UpTo<N extends number> = EQ<N, 0> extends true
 
 export interface Stat {
   max: number;
+  starting: number;
   current: UpTo<Stat['max']>;
 }
 

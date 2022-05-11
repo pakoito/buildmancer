@@ -63,10 +63,10 @@ const PlayerCard: React.FC<{
           {playerStats.defence.current} | Speed {playerStats.speed.current}
         </Card.Text>
         <Card.Text>
-          {playerStats.hp.current}/{playerStats.hp.max} ❤
+          {playerStats.hp.current}/{Math.min(playerStats.hp.starting, playerStats.hp.max)} ❤
         </Card.Text>
         <Card.Text>
-          {playerStats.stamina.current}/{playerStats.stamina.max} 💪 (
+          {playerStats.stamina.current}/{Math.min(playerStats.stamina.starting, playerStats.stamina.max)} 💪 (
           {playerStats.staminaPerTurn.current >= 0 && '+'}
           {playerStats.staminaPerTurn.current})
         </Card.Text>
