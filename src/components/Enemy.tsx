@@ -65,7 +65,7 @@ const EnemyCard: React.FC<{
         {enemy.lore.name} {enemyStats.hp.current > 0 ? '' : <b>💀DEAD💀</b>}
       </Card.Title>
       <Card.Text>
-        ❤:{enemyStats.hp.current} 🏹:{enemyStats.distance + 1}
+        ❤:{enemyStats.hp.current} 🏹:{enemyStats.distance}
       </Card.Text>
       <Card.Text>
         Attack {enemyStats.attack.current}

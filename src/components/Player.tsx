@@ -145,8 +145,8 @@ const PlayerCard: React.FC<{
                     <br />
                     🏹:
                     {e.range.length === 5
-                      ? 'Any'
-                      : e.range.map((a) => a + 1).join(', ')}
+                      ? 'All'
+                      : e.range.join(', ')}
                   </Card.Text>
                 </div>
               </OverlayTrigger>
