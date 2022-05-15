@@ -28,6 +28,7 @@ const PlayerCard: React.FC<{
   lastAction: string | undefined;
   onClickEffect: (index: number) => void;
   disabledSkills: DisabledSkills;
+  hotkeys: string[];
   setDisabledSkills: (skills: DisabledSkills) => void;
 }> = ({
   selectedButtons,
@@ -39,6 +40,7 @@ const PlayerCard: React.FC<{
   lastAction,
   disabledSkills,
   setDisabledSkills,
+  hotkeys,
 }) => {
   const passives = safeEntries(player.build).map(
     ([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const
@@ -136,7 +138,7 @@ const PlayerCard: React.FC<{
                     disabled={playerStats.stamina.current < e.stamina}
                     onClick={(_) => onClickEffect(idx)}
                   >
-                    [<i>{idx + 1}</i>] <b>{e.display}</b>
+                    [<i>{hotkeys[idx]}</i>] <b>{e.display}</b>
                   </Button>
                   <br />
                   <Card.Text>

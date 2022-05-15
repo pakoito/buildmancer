@@ -25,7 +25,7 @@ export type GameProps = {
   onMenu: () => void;
 };
 
-const monsterHotkeys = ['q', 'w', 'e', 'r', 't', 'y'];
+const playerHotkeys = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
 
 const Game = ({
   handlePlayerEffect,
@@ -66,12 +66,14 @@ const Game = ({
 
   const pressed = usePressedKeys((key) => {
     if (!canAct) return;
-    const valNum = parseInt(key);
-    if (valNum > 0 && valNum <= playerSkills.length) {
+
+    const skillIndex = playerHotkeys.indexOf(key);
+    if (skillIndex !== -1) {
+      const skillNumber = playerHotkeys.indexOf(key);
       const hasStamina =
-        playerSkills[valNum - 1].stamina <= playerStats.stamina.current;
+        playerSkills[skillNumber].stamina <= playerStats.stamina.current;
       if (!hasStamina) return;
-      handlePlayerEffect(valNum - 1);
+      handlePlayerEffect(skillNumber);
     }
 
     if (key === 'Escape') {
@@ -96,28 +98,18 @@ const Game = ({
       timeTravel.redo();
     }
 
-    if (key === monsterHotkeys[0] && enemies.length > 0) {
-      setSelected(0 as MonsterTarget);
-    }
-    if (key === monsterHotkeys[1] && enemies.length > 1) {
-      setSelected(1 as MonsterTarget);
-    }
-    if (key === monsterHotkeys[2] && enemies.length > 2) {
-      setSelected(2 as MonsterTarget);
-    }
-    if (key === monsterHotkeys[3] && enemies.length > 3) {
-      setSelected(3 as MonsterTarget);
-    }
-    if (key === monsterHotkeys[4] && enemies.length > 4) {
-      setSelected(4 as MonsterTarget);
+    const valNum = parseInt(key);
+    if (valNum > 0 && valNum <= enemies.length) {
+      setSelected(valNum - 1 as MonsterTarget);
     }
   });
 
   const selectedButtons = Set<string>(
     [...pressed].flatMap((key: string) => {
       const valNum = parseInt(key);
-      if (valNum > 0 && valNum <= playerSkills.length) {
-        return [playerSkills[valNum - 1].display];
+      const skillIndex = playerHotkeys.indexOf(key);
+      if (skillIndex !== -1) {
+        return [playerSkills[skillIndex].display];
       } else {
         return [];
       }
@@ -157,6 +149,7 @@ const Game = ({
               setDisabledSkills={setDisabledSkills}
               onClickEffect={(idx) => handlePlayerEffect(idx)}
               selectedButtons={selectedButtons}
+              hotkeys={playerHotkeys}
               lastAction={
                 lastAttacks
                   .filter((a) => a.origin === 'Player' && a.phase === 'MAIN')
@@ -209,7 +202,7 @@ const Game = ({
                       }
                       isSelected={idx === target}
                       onSelect={() => setSelected(idx as MonsterTarget)}
-                      hotkey={monsterHotkeys[idx]}
+                      hotkey={`${idx + 1}`}
                     />
                   </Col>
                 ))}
