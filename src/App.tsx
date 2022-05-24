@@ -302,7 +302,10 @@ function App() {
     // LOAD
     case state.matches({ replay: 'replay' }): {
       return (
-        <LoadScreen onLoad={(game) => send('REPLAY', { game })} onMenu={onMenu} />
+        <LoadScreen
+          onLoad={(game) => send('REPLAY', { game })}
+          onMenu={onMenu}
+        />
       );
     }
     case state.matches({ replay: 'play' }): {

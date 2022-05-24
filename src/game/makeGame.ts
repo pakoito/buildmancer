@@ -66,7 +66,7 @@ export const playerStatsDefault: PlayerStats = {
 };
 
 export const randomPlayer = (
-  statsOverride?: PlayerStats,
+  statsOverride?: Partial<PlayerStats>,
   buildOverride?: Partial<Build>
 ): [Player, PlayerStats] => {
   const rng = new Chance();

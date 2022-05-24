@@ -19,13 +19,31 @@ export type GameProps = {
   setSelected: (target: MonsterTarget) => void;
   setDisabledSkills: (disabled: DisabledSkills) => void;
   handlePlayerEffect: (index: number) => void;
-  solveGame: (iterations: number) => void;
-  hint: (iterations: number) => void;
+  solveGame: (iterations: number, population: number) => void;
+  hint: (iterations: number, population: number) => void;
   timeTravel: { undo: () => void; redo: (() => void) | undefined } | undefined;
   onMenu: () => void;
 };
 
-const playerHotkeys = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
+const playerHotkeys = [
+  'q',
+  'w',
+  'e',
+  'r',
+  't',
+  'y',
+  'u',
+  'i',
+  'o',
+  'p',
+  'z',
+  'x',
+  'c',
+  'v',
+  'b',
+  'n',
+  'm',
+];
 
 const Game = ({
   handlePlayerEffect,
@@ -80,7 +98,7 @@ const Game = ({
       onMenu();
     }
     if (key === 'h') {
-      hint(100);
+      hint(5, 100);
     }
 
     if (key === 'l') {
@@ -100,13 +118,12 @@ const Game = ({
 
     const valNum = parseInt(key);
     if (valNum > 0 && valNum <= enemies.length) {
-      setSelected(valNum - 1 as MonsterTarget);
+      setSelected((valNum - 1) as MonsterTarget);
     }
   });
 
   const selectedButtons = Set<string>(
     [...pressed].flatMap((key: string) => {
-      const valNum = parseInt(key);
       const skillIndex = playerHotkeys.indexOf(key);
       if (skillIndex !== -1) {
         return [playerSkills[skillIndex].display];
@@ -176,7 +193,7 @@ const Game = ({
             )}
             <Row>
               <ButtonGroup>
-                <Button onClick={(_) => hint(100)}>
+                <Button onClick={(_) => hint(5, 100)}>
                   <i>[H]</i> Hint
                 </Button>
               </ButtonGroup>
@@ -221,8 +238,8 @@ const Game = ({
             <Card.Title>Cheats</Card.Title>
             <Row>
               <ButtonGroup>
-                <Button onClick={(_) => solveGame(100)}>Solve ⌛</Button>
-                <Button onClick={(_) => solveGame(1000)}>
+                <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
+                <Button onClick={(_) => solveGame(20, 100)}>
                   Solve thoroughly ⌛⌛⌛
                 </Button>
               </ButtonGroup>

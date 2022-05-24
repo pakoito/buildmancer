@@ -12,6 +12,7 @@ const start = async ({
   encounters,
   players,
   pop,
+  popPerGame,
   iter,
   iterPergame,
   top,
@@ -23,7 +24,8 @@ const start = async ({
   const iterFinal: number = iter ?? 5;
   const iterPergameFinal: number = iterPergame ?? 5;
   const topFinal: number = top ?? 10;
-  const totalPop = pop ?? populationFinal * 2;
+  const totalPop = pop ?? populationFinal * 100;
+  const perGamePop = popPerGame ?? populationFinal * 100;
 
   const playerPop = rangeArr(populationFinal).map((_) => randomPlayer()[0]);
   const gauntlet: [Seed, EnemyInfo[]][] = Array.isArray(encountersFinal)
@@ -42,6 +44,7 @@ const start = async ({
   const config = {
     encounters: encountersFinal,
     population: populationFinal,
+    populationPerGame: perGamePop,
     iter: iterFinal,
     iterPergame: iterPergameFinal,
     top: topFinal,
@@ -58,6 +61,7 @@ const start = async ({
     iterFinal,
     iterPergameFinal,
     totalPop,
+    perGamePop,
     { debug }
   );
 

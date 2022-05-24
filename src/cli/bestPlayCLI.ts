@@ -60,7 +60,13 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   await pouch.bulkDocs(docs).catch((e) => console.log(JSON.stringify(e)));
 };
 
-const start = async ({ json, iterations, output, db }: minimist.ParsedArgs) => {
+const start = async ({
+  json,
+  iterations,
+  population,
+  output,
+  db,
+}: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(
     `\n==========\nCONFIG\n==========\n${prettyjson.render({
@@ -69,7 +75,12 @@ const start = async ({ json, iterations, output, db }: minimist.ParsedArgs) => {
     })}\n${paramsRender(params)}\n==========\n`
   );
   const gameOptions = params.gameOptions || {};
-  const results = findBestPlay(makeGame(params), iterations, gameOptions);
+  const results = findBestPlay(
+    makeGame(params),
+    iterations,
+    population,
+    gameOptions
+  );
   console.log(
     `\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`
   );

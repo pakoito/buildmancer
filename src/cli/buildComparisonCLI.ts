@@ -33,6 +33,7 @@ const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
 
 const playGauntlet = (
   iterations: number,
+  population: number,
   playerSeed: string,
   p: Build,
   gauntlet: [Seed, EnemyInfo[]][]
@@ -40,7 +41,9 @@ const playGauntlet = (
   gauntlet.reduce(
     (acc, [seed, enemies]) => [
       ...acc,
-      findBestPlay(makeGame(p, enemies, seed), iterations, { playerSeed }),
+      findBestPlay(makeGame(p, enemies, seed), iterations, population, {
+        playerSeed,
+      }),
     ],
     [] as ScoredPhenotype<Play>[][]
   );
@@ -50,6 +53,7 @@ const start = async ({
   encounters,
   encounterCount,
   iterations,
+  population,
   output,
   takeTop,
   seed,
@@ -83,6 +87,7 @@ const start = async ({
     encounters: gauntlet.length,
     playerSeed,
     iterations,
+    population,
     topScores,
   };
   console.log(
@@ -114,7 +119,7 @@ const start = async ({
   );
 
   const results = players.map((p) =>
-    playGauntlet(iterations, playerSeed, p, gauntlet)
+    playGauntlet(iterations, population, playerSeed, p, gauntlet)
   );
 
   const scores: number[] = Seq(results)

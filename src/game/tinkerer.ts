@@ -23,22 +23,88 @@ import {
 } from './types';
 import { build } from './data';
 import { Seq } from 'immutable';
-import { rangeArr } from './zFunDump';
 import { playerStatsDefault } from './makeGame';
 
-export type TinkererOptions = typeof defaultTinkererOptions & {
-  turns?: number;
-};
+export type TinkererOptions = typeof defaultTinkererOptions;
 
 export const defaultTinkererOptions = {
   playerSeed: 'Miau',
-  weights: { monster: 0.7, player: 0.125, turn: 0.1, stamina: 0.075 },
+  weights: { monster: 1000, player: 0, turn: -0.1, stamina: 0 },
   debug: false,
+};
+
+interface StartStats {
+  startPlayerHealth: number;
+  startMonsterHealth: number;
+  startPlayerStamina: number;
+}
+const scorePlay = (
+  options: TinkererOptions,
+  play: Play,
+  { startPlayerHealth, startMonsterHealth, startPlayerStamina }: StartStats
+) => {
+  const latestState = previousState(play);
+  const monsterHealth = latestState.enemies.reduce(
+    (acc, monster) => acc + monster.hp.current,
+    0
+  );
+  const playerHealth = latestState.player.hp.current;
+  const playerStamina = latestState.player.stamina.current;
+
+  const monsterKillingFitness = Math.max(
+    0,
+    (startMonsterHealth - monsterHealth) / startMonsterHealth
+  );
+  const playerAlivenessFitness = playerHealth / startPlayerHealth;
+  const killSpeedFitness = (play.turns - play.states.length) / play.turns;
+  const staminaFitness = playerStamina / startPlayerStamina;
+
+  const fitness =
+    monsterKillingFitness * options.weights.monster +
+    playerAlivenessFitness * options.weights.player +
+    killSpeedFitness * options.weights.turn +
+    staminaFitness * options.weights.stamina;
+
+  if (options.debug || fitness < 0) {
+    console.log(
+      prettyjson.render({
+        player: play.player.lore.name,
+        encounter: JSON.stringify(play.enemies.map((e) => e.lore.name)),
+        monsterHealth,
+        playerHealth,
+        turns: play.states.length,
+        fitness,
+        monsterKillingFitness,
+        playerAlivenessFitness,
+        staminaFitness,
+        killSpeedFitness,
+        weights: options.weights,
+      })
+    );
+  }
+
+  return fitness;
+};
+
+const startStats = (play: Play): StartStats => {
+  const startState = initialState(play);
+  const startPlayerHealth = startState.player.hp.max;
+  const startPlayerStamina = startState.player.stamina.max;
+  const startMonsterHealth = startState.enemies.reduce(
+    (acc, monster) => acc + monster.hp.max,
+    0
+  );
+  return {
+    startPlayerHealth,
+    startMonsterHealth,
+    startPlayerStamina,
+  };
 };
 
 export function findBestPlay(
   play: Play,
   iter: number,
+  population: number,
   optionsOverride?: Partial<TinkererOptions>
 ): ScoredPhenotype<Play>[] {
   const options: TinkererOptions = {
@@ -46,13 +112,7 @@ export function findBestPlay(
     ...optionsOverride,
   };
   const rand = new Chance(options.playerSeed);
-  const startState = initialState(play);
-  const startPlayerHealth = startState.player.hp.max;
-  const startPlayerStamina = startState.player.stamina.max;
-  const startMonsterHealth = startState.enemies.reduce(
-    (acc, monster) => acc + monster.hp.current,
-    0
-  );
+  const initStats = startStats(play);
   const config: GeneticAlgorithmConfig<Play> = {
     mutationFunction: (oldPlay) => {
       const latestState = previousState(oldPlay);
@@ -63,7 +123,11 @@ export function findBestPlay(
       const playerHealth = latestState.player.hp.current;
 
       // Won or loss, we bail
-      if (playerHealth === 0 || monsterHealth === 0) {
+      if (
+        playerHealth === 0 ||
+        monsterHealth === 0 ||
+        oldPlay.states.length >= oldPlay.turns
+      ) {
         return oldPlay;
       }
 
@@ -96,56 +160,16 @@ export function findBestPlay(
 
       return newPlay;
     },
-    fitnessFunction: (play) => {
-      const latestState = previousState(play);
-      const monsterHealth = latestState.enemies.reduce(
-        (acc, monster) => acc + monster.hp.current,
-        0
-      );
-      const playerHealth = latestState.player.hp.current;
-      const playerStamina = latestState.player.stamina.current;
-
-      const monsterKillingFitness =
-        (startMonsterHealth - monsterHealth) / startMonsterHealth;
-      const playerAlivenessFitness = playerHealth / startPlayerHealth;
-      const killSpeedFitness = (play.turns - play.states.length) / play.turns;
-      const staminaFitness = playerStamina / startPlayerStamina;
-
-      const fitness =
-        monsterKillingFitness * options.weights.monster +
-        playerAlivenessFitness * options.weights.player +
-        killSpeedFitness * options.weights.turn +
-        staminaFitness * options.weights.stamina;
-
-      if (options.debug) {
-        console.log(
-          prettyjson.render({
-            player: play.player.lore.name,
-            encounter: JSON.stringify(play.enemies.map((e) => e.lore.name)),
-            monsterHealth,
-            playerHealth,
-            turns: play.states.length,
-            fitness,
-            monsterKillingFitness,
-            playerAlivenessFitness,
-            staminaFitness,
-            killSpeedFitness,
-            weights: options.weights,
-          })
-        );
-      }
-
-      return fitness;
-    },
-    population: rangeArr(iter).map((_) => play),
-    populationSize: iter,
+    fitnessFunction: (play) => scorePlay(options, play, initStats),
+    population: [play],
+    populationSize: population,
   };
 
-  const turns = optionsOverride?.turns ?? play.turns;
   let gen = new GeneticAlgorithmConstructor<Play>(config);
-  for (let i = 0; i < turns; i++) {
+  for (let i = 0; i < iter; i++) {
     gen = gen.evolve();
   }
+
   return Seq(gen.scoredPopulation())
     .sortBy((a) => 1000 / a.score)
     .toArray();
@@ -157,8 +181,9 @@ export const findBestBuild = (
   enemies: [Seed, EnemyInfo[]][],
   iter: number,
   gameIter: number,
-  populationTotal?: number,
-  optionsOverride?: Partial<TinkererOptions>
+  population: number,
+  gamePopulation: number,
+  optionsOverride?: Partial<TinkererOptions & { turns: number }>
 ): ScoredPhenotype<Player>[] => {
   const options: TinkererOptions = {
     ...defaultTinkererOptions,
@@ -197,13 +222,14 @@ export const findBestBuild = (
                 g[0]
               ),
               gameIter,
+              gamePopulation,
               optionsOverride
             )
           ).take(2)
         )
         .reduce((acc, v) => acc + v.score, 0),
     population: players,
-    populationSize: populationTotal ?? players.length,
+    populationSize: population,
   };
 
   let gen = new GeneticAlgorithmConstructor<Player>(config);

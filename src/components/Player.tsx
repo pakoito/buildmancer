@@ -65,10 +65,12 @@ const PlayerCard: React.FC<{
           {playerStats.defence.current} | Speed {playerStats.speed.current}
         </Card.Text>
         <Card.Text>
-          {playerStats.hp.current}/{Math.min(playerStats.hp.starting, playerStats.hp.max)} ❤
+          {playerStats.hp.current}/
+          {Math.min(playerStats.hp.starting, playerStats.hp.max)} ❤
         </Card.Text>
         <Card.Text>
-          {playerStats.stamina.current}/{Math.min(playerStats.stamina.starting, playerStats.stamina.max)} 💪 (
+          {playerStats.stamina.current}/
+          {Math.min(playerStats.stamina.starting, playerStats.stamina.max)} 💪 (
           {playerStats.staminaPerTurn.current >= 0 && '+'}
           {playerStats.staminaPerTurn.current})
         </Card.Text>
@@ -146,9 +148,7 @@ const PlayerCard: React.FC<{
                     {clamp(e.priority - playerStats.speed.current, 0, 4)}
                     <br />
                     🏹:
-                    {e.range.length === 5
-                      ? 'All'
-                      : e.range.join(', ')}
+                    {e.range.length === 5 ? 'All' : e.range.join(', ')}
                   </Card.Text>
                 </div>
               </OverlayTrigger>

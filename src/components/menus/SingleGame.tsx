@@ -76,25 +76,21 @@ const SingleGame = ({
         setRedo([]);
         setGame(handlePlayerEffect(game, idx));
       }}
-      solveGame={(iterations) =>
+      solveGame={(iterations, population) =>
         setGame(
-          Seq(
-            findBestPlay(game, iterations, {
-              turns: game.turns - game.states.length,
-            })
-          ).maxBy((a) => a.score)!!.phenotype
+          Seq(findBestPlay(game, iterations, population)).maxBy(
+            (a) => a.score
+          )!!.phenotype
         )
       }
-      hint={(iterations) =>
+      hint={(iterations, population) =>
         setGame({
           ...game,
           states: [
             ...game.states,
-            Seq(
-              findBestPlay(game, iterations, {
-                turns: game.turns - game.states.length,
-              })
-            ).maxBy((a) => a.score)!!.phenotype.states[game.states.length],
+            Seq(findBestPlay(game, iterations, population)).maxBy(
+              (a) => a.score
+            )!!.phenotype.states[game.states.length],
           ],
         })
       }
