@@ -1,4 +1,4 @@
-import { allRanges, selfRange, makeRange } from '../makeGame';
+import { allRanges, selfRange } from '../makeGame';
 import { BuildRepository, effectFunCall } from '../types';
 import armors from './armors';
 import charms from './charms';

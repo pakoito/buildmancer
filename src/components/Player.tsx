@@ -51,7 +51,9 @@ const PlayerCard: React.FC<{
     0
   );
   const hasPassives = passiveCount > 0;
-  const staminaPerTurn = playerStats.staminaPerTurn.current - 2 * (passiveCount - disabledSkills.length);
+  const staminaPerTurn =
+    playerStats.staminaPerTurn.current -
+    2 * (passiveCount - disabledSkills.length);
 
   return (
     <Card>
@@ -67,12 +69,9 @@ const PlayerCard: React.FC<{
           Attack {playerStats.attack.current} | Defence{' '}
           {playerStats.defence.current} | Speed {playerStats.speed.current}
         </Card.Text>
+        <Card.Text>{playerStats.hp.current} ❤</Card.Text>
         <Card.Text>
-          {playerStats.hp.current} ❤
-        </Card.Text>
-        <Card.Text>
-          {playerStats.stamina.current}/
-          {playerStats.stamina.max} 💪 (
+          {playerStats.stamina.current}/{playerStats.stamina.max} 💪 (
           {staminaPerTurn >= 0 && '+'}
           {staminaPerTurn})
         </Card.Text>
@@ -87,7 +86,8 @@ const PlayerCard: React.FC<{
           <ButtonGroup>
             {passives.map(
               ([k, _i, effs]) =>
-              effs.length > 0 && (effs.map((e, idx) =>
+                effs.length > 0 &&
+                effs.map((e, idx) => (
                   <OverlayTrigger
                     key={idx}
                     placement="right"
@@ -116,7 +116,7 @@ const PlayerCard: React.FC<{
                       {e.display}
                     </ToggleButton>
                   </OverlayTrigger>
-              ))
+                ))
             )}
           </ButtonGroup>
         </>
