@@ -15,7 +15,7 @@ const start = async ({ out }: minimist.ParsedArgs) => {
           const elements = (item.bot ?? [])
             .map((a) => ({ ...a, when: 'BOT' }))
             .concat(item.eot?.map((a) => ({ ...a, when: 'EOT' })) ?? [])
-            .concat(item.effects?.map((a) => ({ ...a, when: 'EFFECT' })) ?? []);
+            .concat(item.effects?.map((a) => ({ ...a, when: 'MAIN' })) ?? []);
           const effects = elements.reduce(
             (acc, a, idx) => ({
               ...acc,
