@@ -40,7 +40,7 @@ const LoadScreen = ({
       reader.readAsText(e.target.fileData.files[0]);
     } else if (
       e.target?.rawData?.value != null &&
-      e.target?.rawData?.value != ''
+      e.target?.rawData?.value !== ''
     ) {
       load(e.target.rawData.value);
     }
