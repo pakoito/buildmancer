@@ -8,9 +8,7 @@ const skillPercents = (effects: Effect[]) =>
     .countBy((e) => e.display)
     .toArray()
     .map(([display, v], idx) => {
-      const { range, priority, tooltip } = effects.find(
-        (a) => a.display === display
-      )!!;
+      const { range, priority, tooltip } = effects.find((a) => a.display === display)!!;
       return (
         <OverlayTrigger
           key={idx}
@@ -50,15 +48,7 @@ const EnemyCard: React.FC<{
   onSelect: () => void;
   canAct: boolean;
   hotkey: string;
-}> = ({
-  enemy,
-  enemyStats,
-  isSelected,
-  onSelect,
-  latestAttack,
-  canAct,
-  hotkey,
-}) => (
+}> = ({ enemy, enemyStats, isSelected, onSelect, latestAttack, canAct, hotkey }) => (
   <Card bg={isSelected ? 'info' : undefined}>
     <Card.Body>
       <Card.Title>
@@ -81,9 +71,7 @@ const EnemyCard: React.FC<{
       <Card.Text>
         Next attack prediction:
         <br />
-        {skillPercents(
-          enemy.rolls[enemyStats.distance].map((idx) => enemy.effects[idx])
-        )}
+        {skillPercents(enemy.rolls[enemyStats.distance].map((idx) => enemy.effects[idx]))}
         <br />
       </Card.Text>
       {canAct && (

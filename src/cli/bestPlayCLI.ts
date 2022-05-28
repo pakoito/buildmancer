@@ -31,17 +31,12 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
     results.flatMap(async (r) => {
       const lastState = previousState(r.phenotype);
       const playerHp = lastState.player.hp.current;
-      const monsterHp = lastState.enemies.reduce(
-        (acc, m) => m.hp.current + acc,
-        0
-      );
+      const monsterHp = lastState.enemies.reduce((acc, m) => m.hp.current + acc, 0);
       const outcome = playerHp > 0 && monsterHp <= 0 ? 'W' : 'L';
       const res = await pouch.get(r.phenotype.id).catch(() => null);
       return res == null
         ? {
-            _id: `##${r.phenotype.id}##${outcome}##${hasher(
-              r.phenotype.states
-            )}##`,
+            _id: `##${r.phenotype.id}##${outcome}##${hasher(r.phenotype.states)}##`,
             ...r,
           }
         : [];
@@ -50,13 +45,7 @@ const writeToDb = async (db: string, results: ScoredPhenotype<Play>[]) => {
   await pouch.bulkDocs(docs).catch((e) => console.log(JSON.stringify(e)));
 };
 
-const start = async ({
-  json,
-  iterations,
-  population,
-  output,
-  db,
-}: minimist.ParsedArgs) => {
+const start = async ({ json, iterations, population, output, db }: minimist.ParsedArgs) => {
   const params = JSON.parse(readFileSync(json).toString()) as GameConfig;
   console.log(
     `\n==========\nCONFIG\n==========\n${prettyjson.render({
@@ -65,15 +54,8 @@ const start = async ({
     })}\n${paramsRender(params)}\n==========\n`
   );
   const gameOptions = params.gameOptions || {};
-  const results = findBestPlay(
-    makeGame(params),
-    iterations,
-    population,
-    gameOptions
-  );
-  console.log(
-    `\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`
-  );
+  const results = findBestPlay(makeGame(params), iterations, population, gameOptions);
+  console.log(`\n==========\nRESULT\n==========\n${gameRender(results)}\n==========\n`);
   if (output != null) {
     console.log(`Writing to ${output}...`);
     writeFileSync(output, JSON.stringify(results, null, 2));
@@ -99,10 +81,7 @@ const gameRender = (results: ScoredPhenotype<Play>[]): string => {
       ]),
       Seq(best.phenotype.enemies)
         .zip(Seq(lastState.enemies))
-        .flatMap(([enemy, stats], idx) => [
-          `[${idx}] ${enemy.lore.name}`,
-          stats,
-        ])
+        .flatMap(([enemy, stats], idx) => [`[${idx}] ${enemy.lore.name}`, stats])
         .toArray(),
       lastState.player,
     ])

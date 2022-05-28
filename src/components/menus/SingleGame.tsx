@@ -77,20 +77,15 @@ const SingleGame = ({
         setGame(handlePlayerEffect(game, idx));
       }}
       solveGame={(iterations, population) =>
-        setGame(
-          Seq(findBestPlay(game, iterations, population)).maxBy(
-            (a) => a.score
-          )!!.phenotype
-        )
+        setGame(Seq(findBestPlay(game, iterations, population)).maxBy((a) => a.score)!!.phenotype)
       }
       hint={(iterations, population) =>
         setGame({
           ...game,
           states: [
             ...game.states,
-            Seq(findBestPlay(game, iterations, population)).maxBy(
-              (a) => a.score
-            )!!.phenotype.states[game.states.length],
+            Seq(findBestPlay(game, iterations, population)).maxBy((a) => a.score)!!.phenotype
+              .states[game.states.length],
           ],
         })
       }

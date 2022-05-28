@@ -36,14 +36,7 @@ const classes = {
   },
   berserk: {
     display: 'Berserk',
-    passives: [
-      '+Attack',
-      '+Attack',
-      '+Attack',
-      '-Defence',
-      '-Defence',
-      '-Health',
-    ],
+    passives: ['+Attack', '+Attack', '+Attack', '-Defence', '-Defence', '-Health'],
     effects: [
       {
         display: 'All or Nothing!',
@@ -59,10 +52,7 @@ const classes = {
           effectFunCall(['Basic:Attack', { amount: 2 }]),
           effectFunCall(['Basic:Attack', { amount: 2 }]),
           effectFunCall(['Basic:Attack', { amount: 2 }]),
-          effectFunCall([
-            'Effect:Stat',
-            { target: 'Player', defence: -3, speed: -1 },
-          ]),
+          effectFunCall(['Effect:Stat', { target: 'Player', defence: -3, speed: -1 }]),
         ],
       },
     ],

@@ -13,9 +13,4 @@ export const pipe = <T, U>(t: T, f: (t: T) => U): U => f(t);
 
 export const pipe2 = <T, U, A>(t: T, u: U, f: (t: T, u: U) => A): A => f(t, u);
 
-export const pipe3 = <T, U, V, A>(
-  t: T,
-  u: U,
-  v: V,
-  f: (t: T, u: U, v: V) => A
-): A => f(t, u, v);
+export const pipe3 = <T, U, V, A>(t: T, u: U, v: V, f: (t: T, u: U, v: V) => A): A => f(t, u, v);

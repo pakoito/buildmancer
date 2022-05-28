@@ -35,8 +35,7 @@ export function extractFunction({ effects }: Effect): ReduceFun {
 }
 
 const effectFun = <T>(fun: ParametrizedFun<T>): EffectFun<T> =>
-  ((params) => (origin, play, oldState) =>
-    fun(params)(origin, play, oldState)) as EffectFun<T>;
+  ((params) => (origin, play, oldState) => fun(params)(origin, play, oldState)) as EffectFun<T>;
 
 const applyPoison = (
   play: Play,
@@ -48,13 +47,9 @@ const applyPoison = (
       ? actions.changeStatPlayer(currentState, ({ hp }) => ({
           hp: { ...hp, current: Math.max(0, hp.current - 1) },
         }))
-      : actions.changeStatMonster(
-          currentState,
-          currentState.target,
-          ({ hp }) => ({
-            hp: { ...hp, current: Math.max(0, hp.current - 1) },
-          })
-        ),
+      : actions.changeStatMonster(currentState, currentState.target, ({ hp }) => ({
+          hp: { ...hp, current: Math.max(0, hp.current - 1) },
+        })),
     (newState) =>
       turns > 0
         ? actions.addBotEffect(newState, 'Player', {
@@ -67,12 +62,7 @@ const applyPoison = (
             range: allRanges,
             priority: 4,
             interruptible: false,
-            effects: [
-              effectFunCall([
-                'Reduce:PoisonBOT',
-                { target: target, turns: turns - 1 },
-              ]),
-            ],
+            effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])],
           })
         : newState
   );
@@ -163,10 +153,7 @@ const engineFunctions = {
 const effectFunRepo: EffectFunctionRepository = {
   ...engineFunctions,
   // #region BASIC
-  'Basic:Rest': effectFun(() => (_origin, play, currentState) => [
-    play,
-    currentState,
-  ]),
+  'Basic:Rest': effectFun(() => (_origin, play, currentState) => [play, currentState]),
   'Basic:Move': effectFun(({ amount }) => (_origin, play, currentState) => [
     play,
     actions.changeDistance(currentState, currentState.target, amount),
@@ -237,10 +224,8 @@ const effectFunRepo: EffectFunctionRepository = {
   ]),
   'Effect:Poison': effectFun(({ target, turns }) => (_, play, currentState) => [
     play,
-    pipe(
-      target === 'Player' ? ('Player' as Target) : currentState.target,
-      (gameTarget) =>
-        applyPoison(play, currentState, { target: gameTarget, turns })
+    pipe(target === 'Player' ? ('Player' as Target) : currentState.target, (gameTarget) =>
+      applyPoison(play, currentState, { target: gameTarget, turns })
     ),
   ]),
   'Reduce:PoisonBOT': effectFun((params) => (_, play, currentState) => [
@@ -257,32 +242,19 @@ const effectFunRepo: EffectFunctionRepository = {
           },
           stamina: {
             ...s.stamina,
-            current: clamp(
-              s.stamina.current + (stats.stamina ?? 0),
-              0,
-              s.stamina.max
-            ),
+            current: clamp(s.stamina.current + (stats.stamina ?? 0), 0, s.stamina.max),
           },
           speed: {
             ...s.speed,
-            current: Math.min(
-              s.speed.max,
-              s.speed.current + (stats.speed ?? 0)
-            ),
+            current: Math.min(s.speed.max, s.speed.current + (stats.speed ?? 0)),
           },
           defence: {
             ...s.defence,
-            current: Math.min(
-              s.defence.max,
-              s.defence.current + (stats.defence ?? 0)
-            ),
+            current: Math.min(s.defence.max, s.defence.current + (stats.defence ?? 0)),
           },
           attack: {
             ...s.attack,
-            current: Math.min(
-              s.attack.max,
-              s.attack.current + (stats.attack ?? 0)
-            ),
+            current: Math.min(s.attack.max, s.attack.current + (stats.attack ?? 0)),
           },
           staminaPerTurn: {
             ...s.staminaPerTurn,
@@ -302,24 +274,15 @@ const effectFunRepo: EffectFunctionRepository = {
             },
             speed: {
               ...s.speed,
-              current: Math.min(
-                s.speed.current + (stats.speed ?? 0),
-                s.speed.max
-              ),
+              current: Math.min(s.speed.current + (stats.speed ?? 0), s.speed.max),
             },
             defence: {
               ...s.defence,
-              current: Math.min(
-                s.defence.current + (stats.defence ?? 0),
-                s.defence.max
-              ),
+              current: Math.min(s.defence.current + (stats.defence ?? 0), s.defence.max),
             },
             attack: {
               ...s.attack,
-              current: Math.min(
-                s.attack.current + (stats.attack ?? 0),
-                s.attack.max
-              ),
+              current: Math.min(s.attack.current + (stats.attack ?? 0), s.attack.max),
             },
           })
         ),
@@ -333,17 +296,9 @@ const effectFunRepo: EffectFunctionRepository = {
   'Monster:Summon': effectFun(
     ({ enemy }) =>
       (_origin, play, currentState) =>
-        actions.addEnemy(
-          play,
-          currentState,
-          enemies[enemy][0],
-          enemies[enemy][1]
-        )
+        actions.addEnemy(play, currentState, enemies[enemy][0], enemies[enemy][1])
   ),
-  'Monster:Dead': effectFun(() => (_origin, play, currentState) => [
-    play,
-    currentState,
-  ]),
+  'Monster:Dead': effectFun(() => (_origin, play, currentState) => [play, currentState]),
   'Monster:Move': effectFun(() => (origin, play, currentState) => [
     play,
     actions.changeDistance(currentState, origin, -2),
@@ -375,11 +330,7 @@ export type EffectFunctionT = SystemFunctionT &
   MonsterFunctionT &
   ItemFunctionT;
 
-export type ReduceFun = (
-  origin: Target,
-  play: Play,
-  newState: Snapshot
-) => [Play, Snapshot];
+export type ReduceFun = (origin: Target, play: Play, newState: Snapshot) => [Play, Snapshot];
 export type ParametrizedFun<T> = (params: T) => ReduceFun;
 export type EffectFun<T> = Opaque<ParametrizedFun<T>, ParametrizedFun<T>>;
 
@@ -399,9 +350,7 @@ const updateMonster = (
   target: Target,
   override: (stats: EnemyStats) => Partial<EnemyStats>
 ): EnemiesStats =>
-  enemies.map((m, idx) =>
-    idx === target ? { ...m, ...override(m) } : m
-  ) as EnemiesStats;
+  enemies.map((m, idx) => (idx === target ? { ...m, ...override(m) } : m)) as EnemiesStats;
 
 const updatePlayer = (
   curr: Snapshot,
@@ -441,10 +390,7 @@ const actions = {
     ...curr,
     enemies: updateMonster(curr.enemies, target, f),
   }),
-  changeStatusPlayer: (
-    curr: Snapshot,
-    updateStatus: (oldStatus: Status) => Status
-  ): Snapshot => ({
+  changeStatusPlayer: (curr: Snapshot, updateStatus: (oldStatus: Status) => Status): Snapshot => ({
     ...curr,
     player: { ...curr.player, status: updateStatus(curr.player.status) },
   }),
@@ -458,21 +404,13 @@ const actions = {
       status: updateStatus(status),
     })),
   }),
-  changeDistance: (
-    curr: Snapshot,
-    origin: Target,
-    amount: number
-  ): Snapshot => ({
+  changeDistance: (curr: Snapshot, origin: Target, amount: number): Snapshot => ({
     ...curr,
     enemies: updateMonster(curr.enemies, origin, ({ distance }) => ({
       distance: clamp(distance + amount, 0, 4) as MonsterTarget,
     })),
   }),
-  removeMonster: (
-    currPlay: Play,
-    currSnap: Snapshot,
-    target: MonsterTarget
-  ): [Play, Snapshot] => [
+  removeMonster: (currPlay: Play, currSnap: Snapshot, target: MonsterTarget): [Play, Snapshot] => [
     {
       ...currPlay,
       enemies: currPlay.enemies.filter((_, idx) => idx === target) as Enemies,
@@ -480,9 +418,7 @@ const actions = {
     {
       ...currSnap,
       target: 0,
-      enemies: currSnap.enemies.filter(
-        (_, idx) => idx === target
-      ) as EnemiesStats,
+      enemies: currSnap.enemies.filter((_, idx) => idx === target) as EnemiesStats,
     },
   ],
   modifyPlayerStamina: (curr: Snapshot, amount: number): Snapshot =>
@@ -518,11 +454,7 @@ const actions = {
   },
 };
 
-function attackMonster(
-  curr: Snapshot,
-  target: MonsterTarget,
-  amount: number
-): Snapshot {
+function attackMonster(curr: Snapshot, target: MonsterTarget, amount: number): Snapshot {
   const monster = curr.enemies[target]!!;
   const armor = monster.status.armor.amount;
   const damage = amount + curr.player.attack.current;
@@ -557,94 +489,58 @@ function attackPlayer(curr: Snapshot, amount: number): Snapshot {
 
 export type StatsFunIndex = keyof typeof statsRepository;
 export const statsRepository = {
-  '+Health': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, hp: makeStat(player.hp.current + 3) },
     enemies,
   ],
-  '+StaPerTurn': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+StaPerTurn': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current + 1) },
     enemies,
   ],
-  '+Stamina': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     {
       ...player,
       stamina: makeStat(player.stamina.current + 2, (a) => a),
     },
     enemies,
   ],
-  '+Attack': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+Attack': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, attack: makeStat(player.attack.current + 1) },
     enemies,
   ],
-  '+Speed': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+Speed': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, speed: makeStat(player.speed.current + 1) },
     enemies,
   ],
-  '+Defence': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '+Defence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, defence: makeStat(player.defence.current + 1) },
     enemies,
   ],
 
-  '-Health': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, hp: makeStat(player.hp.current - 3) },
     enemies,
   ],
-  '-StaPerTurn': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-StaPerTurn': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, staminaPerTurn: makeStat(player.staminaPerTurn.current - 1) },
     enemies,
   ],
-  '-Stamina': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-Stamina': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     {
       ...player,
       stamina: makeStat(player.stamina.current - 2, (a) => a),
     },
     enemies,
   ],
-  '-Attack': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-Attack': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, attack: makeStat(player.attack.current - 1) },
     enemies,
   ],
-  '-Speed': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-Speed': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, speed: makeStat(player.speed.current - 1) },
     enemies,
   ],
-  '-Defence': (
-    player: PlayerStats,
-    enemies: EnemiesStats
-  ): [PlayerStats, EnemiesStats] => [
+  '-Defence': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
     { ...player, defence: makeStat(player.defence.current - 1) },
     enemies,
   ],

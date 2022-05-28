@@ -36,16 +36,12 @@ export const defaultStatus: Status = {
   stun: { active: false },
 };
 
-export const randomEnemy = (): EnemyInfo =>
-  new Chance().pickone(safeValues(enemies));
+export const randomEnemy = (): EnemyInfo => new Chance().pickone(safeValues(enemies));
 export const dummyEnemy = (): EnemyInfo => globals().trainingEnemy;
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
 
-export const randomBuild = (
-  rng: Chance.Chance,
-  buildOverride?: Partial<Build>
-) => ({
+export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) => ({
   debug: build.debug[globals().debug ? 'enabled' : 'disabled'],
   basic: rng.pickone(safeValues(build.basic)),
   class: rng.pickone(safeValues(build.class)),

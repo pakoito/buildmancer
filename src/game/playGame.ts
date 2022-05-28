@@ -29,17 +29,12 @@ import { clamp, rangeArr } from './zFunDump';
 import { allRanges } from './makeGame';
 
 export const initialState = (play: Play): Snapshot => play.states[0];
-export const previousState = (play: Play): Snapshot =>
-  play.states[play.states.length - 1];
+export const previousState = (play: Play): Snapshot => play.states[play.states.length - 1];
 
 /**
  * @returns min inclusive, max exclusive rand
  */
-function turnDeterministicRng(
-  turns: number,
-  randPerTurn: number,
-  monsterSeed: Seed
-): RNG {
+function turnDeterministicRng(turns: number, randPerTurn: number, monsterSeed: Seed): RNG {
   const monsterChance = new Chance(monsterSeed);
   const monsterRng = rangeArr(turns).map((_) =>
     rangeArr(randPerTurn)
@@ -49,13 +44,9 @@ function turnDeterministicRng(
   return monsterRng as RNG;
 }
 
-export const turnRng = (
-  play: Play,
-  turn: number
-): ((min: number, max: number) => number) => {
+export const turnRng = (play: Play, turn: number): ((min: number, max: number) => number) => {
   const turnRng = [...play.rng[turn]];
-  return (min: number, max: number) =>
-    Math.floor((max - min) * turnRng.pop()!! + min);
+  return (min: number, max: number) => Math.floor((max - min) * turnRng.pop()!! + min);
 };
 
 export const playerPassives = (player: Player): StatsFun[] =>
@@ -63,10 +54,7 @@ export const playerPassives = (player: Player): StatsFun[] =>
     .flatMap(([_k, s]) => s.passives ?? [])
     .map((i) => statsRepository[i]);
 
-export const playerActions = (
-  player: Player,
-  inventoryStats: InventoryStats
-): InventoryEffect[] =>
+export const playerActions = (player: Player, inventoryStats: InventoryStats): InventoryEffect[] =>
   safeEntries(player.build)
     .flatMap(([_k, i]) => i.effects ?? [])
     .filter((e) => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0));
@@ -76,26 +64,18 @@ export const playerItemActions = (
   inventoryStats: InventoryStats
 ): [Item, InventoryEffect][] =>
   safeEntries(player.build)
-    .flatMap(([_k, i]) =>
-      (i.effects ?? []).map((e) => [i, e] as [Item, InventoryEffect])
-    )
-    .filter(
-      ([i, e]) => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0)
-    );
+    .flatMap(([_k, i]) => (i.effects ?? []).map((e) => [i, e] as [Item, InventoryEffect]))
+    .filter(([i, e]) => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0));
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies
-    .flatMap((e, idx) =>
-      (e.bot ?? []).map((eff) => [idx as MonsterTarget, eff] as const)
-    )
+    .flatMap((e, idx) => (e.bot ?? []).map((eff) => [idx as MonsterTarget, eff] as const))
     // Sure, typescript
     .map((a) => [...a]);
 
 const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies
-    .flatMap((e, idx) =>
-      (e.eot ?? []).map((eff) => [idx as MonsterTarget, eff] as const)
-    )
+    .flatMap((e, idx) => (e.eot ?? []).map((eff) => [idx as MonsterTarget, eff] as const))
     // Sure, typescript
     .map((a) => [...a]);
 
@@ -120,10 +100,7 @@ export const buildPlayer = (
   playerStats: PlayerStats,
   enemiesStats: EnemiesStats
 ): [PlayerStats, EnemiesStats] =>
-  playerPassives(player).reduce(
-    ([p, e], fun) => fun(p, e),
-    [playerStats, enemiesStats]
-  );
+  playerPassives(player).reduce(([p, e], fun) => fun(p, e), [playerStats, enemiesStats]);
 
 export function makeGameNew(
   player: Player,
@@ -134,11 +111,7 @@ export function makeGameNew(
   seed: number | string,
   randPerTurn: number = 20
 ): Play {
-  const [playerGameStats, enemyGameStats] = buildPlayer(
-    player,
-    playerStats,
-    enemiesStats
-  );
+  const [playerGameStats, enemyGameStats] = buildPlayer(player, playerStats, enemiesStats);
   return makeGameNextLevel(
     player,
     playerGameStats,
@@ -192,15 +165,11 @@ const reduceFuns = (
     .sortBy(([origin, a]) => {
       if (a == null) {
         throw new Error(
-          `Error in ${phase} by ${
-            origin === 'Player' ? 'Player' : p.enemies[origin]?.lore.name
-          }`
+          `Error in ${phase} by ${origin === 'Player' ? 'Player' : p.enemies[origin]?.lore.name}`
         );
       }
       const priorityBonus =
-        origin === 'Player'
-          ? s.player.speed.current
-          : s.enemies[origin]!!.speed.current;
+        origin === 'Player' ? s.player.speed.current : s.enemies[origin]!!.speed.current;
       return clamp(a.priority - priorityBonus, 0, 4);
     })
     .reduce(
@@ -210,8 +179,7 @@ const reduceFuns = (
         const monsterId = origin === 'Player' ? oldState.target : origin;
         const targetMonster = oldState.enemies[monsterId]!!;
 
-        const isDeadAttackingMonster =
-          origin !== 'Player' && targetMonster.hp.current <= 0;
+        const isDeadAttackingMonster = origin !== 'Player' && targetMonster.hp.current <= 0;
         if (isDeadAttackingMonster) {
           const newState: Snapshot = {
             ...oldState,
@@ -224,13 +192,9 @@ const reduceFuns = (
         }
 
         const isStunnedPlayer =
-          effect.interruptible &&
-          origin === 'Player' &&
-          oldState.player.status.stun.active;
+          effect.interruptible && origin === 'Player' && oldState.player.status.stun.active;
         const isStunnedMonster =
-          effect.interruptible &&
-          origin !== 'Player' &&
-          targetMonster.status.stun.active;
+          effect.interruptible && origin !== 'Player' && targetMonster.status.stun.active;
         const isStunned = isStunnedPlayer || isStunnedMonster;
         if (isStunned) {
           const newState: Snapshot = {
@@ -256,16 +220,12 @@ const reduceFuns = (
         }
 
         const monsterDodged =
-          effect.interruptible &&
-          origin === 'Player' &&
-          targetMonster.status.dodge.active;
+          effect.interruptible && origin === 'Player' && targetMonster.status.dodge.active;
         if (monsterDodged) {
           const newState: Snapshot = {
             ...oldState,
             enemies: oldState.enemies.map((e, i) =>
-              i === monsterId
-                ? { ...e, status: { ...e.status, dodge: { active: false } } }
-                : e
+              i === monsterId ? { ...e, status: { ...e.status, dodge: { active: false } } } : e
             ) as EnemiesStats,
             lastAttacks: [
               ...oldState.lastAttacks,
@@ -276,9 +236,7 @@ const reduceFuns = (
         }
 
         const playerDodged =
-          effect.interruptible &&
-          origin !== 'Player' &&
-          oldState.player.status.dodge.active;
+          effect.interruptible && origin !== 'Player' && oldState.player.status.dodge.active;
         if (playerDodged) {
           const newState: Snapshot = {
             ...oldState,
@@ -294,17 +252,10 @@ const reduceFuns = (
           return [oldPlay, newState];
         }
 
-        const [newPlay, newState] = extractFunction(effect)(
-          origin,
-          oldPlay,
-          oldState
-        );
+        const [newPlay, newState] = extractFunction(effect)(origin, oldPlay, oldState);
         const finalState: Snapshot = {
           ...newState,
-          lastAttacks: [
-            ...newState.lastAttacks,
-            { origin, display: effect.display, phase },
-          ],
+          lastAttacks: [...newState.lastAttacks, { origin, display: effect.display, phase }],
         };
         return [newPlay, finalState];
       },
@@ -359,17 +310,9 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // BOT
   // Lingering effects
-  const [postBotPlay, postBotState] = reduceFuns(
-    bot,
-    play,
-    initialState,
-    'BOT'
-  );
+  const [postBotPlay, postBotState] = reduceFuns(bot, play, initialState, 'BOT');
   // Player & Monster effects
-  const playerBotEffs = playerBotEffects(
-    postBotPlay.player,
-    postBotState.disabledSkills
-  );
+  const playerBotEffs = playerBotEffects(postBotPlay.player, postBotState.disabledSkills);
 
   const entitiesBot: [Target, Effect][] = [
     ...playerBotEffs,
@@ -416,24 +359,11 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // EOT
   // Player & Monster effects
-  const playerEotEffs = playerEotEffects(
-    newPlay.player,
-    newState.disabledSkills
-  );
+  const playerEotEffs = playerEotEffects(newPlay.player, newState.disabledSkills);
   const entitiesEot = [...playerEotEffs, ...enemiesEotEffects(newPlay.enemies)];
-  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(
-    entitiesEot,
-    newPlay,
-    newState,
-    'EOT'
-  );
+  const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(entitiesEot, newPlay, newState, 'EOT');
   // Lingering effects
-  const [postEotPlay, postEotState] = reduceFuns(
-    eot,
-    postPlayerEotPlay,
-    postPlayerEotState,
-    'EOT'
-  );
+  const [postEotPlay, postEotState] = reduceFuns(eot, postPlayerEotPlay, postPlayerEotState, 'EOT');
   // Stamina
   const passivesStamina = [...playerBotEffs, ...playerEotEffs].reduce(
     (acc, e) => acc + e[1].stamina,
@@ -444,9 +374,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
       [
         'Player',
         applyEffectStamina(
-          lastTurnState.player.staminaPerTurn.current -
-            usedSkill.stamina -
-            passivesStamina
+          lastTurnState.player.staminaPerTurn.current - usedSkill.stamina - passivesStamina
         ),
       ],
     ],
@@ -479,10 +407,7 @@ export const setSelected = (play: Play, target: MonsterTarget): Play => {
   };
 };
 
-export const setDisabledSkills = (
-  play: Play,
-  disabled: DisabledSkills
-): Play => {
+export const setDisabledSkills = (play: Play, disabled: DisabledSkills): Play => {
   play.states[play.states.length - 1].disabledSkills = disabled;
   return {
     ...play,
@@ -507,16 +432,11 @@ export const scoreGame = (play: Play): number => {
 
   const turns = play.states.length; // 1-50
   const hpLoss =
-    Math.max(0, firstState.player.hp.max - lastState.player.hp.current) /
-    firstState.player.hp.max; // 0-1
+    Math.max(0, firstState.player.hp.max - lastState.player.hp.current) / firstState.player.hp.max; // 0-1
   const staminaLoss =
-    Math.max(
-      0,
-      firstState.player.stamina.max - lastState.player.stamina.current
-    ) / firstState.player.hp.max; // 0-1
+    Math.max(0, firstState.player.stamina.max - lastState.player.stamina.current) /
+    firstState.player.hp.max; // 0-1
   const enemies = lastState.enemies.length; // 1-5
 
-  return Math.floor(
-    enemies * (500 * hpLoss + 150 * staminaLoss + (500 - turns * 10))
-  );
+  return Math.floor(enemies * (500 * hpLoss + 150 * staminaLoss + (500 - turns * 10)));
 };

@@ -26,9 +26,7 @@ export const consumables = {
         display: 'Throw pot',
         tooltip: 'Causes bleeding',
         amount: 2,
-        effects: [
-          effectFunCall(['Effect:Bleed', { target: 'Monster', turns: 3 }]),
-        ],
+        effects: [effectFunCall(['Effect:Bleed', { target: 'Monster', turns: 3 }])],
         priority: 4,
         interruptible: true,
         stamina: 5,

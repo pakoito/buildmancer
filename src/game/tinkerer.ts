@@ -45,10 +45,7 @@ const scorePlay = (
   { startPlayerHealth, startMonsterHealth, startPlayerStamina }: StartStats
 ) => {
   const latestState = previousState(play);
-  const monsterHealth = latestState.enemies.reduce(
-    (acc, monster) => acc + monster.hp.current,
-    0
-  );
+  const monsterHealth = latestState.enemies.reduce((acc, monster) => acc + monster.hp.current, 0);
   const playerHealth = latestState.player.hp.current;
   const playerStamina = latestState.player.stamina.current;
 
@@ -93,10 +90,7 @@ const startStats = (play: Play): StartStats => {
   const startState = initialState(play);
   const startPlayerHealth = startState.player.hp.max;
   const startPlayerStamina = startState.player.stamina.max;
-  const startMonsterHealth = startState.enemies.reduce(
-    (acc, monster) => acc + monster.hp.max,
-    0
-  );
+  const startMonsterHealth = startState.enemies.reduce((acc, monster) => acc + monster.hp.max, 0);
   return {
     startPlayerHealth,
     startMonsterHealth,
@@ -126,20 +120,13 @@ export function findBestPlay(
       const playerHealth = latestState.player.hp.current;
 
       // Won or loss, we bail
-      if (
-        playerHealth === 0 ||
-        monsterHealth === 0 ||
-        oldPlay.states.length >= oldPlay.turns
-      ) {
+      if (playerHealth === 0 || monsterHealth === 0 || oldPlay.states.length >= oldPlay.turns) {
         return oldPlay;
       }
 
       // Maybe change monster
       let newPlay = oldPlay;
-      while (
-        rand.d6() === 6 ||
-        (latestState.enemies[latestState.target]?.hp.current ?? 0) <= 0
-      ) {
+      while (rand.d6() === 6 || (latestState.enemies[latestState.target]?.hp.current ?? 0) <= 0) {
         newPlay = setSelected(
           newPlay,
           rand.natural({
@@ -199,8 +186,8 @@ export const findBestBuild = (
         Object.keys(player.build).filter((k) => !nonMutableProperties.has(k))
       ) as keyof typeof build;
       const newItem = rng.pickone(
-        safeValues<{ [k: string]: Item }, string>(build[toChange]).flatMap(
-          (a) => (a.display !== player.build[toChange].display ? a : [])
+        safeValues<{ [k: string]: Item }, string>(build[toChange]).flatMap((a) =>
+          a.display !== player.build[toChange].display ? a : []
         )
       );
       return {

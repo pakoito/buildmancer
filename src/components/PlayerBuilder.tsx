@@ -1,21 +1,7 @@
 import React from 'react';
-import {
-  Container,
-  Row,
-  Form,
-  Button,
-  ButtonGroup,
-  Navbar,
-} from 'react-bootstrap';
+import { Container, Row, Form, Button, ButtonGroup, Navbar } from 'react-bootstrap';
 import useScroll from '../hooks/useScroll';
-import {
-  Build,
-  Item,
-  Player,
-  PlayerStats,
-  safeEntries,
-  safeValues,
-} from '../game/types';
+import { Build, Item, Player, PlayerStats, safeEntries, safeValues } from '../game/types';
 import { build } from '../game/data';
 import { Set } from 'immutable';
 import { buildPlayer } from '../game/playGame';
@@ -50,11 +36,9 @@ const PlayerBuilder = ({
   };
   const displayType = (type: keyof Build) => <b>{form[type].display}</b>;
 
-  const postBuildPlayerStats = buildPlayer(
-    { ...player, build: form },
-    playerStats,
-    [randomEnemy()[1]]
-  )[0];
+  const postBuildPlayerStats = buildPlayer({ ...player, build: form }, playerStats, [
+    randomEnemy()[1],
+  ])[0];
 
   return (
     <Form onSubmit={onFormSubmit}>
@@ -73,30 +57,19 @@ const PlayerBuilder = ({
               )
           )}
         </Row>
-        <Navbar
-          fixed="bottom"
-          bg="dark"
-          variant="dark"
-          style={{ maxHeight: '100px' }}
-        >
+        <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
           <Container>
             <Navbar.Text>
               You are{' '}
-              <i
-                onClick={() =>
-                  setLore((lore) => ({ ...lore, name: randomName() }))
-                }
-              >
+              <i onClick={() => setLore((lore) => ({ ...lore, name: randomName() }))}>
                 {lore.name}
               </i>
-              , the {displayType('skill')} {displayType('class')}{' '}
-              {displayType('charm')}
+              , the {displayType('skill')} {displayType('class')} {displayType('charm')}
               <br />
-              who wields a {displayType('weapon')} and a{' '}
-              {displayType('offhand')}
+              who wields a {displayType('weapon')} and a {displayType('offhand')}
               <br />
-              and wears {displayType('armor')} with {displayType('headgear')}{' '}
-              and {displayType('footwear')}
+              and wears {displayType('armor')} with {displayType('headgear')} and{' '}
+              {displayType('footwear')}
             </Navbar.Text>
             <Navbar.Text>
               {postBuildPlayerStats.hp.current} ❤
@@ -105,8 +78,7 @@ const PlayerBuilder = ({
               {postBuildPlayerStats.staminaPerTurn.current >= 0 && '+'}
               {postBuildPlayerStats.staminaPerTurn.current})<br />
               Attack {postBuildPlayerStats.attack.current} | Defence{' '}
-              {postBuildPlayerStats.defence.current} | Speed{' '}
-              {postBuildPlayerStats.speed.current}
+              {postBuildPlayerStats.defence.current} | Speed {postBuildPlayerStats.speed.current}
             </Navbar.Text>
             <Button type="submit">This is me!</Button>
           </Container>

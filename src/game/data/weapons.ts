@@ -65,10 +65,7 @@ const weapons = {
       {
         display: 'Earth Flattener',
         tooltip: 'Charges a monstruous stunning blow',
-        effects: [
-          effectFunCall(['Basic:Move', { amount: 5 }]),
-          effectFunCall('Effect:Stun'),
-        ],
+        effects: [effectFunCall(['Basic:Move', { amount: 5 }]), effectFunCall('Effect:Stun')],
         priority: 4,
         interruptible: true,
         stamina: 6,
@@ -151,10 +148,7 @@ const weapons = {
       {
         display: 'Unsheathe',
         tooltip: 'Dodges the next attack and deals damage',
-        effects: [
-          effectFunCall('Effect:Dodge'),
-          effectFunCall(['Basic:Attack', { amount: 3 }]),
-        ],
+        effects: [effectFunCall('Effect:Dodge'), effectFunCall(['Basic:Attack', { amount: 3 }])],
         priority: 1,
         interruptible: true,
         stamina: 4,
@@ -235,10 +229,7 @@ const weapons = {
       {
         display: 'Head Banger',
         tooltip: 'Hits the enemy in the head',
-        effects: [
-          effectFunCall(['Basic:Attack', { amount: 2 }]),
-          effectFunCall('Effect:Stun'),
-        ],
+        effects: [effectFunCall(['Basic:Attack', { amount: 2 }]), effectFunCall('Effect:Stun')],
         priority: 4,
         interruptible: true,
         stamina: 4,
@@ -247,10 +238,7 @@ const weapons = {
       {
         display: 'Large swing',
         tooltip: 'Uses the inertia of the hammer to safely advance',
-        effects: [
-          effectFunCall(['Basic:Move', { amount: -3 }]),
-          effectFunCall('Effect:Stun'),
-        ],
+        effects: [effectFunCall(['Basic:Move', { amount: -3 }]), effectFunCall('Effect:Stun')],
         priority: 3,
         interruptible: true,
         stamina: 3,
@@ -277,9 +265,7 @@ const weapons = {
       {
         display: 'Caress',
         tooltip: 'Applies poison to the monster',
-        effects: [
-          effectFunCall(['Effect:Poison', { target: 'Monster', turns: 2 }]),
-        ],
+        effects: [effectFunCall(['Effect:Poison', { target: 'Monster', turns: 2 }])],
         priority: 3,
         interruptible: false,
         stamina: 2,
@@ -288,10 +274,7 @@ const weapons = {
       {
         display: 'Backflip',
         tooltip: 'Dodges an attack and moves backward',
-        effects: [
-          effectFunCall('Effect:Dodge'),
-          effectFunCall(['Basic:Move', { amount: 2 }]),
-        ],
+        effects: [effectFunCall('Effect:Dodge'), effectFunCall(['Basic:Move', { amount: 2 }])],
         priority: 1,
         interruptible: false,
         stamina: 4,

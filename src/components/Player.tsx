@@ -74,17 +74,14 @@ const PlayerCard: React.FC<{
           {player.lore.name}
           {playerStats.hp.current > 0 ? '' : <b> 💀DEAD💀 </b>}
         </Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">
-          {player.build.class.display}
-        </Card.Subtitle>
+        <Card.Subtitle className="mb-2 text-muted">{player.build.class.display}</Card.Subtitle>
         <Card.Text>
-          Attack {playerStats.attack.current} | Defence{' '}
-          {playerStats.defence.current} | Speed {playerStats.speed.current}
+          Attack {playerStats.attack.current} | Defence {playerStats.defence.current} | Speed{' '}
+          {playerStats.speed.current}
         </Card.Text>
         <Card.Text>{playerStats.hp.current} ❤</Card.Text>
         <Card.Text>
-          {playerStats.stamina.current}/{playerStats.stamina.max} 💪 (
-          {staminaPerTurn >= 0 && '+'}
+          {playerStats.stamina.current}/{playerStats.stamina.max} 💪 ({staminaPerTurn >= 0 && '+'}
           {staminaPerTurn})
         </Card.Text>
         {playerStats.status.bleed.turns > 0 && (
@@ -167,11 +164,7 @@ const PlayerCard: React.FC<{
                           <br />
                           <Card.Text>
                             💪:{e.stamina} ⏱:
-                            {clamp(
-                              e.priority - playerStats.speed.current,
-                              0,
-                              4
-                            )}
+                            {clamp(e.priority - playerStats.speed.current, 0, 4)}
                             <br />
                             🏹:
                             {e.range.length === 5 ? 'All' : e.range.join(', ')}

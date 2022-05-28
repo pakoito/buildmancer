@@ -1,13 +1,6 @@
 import './App.css';
 // import { readString } from "react-papaparse";
-import {
-  Snapshot,
-  Play,
-  EnemyStats,
-  Enemy,
-  EnemiesStats,
-  Enemies,
-} from './game/types';
+import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from './game/types';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PlayerBuilder from './components/PlayerBuilder';
@@ -301,12 +294,7 @@ function App() {
     }
     // LOAD
     case state.matches({ replay: 'replay' }): {
-      return (
-        <LoadScreen
-          onLoad={(game) => send('REPLAY', { game })}
-          onMenu={onMenu}
-        />
-      );
+      return <LoadScreen onLoad={(game) => send('REPLAY', { game })} onMenu={onMenu} />;
     }
     case state.matches({ replay: 'play' }): {
       return (

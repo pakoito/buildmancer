@@ -33,10 +33,12 @@ type BuildTuple<L extends number, T extends any[] = []> = T extends {
 }
   ? T
   : BuildTuple<L, [...T, any]>;
-export type Subtract<
-  A extends number,
-  B extends number
-> = BuildTuple<A> extends [...infer U, ...BuildTuple<B>] ? Length<U> : never;
+export type Subtract<A extends number, B extends number> = BuildTuple<A> extends [
+  ...infer U,
+  ...BuildTuple<B>
+]
+  ? Length<U>
+  : never;
 type EQ<A, B> = A extends B ? (B extends A ? true : false) : false;
 type AtTerminus<A extends number, B extends number> = A extends 0
   ? true
@@ -55,9 +57,7 @@ export type TupleUpTo<T, N extends number> = EQ<N, 1> extends true
   ? [T]
   : TupleUpTo<T, Subtract<N, 1>> | Tuple<T, N>;
 
-export type UpTo<N extends number> = EQ<N, 0> extends true
-  ? 0
-  : UpTo<Subtract<N, 1>> | N;
+export type UpTo<N extends number> = EQ<N, 0> extends true ? 0 : UpTo<Subtract<N, 1>> | N;
 
 export interface Stat {
   max: number;
@@ -135,10 +135,7 @@ type ItemOrMonster = string /* TODO all items */ | 'Monster';
 export type FunIndex = `${ItemOrMonster}:${string}`;
 
 export type StatsFunRepo = { [key in StatsFunIndex]: StatsFun };
-export type StatsFun = (
-  player: PlayerStats,
-  enemies: EnemiesStats
-) => [PlayerStats, EnemiesStats];
+export type StatsFun = (player: PlayerStats, enemies: EnemiesStats) => [PlayerStats, EnemiesStats];
 
 export type Ranges = UpTo<Subtract<Distances, 1>>[];
 

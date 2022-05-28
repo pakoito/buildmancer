@@ -1,11 +1,5 @@
 import { EffectFunctionRepository } from './effectRepository';
-import {
-  BuildRepository,
-  effectFunCall,
-  EnemyInfo,
-  EnemyRepository,
-  Play,
-} from './types';
+import { BuildRepository, effectFunCall, EnemyInfo, EnemyRepository, Play } from './types';
 
 export type Globals = {
   debug: boolean;

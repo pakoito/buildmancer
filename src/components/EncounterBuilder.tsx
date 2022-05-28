@@ -1,14 +1,7 @@
 import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
 
-import {
-  Player,
-  Enemies,
-  EnemiesStats,
-  Build,
-  EnemyInfo,
-  safeValues,
-} from '../game/types';
+import { Player, Enemies, EnemiesStats, Build, EnemyInfo, safeValues } from '../game/types';
 import { enemies } from '../game/data';
 import { randomEnemy } from '../game/makeGame';
 
@@ -27,15 +20,10 @@ const EncounterBuilder = ({
     // Size enforced by UI
     onSave(enemies as Enemies, enemiesStats as EnemiesStats);
   };
-  const displayType = (type: keyof Build) => (
-    <b>{player.build[type].display}</b>
-  );
+  const displayType = (type: keyof Build) => <b>{player.build[type].display}</b>;
   return (
     <Form onSubmit={onFormSubmit}>
-      <Container
-        fluid
-        style={{ marginBottom: encounter.length > 0 ? '205px' : '105px' }}
-      >
+      <Container fluid style={{ marginBottom: encounter.length > 0 ? '205px' : '105px' }}>
         <ButtonGroup size="lg" className="mb-2">
           {safeValues(enemies).map((enemy) => (
             <Button
@@ -49,12 +37,7 @@ const EncounterBuilder = ({
         </ButtonGroup>
       </Container>
       {encounter.length > 0 && (
-        <Navbar
-          fixed="bottom"
-          bg="dark"
-          variant="dark"
-          style={{ marginBottom: '100px' }}
-        >
+        <Navbar fixed="bottom" bg="dark" variant="dark" style={{ marginBottom: '100px' }}>
           <Container fluid>
             <ButtonGroup size="sm" className="mb-2">
               {encounter.map((enemy, idx) => (
@@ -64,10 +47,7 @@ const EncounterBuilder = ({
                     setEncounter((e) => {
                       let found = false;
                       return e.filter(
-                        (m) =>
-                          found ||
-                          m[0].lore.name !== enemy[0].lore.name ||
-                          !(found = true)
+                        (m) => found || m[0].lore.name !== enemy[0].lore.name || !(found = true)
                       );
                     })
                   }
@@ -79,16 +59,11 @@ const EncounterBuilder = ({
           </Container>
         </Navbar>
       )}
-      <Navbar
-        fixed="bottom"
-        bg="dark"
-        variant="dark"
-        style={{ maxHeight: '100px' }}
-      >
+      <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
         <Container>
           <Navbar.Text>
-            You are <i>{player.lore.name}</i>, the {displayType('skill')}{' '}
-            {displayType('class')} {displayType('charm')}
+            You are <i>{player.lore.name}</i>, the {displayType('skill')} {displayType('class')}{' '}
+            {displayType('charm')}
             <br />
             who wields a {displayType('weapon')} and a {displayType('offhand')}
             <br />
@@ -102,10 +77,7 @@ const EncounterBuilder = ({
             >
               Add Random
             </Button>
-            <Button
-              type="submit"
-              disabled={encounter.length < 1 || encounter.length > 5}
-            >
+            <Button type="submit" disabled={encounter.length < 1 || encounter.length > 5}>
               To Battle!
             </Button>
           </ButtonGroup>

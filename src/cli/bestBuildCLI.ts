@@ -50,11 +50,7 @@ const start = async ({
     iterPergame: iterPergameFinal,
     top: topFinal,
   };
-  console.log(
-    `\n==========\nCONFIG\n==========\n${prettyjson.render(
-      config
-    )}\n==========\n`
-  );
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n==========\n`);
 
   const results = findBestBuild(
     playerPop,
@@ -73,13 +69,10 @@ const start = async ({
         .reduce(
           (acc, { score, phenotype: player }, idx) => ({
             ...acc,
-            [idx]: safeEntries(player.build).reduce(
-              (acc, [k, v]) => ({ ...acc, [k]: v.display }),
-              {
-                score,
-                name: player.lore.name,
-              }
-            ),
+            [idx]: safeEntries(player.build).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {
+              score,
+              name: player.lore.name,
+            }),
           }),
           {}
         )
@@ -88,10 +81,7 @@ const start = async ({
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
-    writeFileSync(
-      output,
-      JSON.stringify({ config, results, playerPop, gauntlet }, null, 2)
-    );
+    writeFileSync(output, JSON.stringify({ config, results, playerPop, gauntlet }, null, 2));
   }
 };
 

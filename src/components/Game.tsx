@@ -88,8 +88,7 @@ const Game = ({
     const skillIndex = playerHotkeys.indexOf(key);
     if (skillIndex !== -1) {
       const skillNumber = playerHotkeys.indexOf(key);
-      const hasStamina =
-        playerSkills[skillNumber].stamina <= playerStats.stamina.current;
+      const hasStamina = playerSkills[skillNumber].stamina <= playerStats.stamina.current;
       if (!hasStamina) return;
       handlePlayerEffect(skillNumber);
     }
@@ -210,10 +209,7 @@ const Game = ({
                       canAct={canAct}
                       latestAttack={
                         Seq(lastAttacks)
-                          .filter(
-                            ({ origin, phase }) =>
-                              origin === idx && phase === 'MAIN'
-                          )
+                          .filter(({ origin, phase }) => origin === idx && phase === 'MAIN')
                           .map((a) => `${a.display}`)
                           .join(' -> ') ?? undefined
                       }
@@ -239,20 +235,13 @@ const Game = ({
             <Row>
               <ButtonGroup>
                 <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
-                <Button onClick={(_) => solveGame(20, 100)}>
-                  Solve thoroughly ⌛⌛⌛
-                </Button>
+                <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
               </ButtonGroup>
             </Row>
           </Col>
         </Row>
       </Container>
-      <Modal
-        show={isLogShown}
-        onHide={handleCloseLog}
-        scrollable={true}
-        centered={true}
-      >
+      <Modal show={isLogShown} onHide={handleCloseLog} scrollable={true} centered={true}>
         <Modal.Header closeButton>
           <Modal.Title>Game Log</Modal.Title>
         </Modal.Header>

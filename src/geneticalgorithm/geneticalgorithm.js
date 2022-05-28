@@ -23,26 +23,18 @@ export default function geneticAlgorithmConstructor(options) {
   function settingWithDefaults(settings, defaults) {
     settings = settings || {};
 
-    settings.mutationFunction =
-      settings.mutationFunction || defaults.mutationFunction;
-    settings.crossoverFunction =
-      settings.crossoverFunction || defaults.crossoverFunction;
-    settings.fitnessFunction =
-      settings.fitnessFunction || defaults.fitnessFunction;
+    settings.mutationFunction = settings.mutationFunction || defaults.mutationFunction;
+    settings.crossoverFunction = settings.crossoverFunction || defaults.crossoverFunction;
+    settings.fitnessFunction = settings.fitnessFunction || defaults.fitnessFunction;
 
-    settings.doesABeatBFunction =
-      settings.doesABeatBFunction || defaults.doesABeatBFunction;
+    settings.doesABeatBFunction = settings.doesABeatBFunction || defaults.doesABeatBFunction;
 
     settings.population = settings.population || defaults.population;
     if (settings.population.length <= 0)
-      throw Error(
-        'population must be an array and contain at least 1 phenotypes'
-      );
+      throw Error('population must be an array and contain at least 1 phenotypes');
 
-    settings.populationSize =
-      settings.populationSize || defaults.populationSize;
-    if (settings.populationSize <= 0)
-      throw Error('populationSize must be greater than 0');
+    settings.populationSize = settings.populationSize || defaults.populationSize;
+    if (settings.populationSize <= 0) throw Error('populationSize must be greater than 0');
 
     return settings;
   }
@@ -53,9 +45,7 @@ export default function geneticAlgorithmConstructor(options) {
     var size = settings.population.length;
     while (settings.population.length < settings.populationSize) {
       const rand = Math.floor(Math.random() * size);
-      settings.population.push(
-        mutate(cloneJSON(settings.population[Math.floor(rand)]))
-      );
+      settings.population.push(mutate(cloneJSON(settings.population[Math.floor(rand)])));
     }
   }
 
@@ -69,10 +59,7 @@ export default function geneticAlgorithmConstructor(options) {
 
   function crossover(phenotype) {
     phenotype = cloneJSON(phenotype);
-    var mate =
-      settings.population[
-        Math.floor(Math.random() * settings.population.length)
-      ];
+    var mate = settings.population[Math.floor(Math.random() * settings.population.length)];
     mate = cloneJSON(mate);
     return settings.crossoverFunction(phenotype, mate)[0];
   }
@@ -153,10 +140,7 @@ export default function geneticAlgorithmConstructor(options) {
     },
     clone: function (options) {
       return geneticAlgorithmConstructor(
-        settingWithDefaults(
-          options,
-          settingWithDefaults(this.config(), settings)
-        )
+        settingWithDefaults(options, settingWithDefaults(this.config(), settings))
       );
     },
   };

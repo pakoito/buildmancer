@@ -3,13 +3,7 @@ import { Form, Col, Row, Alert, Button, Container } from 'react-bootstrap';
 import { Play } from '../../game/types';
 import { playSchema } from '../../game/typesSchemas';
 
-const LoadScreen = ({
-  onLoad,
-  onMenu,
-}: {
-  onLoad: (g: Play) => void;
-  onMenu: () => void;
-}) => {
+const LoadScreen = ({ onLoad, onMenu }: { onLoad: (g: Play) => void; onMenu: () => void }) => {
   const [loadError, setLoadError] = React.useState<string | undefined>();
   const load = (data: string) => {
     try {
@@ -38,10 +32,7 @@ const LoadScreen = ({
         }
       };
       reader.readAsText(e.target.fileData.files[0]);
-    } else if (
-      e.target?.rawData?.value != null &&
-      e.target?.rawData?.value !== ''
-    ) {
+    } else if (e.target?.rawData?.value != null && e.target?.rawData?.value !== '') {
       load(e.target.rawData.value);
     }
   };
@@ -69,12 +60,7 @@ const LoadScreen = ({
           <Row>
             <Form.Group>
               <Form.Label>Load Replay from Text</Form.Label>
-              <Form.Control
-                name="rawData"
-                as="textarea"
-                rows={3}
-                placeholder="Replay text"
-              />
+              <Form.Control name="rawData" as="textarea" rows={3} placeholder="Replay text" />
               <Form.Text muted>Paste the text of your Replay here</Form.Text>
             </Form.Group>
           </Row>

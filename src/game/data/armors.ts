@@ -5,15 +5,7 @@ export type Armors = { [k in ArmorsIndex]: Item };
 const armors = {
   heavy: {
     display: 'Heavy',
-    passives: [
-      '+Defence',
-      '+Defence',
-      '+Defence',
-      '+Defence',
-      '-Speed',
-      '-Speed',
-      '-StaPerTurn',
-    ],
+    passives: ['+Defence', '+Defence', '+Defence', '+Defence', '-Speed', '-Speed', '-StaPerTurn'],
   },
   medium: {
     display: 'Medium',

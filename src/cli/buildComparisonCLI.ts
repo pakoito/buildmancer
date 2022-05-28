@@ -3,15 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
 import { enemies } from '../game/data';
 import { findBestPlay, defaultTinkererOptions } from '../game/tinkerer';
-import {
-  Build,
-  Enemies,
-  EnemiesStats,
-  EnemyInfo,
-  Play,
-  safeEntries,
-  Seed,
-} from '../game/types';
+import { Build, Enemies, EnemiesStats, EnemyInfo, Play, safeEntries, Seed } from '../game/types';
 import { pipe, rangeArr } from '../game/zFunDump';
 import { makeGameNew, scoreGame } from '../game/playGame';
 import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
@@ -60,9 +52,9 @@ const start = async ({
   takeTop,
   seed,
 }: minimist.ParsedArgs) => {
-  const players = (
-    JSON.parse(readFileSync(builds).toString()) as BuildConfig[]
-  ).map((b) => makeBuild(b));
+  const players = (JSON.parse(readFileSync(builds).toString()) as BuildConfig[]).map((b) =>
+    makeBuild(b)
+  );
   if (encounters == null && encounterCount == null) {
     console.log(`Please pass one of encounters or encounterCount`);
     return;
@@ -93,20 +85,13 @@ const start = async ({
     population,
     topScores,
   };
-  console.log(
-    `\n==========\nCONFIG\n==========\n${prettyjson.render(
-      config
-    )}\n==========\n`
-  );
+  console.log(`\n==========\nCONFIG\n==========\n${prettyjson.render(config)}\n==========\n`);
   console.log(
     `\n==========\nPLAYERS\n==========\n${prettyjson.render(
       players.reduce(
         (acc, player, idx) => ({
           ...acc,
-          [idx]: safeEntries(player).reduce(
-            (acc, [k, v]) => ({ ...acc, [k]: v.display }),
-            {}
-          ),
+          [idx]: safeEntries(player).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {}),
         }),
         {}
       )
@@ -114,16 +99,11 @@ const start = async ({
   );
   console.log(
     `\n==========\nGAUNTLET\n==========\n${prettyjson.render(
-      gauntlet.reduce(
-        (acc, [seed, e]) => ({ ...acc, [seed]: e.map((b) => b[0].lore.name) }),
-        {}
-      )
+      gauntlet.reduce((acc, [seed, e]) => ({ ...acc, [seed]: e.map((b) => b[0].lore.name) }), {})
     )}\n==========\n`
   );
 
-  const results = players.map((p) =>
-    playGauntlet(iterations, population, playerSeed, p, gauntlet)
-  );
+  const results = players.map((p) => playGauntlet(iterations, population, playerSeed, p, gauntlet));
 
   const scores: number[] = Seq(results)
     .map((gauntlet) =>
@@ -138,65 +118,55 @@ const start = async ({
     )
     .toArray();
   const winner: [number, number] = scores.reduce(
-    ([player, lead], score, idx) =>
-      score > lead ? [idx, score] : [player, lead],
+    ([player, lead], score, idx) => (score > lead ? [idx, score] : [player, lead]),
     [0, 0]
   );
-  const scoresPerGame: { [k: number]: { total: number; [k: number]: number } } =
-    results.reduce(
-      (acc, ga, idx) => ({
-        ...acc,
-        [idx]: ga.reduce(
-          (acc, encounter, idx) => ({
-            ...acc,
-            [gauntlet[idx][0]]: Seq(encounter)
-              .take(topScores)
-              .reduce((acc, result) => acc + result.score, 0),
-          }),
-          { total: scores[idx] }
-        ),
-      }),
-      {}
-    );
-  console.log(
-    `\n==========\nSCORES\n==========\n${prettyjson.render(
-      scoresPerGame
-    )}\n==========\n`
+  const scoresPerGame: { [k: number]: { total: number; [k: number]: number } } = results.reduce(
+    (acc, ga, idx) => ({
+      ...acc,
+      [idx]: ga.reduce(
+        (acc, encounter, idx) => ({
+          ...acc,
+          [gauntlet[idx][0]]: Seq(encounter)
+            .take(topScores)
+            .reduce((acc, result) => acc + result.score, 0),
+        }),
+        { total: scores[idx] }
+      ),
+    }),
+    {}
   );
-  const pointsPerGame: { [k: number]: { total: number; [k: number]: number } } =
-    results.reduce(
-      (acc, ga, idx) => ({
-        ...acc,
-        [idx]: ga.reduce(
-          (acc, encounter, idx) =>
-            pipe(
-              Seq(encounter)
-                .take(topScores)
-                .reduce((acc, result) => acc + scoreGame(result.phenotype), 0),
-              (points) => ({
-                ...acc,
-                total: acc.total + points,
-                [gauntlet[idx][0]]: points,
-              })
-            ),
-          { total: 0 }
-        ),
-      }),
-      {}
-    );
   console.log(
-    `\n==========\nPOINTS\n==========\n${prettyjson.render(
-      pointsPerGame
-    )}\n==========\n`
+    `\n==========\nSCORES\n==========\n${prettyjson.render(scoresPerGame)}\n==========\n`
+  );
+  const pointsPerGame: { [k: number]: { total: number; [k: number]: number } } = results.reduce(
+    (acc, ga, idx) => ({
+      ...acc,
+      [idx]: ga.reduce(
+        (acc, encounter, idx) =>
+          pipe(
+            Seq(encounter)
+              .take(topScores)
+              .reduce((acc, result) => acc + scoreGame(result.phenotype), 0),
+            (points) => ({
+              ...acc,
+              total: acc.total + points,
+              [gauntlet[idx][0]]: points,
+            })
+          ),
+        { total: 0 }
+      ),
+    }),
+    {}
+  );
+  console.log(
+    `\n==========\nPOINTS\n==========\n${prettyjson.render(pointsPerGame)}\n==========\n`
   );
   console.log(
     `\n==========\nWINNER\n==========\n${prettyjson.render({
       Player: winner[0],
     })}\n\n${prettyjson.render(
-      safeEntries(players[winner[0]]).reduce(
-        (acc, [k, v]) => ({ ...acc, [k]: v.display }),
-        {}
-      )
+      safeEntries(players[winner[0]]).reduce((acc, [k, v]) => ({ ...acc, [k]: v.display }), {})
     )}\n\n${prettyjson.render(scoresPerGame[winner[0]])}\n\n${prettyjson.render(
       pointsPerGame[winner[0]]
     )}\n==========\n`
@@ -204,10 +174,7 @@ const start = async ({
 
   if (output != null) {
     console.log(`Writing to ${output}...`);
-    writeFileSync(
-      output,
-      JSON.stringify({ config, gauntlet, players, results }, null, 2)
-    );
+    writeFileSync(output, JSON.stringify({ config, gauntlet, players, results }, null, 2));
   }
 };
 

@@ -1,18 +1,7 @@
-import {
-  allRanges,
-  defaultStatus,
-  makeRange,
-  makeStat,
-  selfRange,
-} from '../makeGame';
+import { allRanges, defaultStatus, makeRange, makeStat, selfRange } from '../makeGame';
 import { effectFunCall, EnemyRepository } from '../types';
 
-export type EnemiesIndex =
-  | 'piripuru'
-  | 'toros'
-  | 'purupuri'
-  | 'ninkujorua'
-  | 'tshopuritazios';
+export type EnemiesIndex = 'piripuru' | 'toros' | 'purupuri' | 'ninkujorua' | 'tshopuritazios';
 const enemies = {
   piripuru: [
     {
@@ -68,9 +57,7 @@ const enemies = {
           tooltip: "It won't be long until the massacre continues",
           priority: 1,
           interruptible: false,
-          effects: [
-            effectFunCall(['Effect:Stat', { target: 'Monster', hp: 1 }]),
-          ],
+          effects: [effectFunCall(['Effect:Stat', { target: 'Monster', hp: 1 }])],
           range: selfRange,
         },
 
@@ -147,9 +134,7 @@ const enemies = {
           tooltip: 'Mama needs its rest',
           priority: 1,
           interruptible: false,
-          effects: [
-            effectFunCall(['Effect:Stat', { target: 'Monster', hp: 3 }]),
-          ],
+          effects: [effectFunCall(['Effect:Stat', { target: 'Monster', hp: 3 }])],
           range: selfRange,
         },
 
@@ -158,10 +143,7 @@ const enemies = {
           tooltip: 'Quickly, out of the way!',
           priority: 3,
           interruptible: true,
-          effects: [
-            effectFunCall(['Monster:Attack', { amount: 8 }]),
-            effectFunCall('Effect:Stun'),
-          ],
+          effects: [effectFunCall(['Monster:Attack', { amount: 8 }]), effectFunCall('Effect:Stun')],
           range: makeRange(0, 1),
         },
 
@@ -289,10 +271,7 @@ const enemies = {
           priority: 1,
           interruptible: false,
           effects: [
-            effectFunCall([
-              'Effect:Stat',
-              { target: 'Player', defence: -1, attack: -1 },
-            ]),
+            effectFunCall(['Effect:Stat', { target: 'Player', defence: -1, attack: -1 }]),
             effectFunCall(['Monster:Move', { amount: 999 }]),
           ],
           range: selfRange,
