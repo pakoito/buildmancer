@@ -435,7 +435,7 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     [['Player' as Target, effectEotCleanup]],
     postEotPlay,
     postEotState,
-    'EOT'
+    'CLEANUP'
   );
 
   const endOfTurn: Play = {

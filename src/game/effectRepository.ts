@@ -59,8 +59,8 @@ const applyPoison = (
             display: `Poison ${
               target === 'Player'
                 ? 'Player'
-                : play.enemies[target]!!.lore.name + '[' + (target + 1)
-            } + "]"`,
+                : play.enemies[target]!!.lore.name + ' [' + (target + 1) + ']'
+            }`,
             tooltip: '',
             range: allRanges,
             priority: 4,

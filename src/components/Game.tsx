@@ -169,7 +169,7 @@ const Game = ({
               hotkeys={playerHotkeys}
               lastAction={
                 lastAttacks
-                  .filter((a) => a.origin === 'Player' && a.phase === 'MAIN')
+                  .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
                   .map((a) => `${a.display}`)
                   .join(' -> ') ?? undefined
               }

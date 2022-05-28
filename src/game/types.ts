@@ -97,7 +97,7 @@ export type Distances = 5;
 export type MonsterCount = 5;
 export type Staminas = 10;
 
-export type EffectPhase = 'MAIN' | 'EOT' | 'BOT';
+export type EffectPhase = 'MAIN' | 'BOT' | 'EOT' | 'CLEANUP';
 export interface EffectSummary {
   origin: Target;
   display: string;
