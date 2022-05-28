@@ -19,6 +19,7 @@ import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
 import { randomPlayer, randomEnemy } from '../game/makeGame';
 import { EnemiesIndex } from 'src/game/data/enemies';
+import { Chance } from 'chance';
 
 const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
   pipe(randomPlayer(undefined, p), ([player, playerStats]) =>
@@ -67,12 +68,13 @@ const start = async ({
     return;
   }
   const enc: EnemiesIndex[][] | undefined = encounters;
+  const rand = new Chance();
   const gauntlet: [Seed, EnemyInfo[]][] =
     enc != null
-      ? enc.map((e) => [Math.random(), e.map((ee) => enemies[ee])])
+      ? enc.map((e) => [rand.guid(), e.map((ee) => enemies[ee])])
       : rangeArr(encounterCount).map((_) =>
           pipe(Math.random() * 6, (roll) => [
-            Math.random(),
+            rand.guid(),
             [
               randomEnemy(),
               ...(roll > 3 ? [randomEnemy()] : []),

@@ -40,7 +40,7 @@ const build: BuildRepository = {
     },
   },
   basic: {
-    _: {
+    basic: {
       display: 'Basic',
       effects: [
         {

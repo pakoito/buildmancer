@@ -1,38 +1,57 @@
 [
   {
-    "basic": 0,
-    "class": 3,
-    "weapon": 4,
-    "skill": 0,
-    "offhand": 1,
-    "consumable": 0,
-    "armor": 1,
-    "headgear": 0,
-    "footwear": 1,
-    "charm": 2
+    "class": "cleric",
+    "weapon": "greatsword",
+    "skill": "nimble",
+    "offhand": "focus",
+    "consumable": "razors",
+    "armor": "heavy",
+    "headgear": "helm",
+    "footwear": "slippers",
+    "charm": "health"
   },
   {
-    "basic": 0,
-    "class": 1,
-    "weapon": 4,
-    "skill": 1,
-    "offhand": 4,
-    "consumable": 0,
-    "armor": 3,
-    "headgear": 1,
-    "footwear": 1,
-    "charm": 2
+    "class": "mage",
+    "weapon": "greatsword",
+    "skill": "resourceful",
+    "offhand": "shield",
+    "consumable": "bubble",
+    "armor": "medium",
+    "headgear": "cap",
+    "footwear": "greaves",
+    "charm": "swiftness"
   },
   {
-    "basic": 0,
-    "class": 1,
-    "weapon": 5,
-    "skill": 0,
-    "offhand": 1,
-    "consumable": 0,
-    "armor": 2,
-    "headgear": 0,
-    "footwear": 2,
-    "charm": 0
+    "class": "warrior",
+    "weapon": "sword",
+    "skill": "sturdy",
+    "offhand": "parry",
+    "consumable": "healing",
+    "armor": "none",
+    "headgear": "cap",
+    "footwear": "slippers",
+    "charm": "haste"
+  },
+  {
+    "class": "rogue",
+    "weapon": "staff",
+    "skill": "sturdy",
+    "offhand": "wand",
+    "consumable": "bubble",
+    "armor": "light",
+    "headgear": "helm",
+    "footwear": "slippers",
+    "charm": "haste"
+  },
+  {
+    "class": "berserk",
+    "weapon": "bow",
+    "skill": "nimble",
+    "offhand": "shield",
+    "consumable": "razors",
+    "armor": "medium",
+    "headgear": "helm",
+    "footwear": "slippers",
+    "charm": "resilience"
   }
 ]

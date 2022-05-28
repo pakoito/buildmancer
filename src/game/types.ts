@@ -192,8 +192,8 @@ export type StatEffectTarget =
   | (MonsterStatParameter & { target: 'Monster' });
 
 export interface BuildRepository {
-  debug: { [k in string]: Item };
-  basic: { [k in string]: Item };
+  debug: { enabled: Item; disabled: Item };
+  basic: { basic: Item };
   class: Classes;
   skill: Skills;
   weapon: Weapons;
@@ -247,3 +247,7 @@ export const safeEntries = <T, K extends keyof T>(o: {
 export const safeValues = <T, K extends keyof T>(o: {
   [s in K]: T[s];
 }): T[K][] => safeEntries(o).map((a) => a[1]);
+
+export const safeKeys = <T, K extends keyof T>(o: {
+  [s in K]: T[s];
+}): K[] => safeEntries(o).map((a) => a[0]);

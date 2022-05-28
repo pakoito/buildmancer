@@ -16,6 +16,7 @@ import {
   Enemies,
   EnemiesStats,
   EnemyInfo,
+  Item,
   MonsterTarget,
   Play,
   Player,
@@ -192,13 +193,13 @@ export const findBestBuild = (
   };
   const rng = new Chance(options.playerSeed);
   const config: GeneticAlgorithmConfig<Player> = {
-    mutationFunction: (player: Player) => {
+    mutationFunction: (player: Player): Player => {
       const toChange = rng.pickone(
         Object.keys(player.build).filter((k) => !nonMutableProperties.has(k))
       ) as keyof typeof build;
       const newItem = rng.pickone(
-        safeValues(build[toChange]).flatMap((a) =>
-          a.display !== player.build[toChange].display ? a : []
+        safeValues<{ [k: string]: Item }, string>(build[toChange]).flatMap(
+          (a) => (a.display !== player.build[toChange].display ? a : [])
         )
       );
       return {

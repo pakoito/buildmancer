@@ -1,9 +1,17 @@
 import { makeGameNew } from '../game/playGame';
-import { Build, Enemies, EnemiesStats, Play, safeValues } from '../game/types';
+import {
+  Build,
+  Enemies,
+  EnemiesStats,
+  Play,
+  PlayerStats,
+  safeKeys,
+  safeValues,
+} from '../game/types';
 import { build, enemies } from '../game/data';
 import { TinkererOptions } from '../game/tinkerer';
 import { rangeArr } from '../game/zFunDump';
-import { makeStat, defaultStatus } from '../game/makeGame';
+import { makeStat, defaultStatus, playerStatsDefault } from '../game/makeGame';
 import { ArmorsIndex } from 'src/game/data/armors';
 import { CharmsIndex } from 'src/game/data/charms';
 import { ConsumablesIndex } from 'src/game/data/consumables';
@@ -16,8 +24,8 @@ import { ClassesIndex } from 'src/game/data/classes';
 import { EnemiesIndex } from 'src/game/data/enemies';
 
 export const makeBuild = (gameConfig: BuildConfig): Build => ({
-  debug: build.debug[0],
-  basic: build.basic._,
+  debug: build.debug.disabled,
+  basic: build.basic.basic,
   class: build.class[gameConfig.class],
   weapon: build.weapon[gameConfig.weapon],
   skill: build.skill[gameConfig.skill],
@@ -29,17 +37,16 @@ export const makeBuild = (gameConfig: BuildConfig): Build => ({
   charm: build.charm[gameConfig.charm],
 });
 
-export const randBuild = (rng: Chance.Chance) => ({
-  basic: rng.pickone(rangeArr(safeValues(build.basic).length)),
-  class: rng.pickone(rangeArr(safeValues(build.class).length)),
-  weapon: rng.pickone(rangeArr(safeValues(build.weapon).length)),
-  skill: rng.pickone(rangeArr(safeValues(build.skill).length)),
-  offhand: rng.pickone(rangeArr(safeValues(build.offhand).length)),
-  consumable: rng.pickone(rangeArr(safeValues(build.consumable).length)),
-  armor: rng.pickone(rangeArr(safeValues(build.armor).length)),
-  headgear: rng.pickone(rangeArr(safeValues(build.headgear).length)),
-  footwear: rng.pickone(rangeArr(safeValues(build.footwear).length)),
-  charm: rng.pickone(rangeArr(safeValues(build.charm).length)),
+export const randBuild = (rand: Chance.Chance): BuildConfig => ({
+  class: rand.pickone(safeKeys(build.class)),
+  weapon: rand.pickone(safeKeys(build.weapon)),
+  skill: rand.pickone(safeKeys(build.skill)),
+  offhand: rand.pickone(safeKeys(build.offhand)),
+  consumable: rand.pickone(safeKeys(build.consumable)),
+  armor: rand.pickone(safeKeys(build.armor)),
+  headgear: rand.pickone(safeKeys(build.headgear)),
+  footwear: rand.pickone(safeKeys(build.footwear)),
+  charm: rand.pickone(safeKeys(build.charm)),
 });
 
 export const makeGame = (gameConfig: GameConfig): Play =>
@@ -50,22 +57,21 @@ export const makeGame = (gameConfig: GameConfig): Play =>
         name: 'XXX',
         age: 123,
       },
-      build: makeBuild(gameConfig),
+      build: makeBuild(gameConfig.player.build),
     },
-    {
-      hp: makeStat(gameConfig.player.hp),
-      stamina: makeStat(gameConfig.player.stamina),
-      staminaPerTurn: makeStat(gameConfig.player.staminaPerTurn),
-      speed: makeStat(gameConfig.player.speed),
-      attack: makeStat(gameConfig.player.attack),
-      defence: makeStat(gameConfig.player.defence),
-      status: defaultStatus,
-    },
+    gameConfig.player.stats,
     gameConfig.enemies.map((v) => enemies[v][0]) as Enemies,
     gameConfig.enemies.map((v) => enemies[v][1]) as EnemiesStats,
     gameConfig.turns,
     gameConfig.seed
   );
+
+export const randGame = (rand: Chance.Chance): GameConfig => ({
+  enemies: [rand.pickone(safeKeys(enemies))],
+  player: { stats: playerStatsDefault, build: randBuild(rand) },
+  turns: 50,
+  seed: rand.string(),
+});
 
 export type BuildConfig = {
   class: ClassesIndex;
@@ -79,15 +85,11 @@ export type BuildConfig = {
   charm: CharmsIndex;
 };
 
-export type GameConfig = BuildConfig & {
+export type GameConfig = {
   enemies: EnemiesIndex[];
   player: {
-    hp: number;
-    stamina: number;
-    staminaPerTurn: number;
-    speed: number;
-    attack: number;
-    defence: number;
+    stats: PlayerStats;
+    build: BuildConfig;
   };
   turns: number;
   seed: string | number;

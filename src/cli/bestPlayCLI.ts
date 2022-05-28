@@ -18,16 +18,6 @@ export const paramsRender = (params: GameConfig): string => {
   const resolve = {
     ...params,
     enemies: params.enemies.map((a) => enemies[a][0].lore.name),
-    basic: build.basic._.display,
-    class: build.class[params.class].display,
-    weapon: build.weapon[params.weapon].display,
-    skill: build.skill[params.skill].display,
-    offhand: build.offhand[params.offhand].display,
-    consumable: build.consumable[params.consumable].display,
-    armor: build.armor[params.armor].display,
-    headgear: build.headgear[params.headgear].display,
-    footwear: build.footwear[params.footwear].display,
-    charm: build.charm[params.charm].display,
   };
   return prettyjson.render(resolve);
 };

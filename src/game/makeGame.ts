@@ -43,7 +43,7 @@ export const randomBuild = (
   rng: Chance.Chance,
   buildOverride?: Partial<Build>
 ) => ({
-  debug: build.debug[globals().debug ? 1 : 0],
+  debug: build.debug[globals().debug ? 'enabled' : 'disabled'],
   basic: rng.pickone(safeValues(build.basic)),
   class: rng.pickone(safeValues(build.class)),
   skill: rng.pickone(safeValues(build.skill)),

@@ -1,26 +1,32 @@
 {
-  "enemies": [1],
-  "basic": 0,
-  "class": 0,
-  "weapon": 0,
-  "skill": 0,
-  "offhand": 0,
-  "consumable": 0,
-  "armor": 0,
-  "headgear": 0,
-  "footwear": 0,
-  "charm": 0,
+  "enemies": ["tshopuritazios"],
   "player": {
-    "hp": 10,
-    "stamina": 6,
-    "staminaPerTurn": 2,
-    "speed": 0,
-    "attack": 0,
-    "defence": 0
+    "stats": {
+      "hp": { "current": 10, "starting": 10, "max": 15 },
+      "stamina": { "current": 6, "starting": 6, "max": 11 },
+      "staminaPerTurn": { "current": 2, "starting": 2, "max": 7 },
+      "speed": { "current": 0, "starting": 0, "max": 5 },
+      "attack": { "current": 0, "starting": 0, "max": 5 },
+      "defence": { "current": 0, "starting": 0, "max": 5 },
+      "status": {
+        "dodge": { "active": false },
+        "armor": { "amount": 0 },
+        "bleed": { "turns": 0 },
+        "stun": { "active": false }
+      }
+    },
+    "build": {
+      "class": "mage",
+      "weapon": "twinblades",
+      "skill": "resourceful",
+      "offhand": "focus",
+      "consumable": "bubble",
+      "armor": "none",
+      "headgear": "helm",
+      "footwear": "greaves",
+      "charm": "strength"
+    }
   },
   "turns": 50,
-  "seed": "paco",
-  "gameOptions": {
-    "debug": false
-  }
+  "seed": "tUR3NNVcyTPc"
 }

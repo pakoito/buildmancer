@@ -10,6 +10,7 @@ import {
 import useScroll from '../hooks/useScroll';
 import {
   Build,
+  BuildRepository,
   Item,
   Player,
   PlayerStats,
@@ -61,12 +62,11 @@ const PlayerBuilder = ({
       <Container fluid style={{ marginBottom: '105px' }}>
         <Row className="g-2">
           {safeEntries(build)
-            .filter(([type, _]) => !systemBuildKeys.has(type))
-            .map(([type, values]) => (
+            .map(([type, values]) => (!systemBuildKeys.has(type) &&
               <ElementPicker
                 setField={(value) => setField(type, value)}
                 section={type}
-                options={safeValues(values)}
+                options={safeValues<{ [k: string]: Item}, string>(values)}
                 key={type}
                 isSelected={(value) => form[type].display === value.display}
               />
