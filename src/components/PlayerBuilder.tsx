@@ -61,16 +61,18 @@ const PlayerBuilder = ({
     <Form onSubmit={onFormSubmit}>
       <Container fluid style={{ marginBottom: '105px' }}>
         <Row className="g-2">
-          {safeEntries(build)
-            .map(([type, values]) => (!systemBuildKeys.has(type) &&
-              <ElementPicker
-                setField={(value) => setField(type, value)}
-                section={type}
-                options={safeValues<{ [k: string]: Item}, string>(values)}
-                key={type}
-                isSelected={(value) => form[type].display === value.display}
-              />
-            ))}
+          {safeEntries(build).map(
+            ([type, values]) =>
+              !systemBuildKeys.has(type) && (
+                <ElementPicker
+                  setField={(value) => setField(type, value)}
+                  section={type}
+                  options={safeValues<{ [k: string]: Item }, string>(values)}
+                  key={type}
+                  isSelected={(value) => form[type].display === value.display}
+                />
+              )
+          )}
         </Row>
         <Navbar
           fixed="bottom"
