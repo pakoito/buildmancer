@@ -89,7 +89,7 @@ const enemiesEotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
 export const playerBotEffects = (
   player: Player,
   d: DisabledSkills
-): [PlayerTarget, Effect][] =>
+): [PlayerTarget, InventoryEffect][] =>
   safeEntries(player.build)
     .flatMap(([k, s]) => (!Set(d).has(k) ? s.bot ?? [] : []))
     .map((a) => ['Player', a]);
@@ -97,7 +97,7 @@ export const playerBotEffects = (
 export const playerEotEffects = (
   player: Player,
   d: DisabledSkills
-): [PlayerTarget, Effect][] =>
+): [PlayerTarget, InventoryEffect][] =>
   safeEntries(player.build)
     .flatMap(([k, s]) => (!Set(d).has(k) ? s.eot ?? [] : []))
     .map((a) => ['Player', a]);
@@ -344,32 +344,22 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     },
   };
 
-  // Stamina
-  const [preBotPlay, preBotState] = reduceFuns(
-    [
-      [
-        'Player',
-        applyEffectStamina(
-          lastTurnState.player.staminaPerTurn.current - usedSkill.stamina
-        ),
-      ],
-    ],
-    play,
-    initialState,
-    'MAIN'
-  );
-
   // BOT
   // Lingering effects
   const [postBotPlay, postBotState] = reduceFuns(
     bot,
-    preBotPlay,
-    preBotState,
+    play,
+    initialState,
     'BOT'
   );
   // Player & Monster effects
+  const playerBotEffs = playerBotEffects(
+    postBotPlay.player,
+    postBotState.disabledSkills
+  );
+
   const entitiesBot: [Target, Effect][] = [
-    ...playerBotEffects(postBotPlay.player, postBotState.disabledSkills),
+    ...playerBotEffs,
     ...enemiesBotEffects(postBotPlay.enemies),
   ];
   const [postEntitiesBotPlay, postEntitiesBotState] = reduceFuns(
@@ -413,10 +403,11 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
 
   // EOT
   // Player & Monster effects
-  const entitiesEot = [
-    ...playerEotEffects(newPlay.player, newState.disabledSkills),
-    ...enemiesEotEffects(newPlay.enemies),
-  ];
+  const playerEotEffs = playerEotEffects(
+    newPlay.player,
+    newState.disabledSkills
+  );
+  const entitiesEot = [...playerEotEffs, ...enemiesEotEffects(newPlay.enemies)];
   const [postPlayerEotPlay, postPlayerEotState] = reduceFuns(
     entitiesEot,
     newPlay,
@@ -430,11 +421,33 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     postPlayerEotState,
     'EOT'
   );
+
+  // Stamina
+  const passivesStamina = [...playerBotEffs, ...playerEotEffs].reduce(
+    (acc, e) => acc + e[1].stamina,
+    0
+  );
+  const [postStaminaPlay, postStaminaState] = reduceFuns(
+    [
+      [
+        'Player',
+        applyEffectStamina(
+          lastTurnState.player.staminaPerTurn.current -
+            usedSkill.stamina -
+            passivesStamina
+        ),
+      ],
+    ],
+    postEotPlay,
+    postEotState,
+    'EOT'
+  );
+
   // Cleanup
   const [postCleanup, postCleanupState] = reduceFuns(
     [['Player' as Target, effectEotCleanup]],
-    postEotPlay,
-    postEotState,
+    postStaminaPlay,
+    postStaminaState,
     'CLEANUP'
   );
 

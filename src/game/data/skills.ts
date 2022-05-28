@@ -10,10 +10,8 @@ const skills = {
       {
         display: 'Endure the pain',
         tooltip: 'Blocks some damage each turn at the cost of stamina',
-        effects: [
-          effectFunCall(['Effect:Armor', { amount: 4 }]),
-          effectFunCall(['Effect:Stat', { target: 'Player', stamina: -2 }]),
-        ],
+        stamina: 2,
+        effects: [effectFunCall(['Effect:Armor', { amount: 4 }])],
         priority: 1,
         interruptible: false,
         range: selfRange,

@@ -215,10 +215,9 @@ export interface Item {
   display: string;
   tooltip?: string;
   passives?: StatsFunIndex[];
-  bot?: Nel<Effect>;
-  eot?: Nel<Effect>;
+  bot?: Nel<InventoryEffect>;
+  eot?: Nel<InventoryEffect>;
   effects?: Nel<InventoryEffect>;
-  //[key: string]: any;
 }
 
 export interface Player {

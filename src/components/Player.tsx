@@ -9,8 +9,11 @@ import {
   OverlayTrigger,
 } from 'react-bootstrap';
 import {
+  BuildRepository,
   DisabledSkills,
+  InventoryEffect,
   InventoryStats,
+  Item,
   Player,
   PlayerStats,
   safeEntries,
@@ -43,17 +46,16 @@ const PlayerCard: React.FC<{
   hotkeys,
 }) => {
   const passives = safeEntries(player.build).map(
-    ([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const
+    ([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as [keyof BuildRepository, Item, InventoryEffect[]]
   );
 
-  const passiveCount = passives.reduce(
-    (acc, [_k, _e, passives]) => acc + passives.length,
-    0
+  const [passiveCount, passiveStamina] = passives.reduce(
+    ([count, sta], [k, _e, p]) => [count + p.length, sta + (Set(disabledSkills).has(k) ? 0 : p.reduce((acc, s) => acc + s.stamina, 0))],
+    [0, 0]
   );
   const hasPassives = passiveCount > 0;
   const staminaPerTurn =
-    playerStats.staminaPerTurn.current -
-    2 * (passiveCount - disabledSkills.length);
+    playerStats.staminaPerTurn.current - passiveStamina;
 
   return (
     <Card>
@@ -82,7 +84,7 @@ const PlayerCard: React.FC<{
       </Card.Body>
       {canAct && hasPassives && (
         <>
-          <b>Passives (-2 💪 each)</b>
+          <b>Passives</b>
           <ButtonGroup>
             {passives.map(
               ([k, _i, effs]) =>
@@ -113,7 +115,7 @@ const PlayerCard: React.FC<{
                         )
                       }
                     >
-                      {e.display}
+                      {e.display} (💪: {e.stamina})
                     </ToggleButton>
                   </OverlayTrigger>
                 ))

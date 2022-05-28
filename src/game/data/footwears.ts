@@ -31,10 +31,8 @@ export const footwears = {
         priority: 0,
         interruptible: false,
         range: allRanges,
-        effects: [
-          effectFunCall('BootsOfFlight:EOT'),
-          effectFunCall(['Effect:Stat', { target: 'Player', stamina: -2 }]),
-        ],
+        stamina: 2,
+        effects: [effectFunCall('BootsOfFlight:EOT')],
       },
     ],
   },
