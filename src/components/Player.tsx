@@ -102,12 +102,12 @@ const PlayerCard: React.FC<{
                       key={idx}
                       placement="right"
                       delay={{ show: 100, hide: 250 }}
-                      overlay={
-                        <Popover>
+                      overlay={(props) => (
+                        <Popover {...props}>
                           <Popover.Header as="h3">{e.display}</Popover.Header>
                           <Popover.Body>{e.tooltip}</Popover.Body>
                         </Popover>
-                      }
+                      )}
                     >
                       <ToggleButton
                         checked={!disabled.has(k)}
@@ -146,12 +146,12 @@ const PlayerCard: React.FC<{
                         key={e.display}
                         placement="top"
                         delay={{ show: 100, hide: 250 }}
-                        overlay={
-                          <Popover>
+                        overlay={(props) => (
+                          <Popover {...props}>
                             <Popover.Header as="h3">{e.display}</Popover.Header>
                             <Popover.Body>{e.tooltip}</Popover.Body>
                           </Popover>
-                        }
+                        )}
                       >
                         <div>
                           <Button

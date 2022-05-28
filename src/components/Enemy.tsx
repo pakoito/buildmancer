@@ -14,8 +14,8 @@ const skillPercents = (effects: Effect[]) =>
           key={idx}
           placement="top"
           delay={{ show: 100, hide: 250 }}
-          overlay={
-            <Popover>
+          overlay={(props) => (
+            <Popover {...props}>
               <Popover.Header as="h3">{display}</Popover.Header>
               <Popover.Body>
                 {tooltip}
@@ -30,7 +30,7 @@ const skillPercents = (effects: Effect[]) =>
                   : range.map((a) => a + 1).join(', ')}
               </Popover.Body>
             </Popover>
-          }
+          )}
         >
           <>
             [{((v / effects.length) * 100).toFixed(2)}%] {display}
