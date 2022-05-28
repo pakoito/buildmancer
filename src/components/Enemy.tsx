@@ -32,10 +32,9 @@ const skillPercents = (effects: Effect[]) =>
             </Popover>
           )}
         >
-          <>
+          <div>
             [{((v / effects.length) * 100).toFixed(2)}%] {display}
-            <br key={idx} />
-          </>
+          </div>
         </OverlayTrigger>
       );
     });
