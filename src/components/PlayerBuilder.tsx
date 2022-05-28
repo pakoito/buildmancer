@@ -8,7 +8,14 @@ import {
   Navbar,
 } from 'react-bootstrap';
 import useScroll from '../hooks/useScroll';
-import { Build, Item, Player, PlayerStats, safeEntries, safeValues } from '../game/types';
+import {
+  Build,
+  Item,
+  Player,
+  PlayerStats,
+  safeEntries,
+  safeValues,
+} from '../game/types';
 import { build } from '../game/data';
 import { Set } from 'immutable';
 import { buildPlayer } from '../game/playGame';

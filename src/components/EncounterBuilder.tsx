@@ -1,7 +1,14 @@
 import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
 
-import { Player, Enemies, EnemiesStats, Build, EnemyInfo, safeValues } from '../game/types';
+import {
+  Player,
+  Enemies,
+  EnemiesStats,
+  Build,
+  EnemyInfo,
+  safeValues,
+} from '../game/types';
 import { enemies } from '../game/data';
 import { randomEnemy } from '../game/makeGame';
 
