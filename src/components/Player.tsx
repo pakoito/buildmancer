@@ -100,7 +100,7 @@ const PlayerCard: React.FC<{
                   effs.map((e, idx) => (
                     <OverlayTrigger
                       key={idx}
-                      placement="right"
+                      placement="top"
                       delay={{ show: 100, hide: 250 }}
                       overlay={(props) => (
                         <Popover {...props}>
