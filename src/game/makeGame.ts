@@ -21,10 +21,13 @@ export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) =>
 export const allRanges = makeRange(0, 1, 2, 3, 4);
 export const selfRange = allRanges;
 
-export const makeStat = (amount: number, max: number = amount + 5): Stat => ({
+export const makeStat = (
+  amount: number,
+  max: (amt: number) => number = (amt) => amt + 10
+): Stat => ({
   current: amount,
   starting: amount,
-  max,
+  max: max(amount),
 });
 export const defaultStatus: Status = {
   dodge: { active: false },
@@ -59,7 +62,7 @@ export const randomBuild = (
 
 export const playerStatsDefault: PlayerStats = {
   hp: makeStat(10),
-  stamina: makeStat(6),
+  stamina: makeStat(6, (a) => a),
   staminaPerTurn: makeStat(2),
   speed: makeStat(0),
   attack: makeStat(0),

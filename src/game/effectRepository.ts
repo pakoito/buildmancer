@@ -573,7 +573,10 @@ export const statsRepository = {
     player: PlayerStats,
     enemies: EnemiesStats
   ): [PlayerStats, EnemiesStats] => [
-    { ...player, stamina: makeStat(player.stamina.current + 2) },
+    {
+      ...player,
+      stamina: makeStat(player.stamina.current + 2, (a) => a),
+    },
     enemies,
   ],
   '+Attack': (
@@ -616,7 +619,10 @@ export const statsRepository = {
     player: PlayerStats,
     enemies: EnemiesStats
   ): [PlayerStats, EnemiesStats] => [
-    { ...player, stamina: makeStat(player.stamina.current - 2) },
+    {
+      ...player,
+      stamina: makeStat(player.stamina.current - 2, (a) => a),
+    },
     enemies,
   ],
   '-Attack': (

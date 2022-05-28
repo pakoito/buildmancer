@@ -46,10 +46,13 @@ const PlayerCard: React.FC<{
     ([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as const
   );
 
-  const hasPassives = passives.reduce(
-    (acc, [k, e, passives]) => passives.length > 0,
-    false
+  const passiveCount = passives.reduce(
+    (acc, [_k, _e, passives]) => acc + passives.length,
+    0
   );
+  const hasPassives = passiveCount > 0;
+  const staminaPerTurn = playerStats.staminaPerTurn.current - 2 * (passiveCount - disabledSkills.length);
+
   return (
     <Card>
       <Card.Body>
@@ -65,14 +68,13 @@ const PlayerCard: React.FC<{
           {playerStats.defence.current} | Speed {playerStats.speed.current}
         </Card.Text>
         <Card.Text>
-          {playerStats.hp.current}/
-          {Math.min(playerStats.hp.starting, playerStats.hp.max)} ❤
+          {playerStats.hp.current} ❤
         </Card.Text>
         <Card.Text>
           {playerStats.stamina.current}/
-          {Math.min(playerStats.stamina.starting, playerStats.stamina.max)} 💪 (
-          {playerStats.staminaPerTurn.current >= 0 && '+'}
-          {playerStats.staminaPerTurn.current})
+          {playerStats.stamina.max} 💪 (
+          {staminaPerTurn >= 0 && '+'}
+          {staminaPerTurn})
         </Card.Text>
         {playerStats.status.bleed.turns > 0 && (
           <Card.Text>{playerStats.status.bleed.turns} 🩸</Card.Text>
@@ -81,11 +83,11 @@ const PlayerCard: React.FC<{
       </Card.Body>
       {canAct && hasPassives && (
         <>
-          <b>Passives</b>
+          <b>Passives (-2 💪 each)</b>
           <ButtonGroup>
             {passives.map(
-              ([k, e, passives], idx) =>
-                passives.length > 0 && (
+              ([k, _i, effs]) =>
+              effs.length > 0 && (effs.map((e, idx) =>
                   <OverlayTrigger
                     key={idx}
                     placement="right"
@@ -114,7 +116,7 @@ const PlayerCard: React.FC<{
                       {e.display}
                     </ToggleButton>
                   </OverlayTrigger>
-                )
+              ))
             )}
           </ButtonGroup>
         </>

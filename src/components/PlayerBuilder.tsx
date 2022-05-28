@@ -100,10 +100,9 @@ const PlayerBuilder = ({
               and {displayType('footwear')}
             </Navbar.Text>
             <Navbar.Text>
-              {postBuildPlayerStats.hp.current}/{postBuildPlayerStats.hp.max} ❤
+              {postBuildPlayerStats.hp.current} ❤
               <br />
-              {postBuildPlayerStats.stamina.current}/
-              {postBuildPlayerStats.stamina.max} 💪 (
+              {postBuildPlayerStats.stamina.current} 💪 (
               {postBuildPlayerStats.staminaPerTurn.current >= 0 && '+'}
               {postBuildPlayerStats.staminaPerTurn.current})<br />
               Attack {postBuildPlayerStats.attack.current} | Defence{' '}
