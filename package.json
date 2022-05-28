@@ -73,6 +73,7 @@
     "lsm": "open https://statecharts.io/inspect?server=localhost:8888",
     "wsm": "powershell.exe /c 'start https://statecharts.io/inspect?server=localhost:8888'",
     "sm": "SMD=1 node --experimental-specifier-resolution=node --loader ts-node/esm src/menuStateMachine.ts",
+    "pnp": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/makePNPCLI.ts --out='./pnp'",
     "makeSample": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/sampleMakerCLI.ts",
     "play": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/bestPlayCLI.ts",
     "compare": "node --experimental-specifier-resolution=node --loader ts-node/esm src/cli/buildComparisonCLI.ts",

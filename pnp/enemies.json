@@ -1,0 +1,914 @@
+{
+  "piripuru": [
+    {
+      "lore": {
+        "name": "Piripuru"
+      },
+      "rolls": [
+        [
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "display": "Bounce",
+          "tooltip": "Floomp Floomp",
+          "priority": 1,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -2
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Slam",
+          "tooltip": "Throws itself at you",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 5
+              }
+            }
+          ],
+          "range": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "hp": {
+        "current": 7,
+        "starting": 7,
+        "max": 17
+      },
+      "distance": 4,
+      "speed": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "attack": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "defence": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "status": {
+        "dodge": {
+          "active": false
+        },
+        "armor": {
+          "amount": 0
+        },
+        "bleed": {
+          "turns": 0
+        },
+        "stun": {
+          "active": false
+        }
+      }
+    }
+  ],
+  "toros": [
+    {
+      "lore": {
+        "name": "Toros",
+        "description": "Big, mean, strong and unclean"
+      },
+      "rolls": [
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          2,
+          2,
+          3,
+          3,
+          4,
+          0
+        ],
+        [
+          2,
+          3,
+          3,
+          4,
+          0
+        ],
+        [
+          3,
+          3,
+          3,
+          4,
+          4,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "display": "Rest",
+          "tooltip": "It won't be long until the massacre continues",
+          "priority": 1,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Monster",
+                "hp": 1
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Chomp",
+          "tooltip": "Toro attempts to eat you for massive damage!",
+          "priority": 4,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 18
+              }
+            }
+          ],
+          "range": [
+            0
+          ]
+        },
+        {
+          "display": "Swipe",
+          "tooltip": "High damage attack that staggers",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 12
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -1
+              }
+            },
+            {
+              "index": "Effect:Stun"
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "display": "Lunge",
+          "tooltip": "Charges forward for a horn attack",
+          "priority": 4,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 10
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -5
+              }
+            }
+          ],
+          "range": [
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Roar",
+          "tooltip": "A terrifying howl!",
+          "priority": 3,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Basic:Stamina",
+              "parameters": {
+                "amount": -5
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "hp": {
+        "current": 38,
+        "starting": 38,
+        "max": 48
+      },
+      "distance": 2,
+      "speed": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "attack": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "defence": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "status": {
+        "dodge": {
+          "active": false
+        },
+        "armor": {
+          "amount": 0
+        },
+        "bleed": {
+          "turns": 0
+        },
+        "stun": {
+          "active": false
+        }
+      }
+    }
+  ],
+  "purupuri": [
+    {
+      "lore": {
+        "name": "Mama Purupuri",
+        "description": "Mama can always call one of its little ones to help"
+      },
+      "rolls": [
+        [
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          2,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "display": "Recover",
+          "tooltip": "Mama needs its rest",
+          "priority": 1,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Monster",
+                "hp": 3
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Stomp",
+          "tooltip": "Quickly, out of the way!",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 8
+              }
+            },
+            {
+              "index": "Effect:Stun"
+            }
+          ],
+          "range": [
+            0,
+            1
+          ]
+        },
+        {
+          "display": "Call for Aid",
+          "tooltip": "Calls for the litter to help",
+          "priority": 3,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Monster:Summon",
+              "parameters": {
+                "enemy": "piripuru"
+              }
+            },
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Monster",
+                "hp": -5
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -2
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "hp": {
+        "current": 50,
+        "starting": 50,
+        "max": 60
+      },
+      "distance": 3,
+      "speed": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "attack": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "defence": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "status": {
+        "dodge": {
+          "active": false
+        },
+        "armor": {
+          "amount": 0
+        },
+        "bleed": {
+          "turns": 0
+        },
+        "stun": {
+          "active": false
+        }
+      }
+    }
+  ],
+  "ninkujorua": [
+    {
+      "lore": {
+        "name": "Ninkujorua",
+        "description": "Just...stay...still...for...a...second"
+      },
+      "rolls": [
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "display": "Meditate",
+          "tooltip": "And not about good vibes",
+          "priority": 1,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Monster",
+                "attack": 1
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": 999
+              }
+            },
+            {
+              "index": "Effect:Dodge"
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Rapid Slash - Retreat!",
+          "tooltip": "Deals several strikes then moves away from the player",
+          "priority": 2,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -5
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Effect:Dodge"
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Rapid Slash - Advance!",
+          "tooltip": "Moves close to the player then deals several strikes",
+          "priority": 2,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": -5
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Back Spikes",
+          "tooltip": "Jumps and shoots several needles that cause bleed",
+          "priority": 4,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 1
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 1
+              }
+            },
+            {
+              "index": "Effect:Bleed",
+              "parameters": {
+                "target": "Player",
+                "turns": 3
+              }
+            }
+          ],
+          "range": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "hp": {
+        "current": 25,
+        "starting": 25,
+        "max": 35
+      },
+      "distance": 1,
+      "speed": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "attack": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "defence": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "status": {
+        "dodge": {
+          "active": false
+        },
+        "armor": {
+          "amount": 0
+        },
+        "bleed": {
+          "turns": 0
+        },
+        "stun": {
+          "active": false
+        }
+      }
+    }
+  ],
+  "tshopuritazios": [
+    {
+      "lore": {
+        "name": "Tshopuritazios",
+        "description": "A filth bird whose stench hits a mile away"
+      },
+      "rolls": [
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          1,
+          2,
+          2,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "display": "Goad",
+          "tooltip": "Sounds like it's laughing at you",
+          "priority": 1,
+          "interruptible": false,
+          "effects": [
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Player",
+                "defence": -1,
+                "attack": -1
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": 999
+              }
+            }
+          ],
+          "range": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "display": "Peck",
+          "tooltip": "What is worse, the force or the texture?",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 10
+              }
+            },
+            {
+              "index": "Effect:Stun"
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": 2
+              }
+            }
+          ],
+          "range": [
+            0,
+            1
+          ]
+        },
+        {
+          "display": "Fling Mud",
+          "tooltip": "A large chunk coming right at you!",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 2
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 8
+              }
+            },
+            {
+              "index": "Monster:Move",
+              "parameters": {
+                "amount": 1
+              }
+            }
+          ],
+          "range": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "display": "Spit Bile",
+          "tooltip": "This disgusting liquid corrodes your armor",
+          "priority": 3,
+          "interruptible": true,
+          "effects": [
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 1
+              }
+            },
+            {
+              "index": "Monster:Attack",
+              "parameters": {
+                "amount": 1
+              }
+            },
+            {
+              "index": "Effect:Poison",
+              "parameters": {
+                "target": "Player",
+                "turns": 3
+              }
+            },
+            {
+              "index": "Effect:Stat",
+              "parameters": {
+                "target": "Player",
+                "defence": -1
+              }
+            }
+          ],
+          "range": [
+            2,
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "hp": {
+        "current": 32,
+        "starting": 32,
+        "max": 42
+      },
+      "distance": 4,
+      "speed": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "attack": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "defence": {
+        "current": 0,
+        "starting": 0,
+        "max": 10
+      },
+      "status": {
+        "dodge": {
+          "active": false
+        },
+        "armor": {
+          "amount": 0
+        },
+        "bleed": {
+          "turns": 0
+        },
+        "stun": {
+          "active": false
+        }
+      }
+    }
+  ]
+}
