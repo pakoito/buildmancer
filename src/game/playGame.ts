@@ -421,7 +421,6 @@ export const handlePlayerEffect = (play: Play, index: number): Play => {
     postPlayerEotState,
     'EOT'
   );
-
   // Stamina
   const passivesStamina = [...playerBotEffs, ...playerEotEffs].reduce(
     (acc, e) => acc + e[1].stamina,

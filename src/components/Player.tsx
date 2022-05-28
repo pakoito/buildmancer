@@ -46,16 +46,25 @@ const PlayerCard: React.FC<{
   hotkeys,
 }) => {
   const passives = safeEntries(player.build).map(
-    ([k, e]) => [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as [keyof BuildRepository, Item, InventoryEffect[]]
+    ([k, e]) =>
+      [k, e, [...(e.bot ?? []), ...(e.eot ?? [])]] as [
+        keyof BuildRepository,
+        Item,
+        InventoryEffect[]
+      ]
   );
 
+  const disabled = Set(disabledSkills);
+
   const [passiveCount, passiveStamina] = passives.reduce(
-    ([count, sta], [k, _e, p]) => [count + p.length, sta + (Set(disabledSkills).has(k) ? 0 : p.reduce((acc, s) => acc + s.stamina, 0))],
+    ([count, sta], [k, _e, p]) => [
+      count + p.length,
+      sta + (disabled.has(k) ? 0 : p.reduce((acc, s) => acc + s.stamina, 0)),
+    ],
     [0, 0]
   );
   const hasPassives = passiveCount > 0;
-  const staminaPerTurn =
-    playerStats.staminaPerTurn.current - passiveStamina;
+  const staminaPerTurn = playerStats.staminaPerTurn.current - passiveStamina;
 
   return (
     <Card>
@@ -102,7 +111,7 @@ const PlayerCard: React.FC<{
                     }
                   >
                     <ToggleButton
-                      checked={!Set(disabledSkills).has(k)}
+                      checked={!disabled.has(k)}
                       value={k}
                       id={`passive-skill-${k}`}
                       type="checkbox"

@@ -69,7 +69,7 @@ const scorePlay = (
 
   if (options.debug || fitness < 0) {
     console.log(
-      prettyjson.render({
+      {
         player: play.player.lore.name,
         encounter: JSON.stringify(play.enemies.map((e) => e.lore.name)),
         monsterHealth,
@@ -81,7 +81,9 @@ const scorePlay = (
         staminaFitness,
         killSpeedFitness,
         weights: options.weights,
-      })
+      },
+      null,
+      2
     );
   }
 
