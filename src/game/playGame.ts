@@ -18,6 +18,7 @@ import {
   EffectPhase,
   InventoryStats,
   Seed,
+  Item,
 } from './types';
 import { Seq, Set } from 'immutable';
 import { Chance } from 'chance';
@@ -69,6 +70,18 @@ export const playerActions = (
   safeEntries(player.build)
     .flatMap(([_k, i]) => i.effects ?? [])
     .filter((e) => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0));
+
+export const playerItemActions = (
+  player: Player,
+  inventoryStats: InventoryStats
+): [Item, InventoryEffect][] =>
+  safeEntries(player.build)
+    .flatMap(([_k, i]) =>
+      (i.effects ?? []).map((e) => [i, e] as [Item, InventoryEffect])
+    )
+    .filter(
+      ([i, e]) => (e.amount ?? 999) > (inventoryStats[e.display]?.used ?? 0)
+    );
 
 const enemiesBotEffects = (enemies: Enemies): [MonsterTarget, Effect][] =>
   enemies

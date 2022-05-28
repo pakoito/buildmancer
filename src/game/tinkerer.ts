@@ -2,7 +2,6 @@ import GeneticAlgorithmConstructor, {
   GeneticAlgorithmConfig,
   ScoredPhenotype,
 } from '../geneticalgorithm/geneticalgorithm';
-import prettyjson from 'prettyjson';
 import {
   handlePlayerEffect,
   initialState,

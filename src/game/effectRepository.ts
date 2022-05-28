@@ -51,7 +51,9 @@ const applyPoison = (
       : actions.changeStatMonster(
           currentState,
           currentState.target,
-          ({ hp }) => ({ hp: { ...hp, current: Math.max(0, hp.current - 1) } })
+          ({ hp }) => ({
+            hp: { ...hp, current: Math.max(0, hp.current - 1) },
+          })
         ),
     (newState) =>
       turns > 0

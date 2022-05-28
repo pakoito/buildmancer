@@ -75,7 +75,10 @@ const start = async ({
             ...acc,
             [idx]: safeEntries(player.build).reduce(
               (acc, [k, v]) => ({ ...acc, [k]: v.display }),
-              { score, name: player.lore.name }
+              {
+                score,
+                name: player.lore.name,
+              }
             ),
           }),
           {}

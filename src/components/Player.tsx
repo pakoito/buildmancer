@@ -2,11 +2,12 @@ import React from 'react';
 import {
   Card,
   Button,
-  Stack,
   ToggleButton,
   ButtonGroup,
   Popover,
   OverlayTrigger,
+  Container,
+  Row,
 } from 'react-bootstrap';
 import {
   BuildRepository,
@@ -18,9 +19,9 @@ import {
   PlayerStats,
   safeEntries,
 } from '../game/types';
-import { Set } from 'immutable';
+import { Seq, Set } from 'immutable';
 import { clamp } from '../game/zFunDump';
-import { playerActions } from '../game/playGame';
+import { playerItemActions } from '../game/playGame';
 
 const PlayerCard: React.FC<{
   selectedButtons: Set<string>;
@@ -91,84 +92,98 @@ const PlayerCard: React.FC<{
         )}
         {lastAction && <Card.Text>Last action: {lastAction}</Card.Text>}
       </Card.Body>
-      {canAct && hasPassives && (
-        <>
-          <b>Passives</b>
-          <ButtonGroup>
-            {passives.map(
-              ([k, _i, effs]) =>
-                effs.length > 0 &&
-                effs.map((e, idx) => (
-                  <OverlayTrigger
-                    key={idx}
-                    placement="right"
-                    delay={{ show: 100, hide: 250 }}
-                    overlay={
-                      <Popover>
-                        <Popover.Header as="h3">{e.display}</Popover.Header>
-                        <Popover.Body>{e.tooltip}</Popover.Body>
-                      </Popover>
-                    }
-                  >
-                    <ToggleButton
-                      checked={!disabled.has(k)}
-                      value={k}
-                      id={`passive-skill-${k}`}
-                      type="checkbox"
-                      variant="outline-primary"
-                      onChange={(event) =>
-                        setDisabledSkills(
-                          event.currentTarget.checked
-                            ? Set(disabledSkills).delete(k).toArray()
-                            : Set(disabledSkills).add(k).toArray()
-                        )
+      <Container>
+        {canAct && hasPassives && (
+          <Row>
+            <b>Passives</b>
+            <ButtonGroup>
+              {passives.map(
+                ([k, _i, effs]) =>
+                  effs.length > 0 &&
+                  effs.map((e, idx) => (
+                    <OverlayTrigger
+                      key={idx}
+                      placement="right"
+                      delay={{ show: 100, hide: 250 }}
+                      overlay={
+                        <Popover>
+                          <Popover.Header as="h3">{e.display}</Popover.Header>
+                          <Popover.Body>{e.tooltip}</Popover.Body>
+                        </Popover>
                       }
                     >
-                      {e.display} (💪: {e.stamina})
-                    </ToggleButton>
-                  </OverlayTrigger>
-                ))
-            )}
-          </ButtonGroup>
-        </>
-      )}
-      {canAct && (
-        <Card.Body>
-          <Stack direction="horizontal" gap={2}>
-            {playerActions(player, inventoryStats).map((e, idx) => (
-              <OverlayTrigger
-                key={e.display}
-                placement="top"
-                delay={{ show: 100, hide: 250 }}
-                overlay={
-                  <Popover>
-                    <Popover.Header as="h3">{e.display}</Popover.Header>
-                    <Popover.Body>{e.tooltip}</Popover.Body>
-                  </Popover>
-                }
-              >
-                <div>
-                  <Button
-                    active={selectedButtons.has(e.display)}
-                    disabled={playerStats.stamina.current < e.stamina}
-                    onClick={(_) => onClickEffect(idx)}
-                  >
-                    [<i>{hotkeys[idx]}</i>] <b>{e.display}</b>
-                  </Button>
-                  <br />
-                  <Card.Text>
-                    💪:{e.stamina} ⏱:
-                    {clamp(e.priority - playerStats.speed.current, 0, 4)}
-                    <br />
-                    🏹:
-                    {e.range.length === 5 ? 'All' : e.range.join(', ')}
-                  </Card.Text>
-                </div>
-              </OverlayTrigger>
+                      <ToggleButton
+                        checked={!disabled.has(k)}
+                        value={k}
+                        id={`passive-skill-${k}`}
+                        type="checkbox"
+                        variant="outline-primary"
+                        onChange={(event) =>
+                          setDisabledSkills(
+                            event.currentTarget.checked
+                              ? Set(disabledSkills).delete(k).toArray()
+                              : Set(disabledSkills).add(k).toArray()
+                          )
+                        }
+                      >
+                        {e.display} (💪: {e.stamina})
+                      </ToggleButton>
+                    </OverlayTrigger>
+                  ))
+              )}
+            </ButtonGroup>
+          </Row>
+        )}
+        {canAct &&
+          Seq(playerItemActions(player, inventoryStats))
+            .map((a, idx) => [idx, a] as const)
+            .groupBy(([idx, [i, _e]]) => i.display)
+            .toArray()
+            .map(([k, effects]) => (
+              <Row key={k}>
+                <b>{k}</b>
+                <ButtonGroup>
+                  {effects
+                    .map(([idx, [_i, e]]) => (
+                      <OverlayTrigger
+                        key={e.display}
+                        placement="top"
+                        delay={{ show: 100, hide: 250 }}
+                        overlay={
+                          <Popover>
+                            <Popover.Header as="h3">{e.display}</Popover.Header>
+                            <Popover.Body>{e.tooltip}</Popover.Body>
+                          </Popover>
+                        }
+                      >
+                        <div>
+                          <Button
+                            active={selectedButtons.has(e.display)}
+                            disabled={playerStats.stamina.current < e.stamina}
+                            onClick={(_) => onClickEffect(idx)}
+                          >
+                            [<i>{hotkeys[idx]}</i>] <b>{e.display}</b>
+                          </Button>
+                          <br />
+                          <Card.Text>
+                            💪:{e.stamina} ⏱:
+                            {clamp(
+                              e.priority - playerStats.speed.current,
+                              0,
+                              4
+                            )}
+                            <br />
+                            🏹:
+                            {e.range.length === 5 ? 'All' : e.range.join(', ')}
+                          </Card.Text>
+                        </div>
+                      </OverlayTrigger>
+                    ))
+                    .toArray()}
+                </ButtonGroup>
+              </Row>
             ))}
-          </Stack>
-        </Card.Body>
-      )}
+      </Container>
     </Card>
   );
 };
