@@ -211,9 +211,13 @@ const reduceFuns = (
         }
 
         const isStunnedPlayer =
-          origin === 'Player' && oldState.player.status.stun.active;
+          effect.dodgeable &&
+          origin === 'Player' &&
+          oldState.player.status.stun.active;
         const isStunnedMonster =
-          origin !== 'Player' && targetMonster.status.stun.active;
+          effect.dodgeable &&
+          origin !== 'Player' &&
+          targetMonster.status.stun.active;
         const isStunned = isStunnedPlayer || isStunnedMonster;
         if (isStunned) {
           const newState: Snapshot = {
