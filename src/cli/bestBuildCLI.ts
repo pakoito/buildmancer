@@ -7,6 +7,7 @@ import { Seq } from 'immutable';
 import { enemies } from '../game/data';
 import { pipe, rangeArr } from '../game/zFunDump';
 import { randomPlayer, randomEnemy } from '../game/makeGame';
+import { EnemiesIndex } from 'src/game/data/enemies';
 
 const start = async ({
   encounters,
@@ -19,7 +20,7 @@ const start = async ({
   output,
   debug,
 }: minimist.ParsedArgs) => {
-  const encountersFinal: number | number[][] = encounters ?? 20;
+  const encountersFinal: number | EnemiesIndex[][] = encounters ?? 20;
   const populationFinal: number = players ?? 100;
   const iterFinal: number = iter ?? 5;
   const iterPergameFinal: number = iterPergame ?? 5;

@@ -1,5 +1,6 @@
 import { Opaque } from 'type-fest';
 import { enemies } from './data';
+import { EnemiesIndex } from './data/enemies';
 import { allRanges, makeStat } from './makeGame';
 import { updateGlobals } from './modding';
 import {
@@ -97,7 +98,7 @@ type StatusFunctionT = {
 };
 
 type MonsterFunctionT = {
-  'Monster:Summon': { enemy: number };
+  'Monster:Summon': { enemy: EnemiesIndex };
   'Monster:Dead': undefined;
   'Monster:Attack': { amount: number };
   'Monster:Move': { amount: number };

@@ -18,6 +18,7 @@ import { ScoredPhenotype } from '../geneticalgorithm/geneticalgorithm';
 import { Seq } from 'immutable';
 import { BuildConfig, makeBuild } from './tinkererTools';
 import { randomPlayer, randomEnemy } from '../game/makeGame';
+import { EnemiesIndex } from 'src/game/data/enemies';
 
 const makeGame = (p: Build, e: EnemyInfo[], seed: Seed) =>
   pipe(randomPlayer(undefined, p), ([player, playerStats]) =>
@@ -65,7 +66,7 @@ const start = async ({
     console.log(`Please pass one of encounters or encounterCount`);
     return;
   }
-  const enc: number[][] | undefined = encounters;
+  const enc: EnemiesIndex[][] | undefined = encounters;
   const gauntlet: [Seed, EnemyInfo[]][] =
     enc != null
       ? enc.map((e) => [Math.random(), e.map((ee) => enemies[ee])])

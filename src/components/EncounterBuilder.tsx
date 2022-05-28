@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
 
-import { Player, Enemies, EnemiesStats, Build, EnemyInfo } from '../game/types';
+import { Player, Enemies, EnemiesStats, Build, EnemyInfo, safeValues } from '../game/types';
 import { enemies } from '../game/data';
 import { randomEnemy } from '../game/makeGame';
 
@@ -30,7 +30,7 @@ const EncounterBuilder = ({
         style={{ marginBottom: encounter.length > 0 ? '205px' : '105px' }}
       >
         <ButtonGroup size="lg" className="mb-2">
-          {enemies.map((enemy) => (
+          {safeValues(enemies).map((enemy) => (
             <Button
               key={enemy[0].lore.name}
               disabled={encounter.length > 4}

@@ -7,8 +7,14 @@ import {
 } from '../makeGame';
 import { effectFunCall, EnemyRepository } from '../types';
 
-const enemies: EnemyRepository = [
-  [
+export type EnemiesIndex =
+  | 'piripuru'
+  | 'toros'
+  | 'purupuri'
+  | 'ninkujorua'
+  | 'tshopuritazios';
+const enemies = {
+  piripuru: [
     {
       lore: {
         name: 'Piripuru',
@@ -43,8 +49,7 @@ const enemies: EnemyRepository = [
       status: defaultStatus,
     },
   ],
-
-  [
+  toros: [
     {
       lore: {
         name: 'Toros',
@@ -123,7 +128,7 @@ const enemies: EnemyRepository = [
     },
   ],
 
-  [
+  purupuri: [
     {
       lore: {
         name: 'Mama Purupuri',
@@ -166,7 +171,7 @@ const enemies: EnemyRepository = [
           priority: 3,
           dodgeable: false,
           effects: [
-            effectFunCall(['Monster:Summon', { enemy: 0 }]),
+            effectFunCall(['Monster:Summon', { enemy: 'piripuru' }]),
             effectFunCall(['Effect:Stat', { target: 'Monster', hp: -5 }]),
             effectFunCall(['Monster:Move', { amount: -2 }]),
           ],
@@ -184,7 +189,7 @@ const enemies: EnemyRepository = [
     },
   ],
 
-  [
+  ninkujorua: [
     {
       lore: {
         name: 'Ninkujorua',
@@ -264,7 +269,7 @@ const enemies: EnemyRepository = [
     },
   ],
 
-  [
+  tshopuritazios: [
     {
       lore: {
         name: 'Tshopuritazios',
@@ -344,6 +349,6 @@ const enemies: EnemyRepository = [
       status: defaultStatus,
     },
   ],
-];
+};
 
-export default enemies;
+export default enemies as EnemyRepository;

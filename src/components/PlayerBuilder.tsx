@@ -8,7 +8,7 @@ import {
   Navbar,
 } from 'react-bootstrap';
 import useScroll from '../hooks/useScroll';
-import { Build, Item, Player, PlayerStats, safeEntries } from '../game/types';
+import { Build, Item, Player, PlayerStats, safeEntries, safeValues } from '../game/types';
 import { build } from '../game/data';
 import { Set } from 'immutable';
 import { buildPlayer } from '../game/playGame';
@@ -59,7 +59,7 @@ const PlayerBuilder = ({
               <ElementPicker
                 setField={(value) => setField(type, value)}
                 section={type}
-                options={values as Item[]}
+                options={safeValues(values)}
                 key={type}
                 isSelected={(value) => form[type].display === value.display}
               />

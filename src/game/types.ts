@@ -1,4 +1,14 @@
 import { Opaque } from 'type-fest';
+import { Armors } from './data/armors';
+import { Charms } from './data/charms';
+import { Classes } from './data/classes';
+import { Consumables } from './data/consumables';
+import { EnemiesIndex } from './data/enemies';
+import { Footwears } from './data/footwears';
+import { Headgears } from './data/headgears';
+import { Offhands } from './data/offhand';
+import { Skills } from './data/skills';
+import { Weapons } from './data/weapons';
 import {
   EffectFunParams,
   EffectFunctionRepository,
@@ -182,24 +192,24 @@ export type StatEffectTarget =
   | (MonsterStatParameter & { target: 'Monster' });
 
 export interface BuildRepository {
-  debug: Item[];
-  basic: Item[];
-  class: Item[];
-  skill: Item[];
-  weapon: Item[];
-  offhand: Item[];
-  consumable: Item[];
-  armor: Item[];
-  headgear: Item[];
-  footwear: Item[];
-  charm: Item[];
+  debug: { [k in string]: Item };
+  basic: { [k in string]: Item };
+  class: Classes;
+  skill: Skills;
+  weapon: Weapons;
+  offhand: Offhands;
+  consumable: Consumables;
+  armor: Armors;
+  headgear: Headgears;
+  footwear: Footwears;
+  charm: Charms;
 }
 export type Build = {
   [k in keyof BuildRepository]: Item;
 };
 
 export type EnemyInfo = [Enemy, EnemyStats];
-export type EnemyRepository = EnemyInfo[];
+export type EnemyRepository = { [k in EnemiesIndex]: EnemyInfo };
 
 export interface Item {
   display: string;
@@ -233,3 +243,7 @@ export type EnemiesStats = TupleUpTo<EnemyStats, MonsterCount>;
 export const safeEntries = <T, K extends keyof T>(o: {
   [s in K]: T[s];
 }): [K, T[K]][] => Object.entries(o).map(([k, v]) => [k as K, v as T[K]]);
+
+export const safeValues = <T, K extends keyof T>(o: {
+  [s in K]: T[s];
+}): T[K][] => safeEntries(o).map((a) => a[1]);

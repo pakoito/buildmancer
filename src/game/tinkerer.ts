@@ -19,6 +19,7 @@ import {
   MonsterTarget,
   Play,
   Player,
+  safeValues,
   Seed,
 } from './types';
 import { build } from './data';
@@ -196,8 +197,8 @@ export const findBestBuild = (
         Object.keys(player.build).filter((k) => !nonMutableProperties.has(k))
       ) as keyof typeof build;
       const newItem = rng.pickone(
-        build[toChange].filter(
-          (a) => a.display !== player.build[toChange].display
+        safeValues(build[toChange]).flatMap((a) =>
+          a.display !== player.build[toChange].display ? a : []
         )
       );
       return {

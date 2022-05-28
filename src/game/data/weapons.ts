@@ -1,8 +1,10 @@
 import { makeRange, allRanges } from '../makeGame';
 import { Item, effectFunCall } from '../types';
 
-const weapons: Item[] = [
-  {
+export type WeaponsIndex = keyof typeof weapons;
+export type Weapons = { [k in WeaponsIndex]: Item };
+const weapons = {
+  sword: {
     display: 'Sword',
     tooltip: 'All-rounder',
     effects: [
@@ -38,7 +40,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  greatsword: {
     display: 'Greatsword',
     tooltip: 'Specialized in big damage',
     effects: [
@@ -74,7 +76,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  twinblades: {
     display: 'Twinblades',
     tooltip: 'Specialized in mobility',
     effects: [
@@ -118,7 +120,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  katana: {
     display: 'Katana',
     tooltip: 'Specialized in bleeding',
     effects: [
@@ -160,7 +162,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  axe: {
     display: 'Axe',
     tooltip: 'Specialized in debuffs',
     effects: [
@@ -199,7 +201,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  lance: {
     display: 'Lance',
     tooltip: 'Specialized in mid-range attacks',
     effects: [
@@ -226,7 +228,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  hammer: {
     display: 'Hammer',
     tooltip: 'Specialized in stunning',
     effects: [
@@ -268,7 +270,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  claw: {
     display: 'Finger Claw',
     tooltip: 'Specialized in poison',
     effects: [
@@ -297,7 +299,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  bow: {
     display: 'Bow',
     tooltip: 'Specialized in ranged attacks',
     effects: [
@@ -324,7 +326,7 @@ const weapons: Item[] = [
       },
     ],
   },
-  {
+  staff: {
     display: 'Magic Staff',
     tooltip: 'Specialized in multiple attacks',
     effects: [
@@ -353,6 +355,6 @@ const weapons: Item[] = [
       },
     ],
   },
-];
+};
 
-export default weapons;
+export default weapons as Weapons;

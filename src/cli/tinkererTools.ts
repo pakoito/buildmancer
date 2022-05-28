@@ -1,13 +1,23 @@
 import { makeGameNew } from '../game/playGame';
-import { Build, Enemies, EnemiesStats, Play } from '../game/types';
+import { Build, Enemies, EnemiesStats, Play, safeValues } from '../game/types';
 import { build, enemies } from '../game/data';
 import { TinkererOptions } from '../game/tinkerer';
 import { rangeArr } from '../game/zFunDump';
 import { makeStat, defaultStatus } from '../game/makeGame';
+import { ArmorsIndex } from 'src/game/data/armors';
+import { CharmsIndex } from 'src/game/data/charms';
+import { ConsumablesIndex } from 'src/game/data/consumables';
+import { FootwearsIndex } from 'src/game/data/footwears';
+import { HeadgearsIndex } from 'src/game/data/headgears';
+import { OffhandsIndex } from 'src/game/data/offhand';
+import { SkillsIndex } from 'src/game/data/skills';
+import { WeaponsIndex } from 'src/game/data/weapons';
+import { ClassesIndex } from 'src/game/data/classes';
+import { EnemiesIndex } from 'src/game/data/enemies';
 
 export const makeBuild = (gameConfig: BuildConfig): Build => ({
   debug: build.debug[0],
-  basic: build.basic[gameConfig.basic],
+  basic: build.basic._,
   class: build.class[gameConfig.class],
   weapon: build.weapon[gameConfig.weapon],
   skill: build.skill[gameConfig.skill],
@@ -20,16 +30,16 @@ export const makeBuild = (gameConfig: BuildConfig): Build => ({
 });
 
 export const randBuild = (rng: Chance.Chance) => ({
-  basic: rng.pickone(rangeArr(build.basic.length)),
-  class: rng.pickone(rangeArr(build.class.length)),
-  weapon: rng.pickone(rangeArr(build.weapon.length)),
-  skill: rng.pickone(rangeArr(build.skill.length)),
-  offhand: rng.pickone(rangeArr(build.offhand.length)),
-  consumable: rng.pickone(rangeArr(build.consumable.length)),
-  armor: rng.pickone(rangeArr(build.armor.length)),
-  headgear: rng.pickone(rangeArr(build.headgear.length)),
-  footwear: rng.pickone(rangeArr(build.footwear.length)),
-  charm: rng.pickone(rangeArr(build.charm.length)),
+  basic: rng.pickone(rangeArr(safeValues(build.basic).length)),
+  class: rng.pickone(rangeArr(safeValues(build.class).length)),
+  weapon: rng.pickone(rangeArr(safeValues(build.weapon).length)),
+  skill: rng.pickone(rangeArr(safeValues(build.skill).length)),
+  offhand: rng.pickone(rangeArr(safeValues(build.offhand).length)),
+  consumable: rng.pickone(rangeArr(safeValues(build.consumable).length)),
+  armor: rng.pickone(rangeArr(safeValues(build.armor).length)),
+  headgear: rng.pickone(rangeArr(safeValues(build.headgear).length)),
+  footwear: rng.pickone(rangeArr(safeValues(build.footwear).length)),
+  charm: rng.pickone(rangeArr(safeValues(build.charm).length)),
 });
 
 export const makeGame = (gameConfig: GameConfig): Play =>
@@ -58,30 +68,19 @@ export const makeGame = (gameConfig: GameConfig): Play =>
   );
 
 export type BuildConfig = {
-  basic: number;
-  class: number;
-  weapon: number;
-  skill: number;
-  offhand: number;
-  consumable: number;
-  armor: number;
-  headgear: number;
-  footwear: number;
-  charm: number;
+  class: ClassesIndex;
+  weapon: WeaponsIndex;
+  skill: SkillsIndex;
+  offhand: OffhandsIndex;
+  consumable: ConsumablesIndex;
+  armor: ArmorsIndex;
+  headgear: HeadgearsIndex;
+  footwear: FootwearsIndex;
+  charm: CharmsIndex;
 };
 
 export type GameConfig = BuildConfig & {
-  enemies: number[];
-  basic: number;
-  class: number;
-  weapon: number;
-  skill: number;
-  offhand: number;
-  consumable: number;
-  armor: number;
-  headgear: number;
-  footwear: number;
-  charm: number;
+  enemies: EnemiesIndex[];
   player: {
     hp: number;
     stamina: number;

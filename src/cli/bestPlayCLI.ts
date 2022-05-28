@@ -18,7 +18,7 @@ export const paramsRender = (params: GameConfig): string => {
   const resolve = {
     ...params,
     enemies: params.enemies.map((a) => enemies[a][0].lore.name),
-    basic: build.basic[params.basic].display,
+    basic: build.basic._.display,
     class: build.class[params.class].display,
     weapon: build.weapon[params.weapon].display,
     skill: build.skill[params.skill].display,

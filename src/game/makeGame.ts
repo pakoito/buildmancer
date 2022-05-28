@@ -13,6 +13,7 @@ import {
   Build,
   PlayerStats,
   Player,
+  safeValues,
 } from './types';
 
 export const makeRange = (...number: UpTo<Subtract<Distances, 1>>[]) =>
@@ -32,7 +33,8 @@ export const defaultStatus: Status = {
   stun: { active: false },
 };
 
-export const randomEnemy = (): EnemyInfo => new Chance().pickone(enemies);
+export const randomEnemy = (): EnemyInfo =>
+  new Chance().pickone(safeValues(enemies));
 export const dummyEnemy = (): EnemyInfo => globals().trainingEnemy;
 
 export const randomName = () => names[Math.floor(Math.random() * names.length)];
@@ -42,16 +44,16 @@ export const randomBuild = (
   buildOverride?: Partial<Build>
 ) => ({
   debug: build.debug[globals().debug ? 1 : 0],
-  basic: rng.pickone(build.basic),
-  class: rng.pickone(build.class),
-  skill: rng.pickone(build.skill),
-  armor: rng.pickone(build.armor),
-  weapon: rng.pickone(build.weapon),
-  offhand: rng.pickone(build.offhand),
-  footwear: rng.pickone(build.footwear),
-  headgear: rng.pickone(build.headgear),
-  charm: rng.pickone(build.charm),
-  consumable: rng.pickone(build.consumable),
+  basic: rng.pickone(safeValues(build.basic)),
+  class: rng.pickone(safeValues(build.class)),
+  skill: rng.pickone(safeValues(build.skill)),
+  armor: rng.pickone(safeValues(build.armor)),
+  weapon: rng.pickone(safeValues(build.weapon)),
+  offhand: rng.pickone(safeValues(build.offhand)),
+  footwear: rng.pickone(safeValues(build.footwear)),
+  headgear: rng.pickone(safeValues(build.headgear)),
+  charm: rng.pickone(safeValues(build.charm)),
+  consumable: rng.pickone(safeValues(build.consumable)),
   ...buildOverride,
 });
 
