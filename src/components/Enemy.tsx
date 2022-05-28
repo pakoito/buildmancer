@@ -12,7 +12,7 @@ const skillPercents = (effects: Effect[]) =>
       return (
         <OverlayTrigger
           key={idx}
-          placement="right"
+          placement="top"
           delay={{ show: 100, hide: 250 }}
           overlay={
             <Popover>
