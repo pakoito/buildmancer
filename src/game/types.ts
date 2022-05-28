@@ -169,7 +169,7 @@ export interface Effect {
   effects: Nel<EffectFunCall>;
   priority: UpTo<Subtract<Priorities, 1>>;
   range: Ranges;
-  dodgeable: boolean;
+  interruptible: boolean;
 }
 export interface InventoryEffect extends Effect {
   stamina: UpTo<Subtract<Staminas, 1>>;

@@ -32,7 +32,7 @@ const globalsDefault: Globals = {
           tooltip: "You're doing great!",
           priority: 4,
           effects: [effectFunCall(['Monster:Attack', { amount: 0 }])],
-          dodgeable: true,
+          interruptible: true,
           range: [0, 1, 2, 3, 4],
         },
       ],

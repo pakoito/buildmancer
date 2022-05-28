@@ -64,7 +64,7 @@ const applyPoison = (
             tooltip: '',
             range: allRanges,
             priority: 4,
-            dodgeable: false,
+            interruptible: false,
             effects: [
               effectFunCall([
                 'Reduce:PoisonBOT',

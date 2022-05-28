@@ -27,7 +27,7 @@ export const headgears = {
           effectFunCall(['Basic:Move', { amount: 2 }]),
         ],
         priority: 3,
-        dodgeable: true,
+        interruptible: true,
         stamina: 4,
         range: makeRange(1, 2),
       },

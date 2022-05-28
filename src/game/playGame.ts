@@ -211,11 +211,11 @@ const reduceFuns = (
         }
 
         const isStunnedPlayer =
-          effect.dodgeable &&
+          effect.interruptible &&
           origin === 'Player' &&
           oldState.player.status.stun.active;
         const isStunnedMonster =
-          effect.dodgeable &&
+          effect.interruptible &&
           origin !== 'Player' &&
           targetMonster.status.stun.active;
         const isStunned = isStunnedPlayer || isStunnedMonster;
@@ -243,7 +243,7 @@ const reduceFuns = (
         }
 
         const monsterDodged =
-          effect.dodgeable &&
+          effect.interruptible &&
           origin === 'Player' &&
           targetMonster.status.dodge.active;
         if (monsterDodged) {
@@ -263,7 +263,7 @@ const reduceFuns = (
         }
 
         const playerDodged =
-          effect.dodgeable &&
+          effect.interruptible &&
           origin !== 'Player' &&
           oldState.player.status.dodge.active;
         if (playerDodged) {
@@ -304,7 +304,7 @@ const applyEffectStamina = (amount: number): Effect => ({
   effects: [effectFunCall(['Basic:Stamina', { amount }])],
   range: allRanges,
   priority: 0,
-  dodgeable: false,
+  interruptible: false,
 });
 
 const effectEotCleanup: Effect = {
@@ -313,7 +313,7 @@ const effectEotCleanup: Effect = {
   effects: [effectFunCall('Utility:Cleanup')],
   range: allRanges,
   priority: 0,
-  dodgeable: false,
+  interruptible: false,
 };
 
 const effectDead: Effect = {
@@ -322,7 +322,7 @@ const effectDead: Effect = {
   priority: 4,
   effects: [effectFunCall('Monster:Dead')],
   range: allRanges,
-  dodgeable: false,
+  interruptible: false,
 };
 
 export const handlePlayerEffect = (play: Play, index: number): Play => {

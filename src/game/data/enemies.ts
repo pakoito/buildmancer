@@ -25,7 +25,7 @@ const enemies = {
           display: 'Bounce',
           tooltip: 'Floomp Floomp',
           priority: 1,
-          dodgeable: false,
+          interruptible: false,
           effects: [effectFunCall(['Monster:Move', { amount: -2 }])],
           range: selfRange,
         },
@@ -34,7 +34,7 @@ const enemies = {
           display: 'Slam',
           tooltip: 'Throws itself at you',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [effectFunCall(['Monster:Attack', { amount: 5 }])],
           range: makeRange(0, 1),
         },
@@ -67,7 +67,7 @@ const enemies = {
           display: 'Rest',
           tooltip: "It won't be long until the massacre continues",
           priority: 1,
-          dodgeable: false,
+          interruptible: false,
           effects: [
             effectFunCall(['Effect:Stat', { target: 'Monster', hp: 1 }]),
           ],
@@ -78,7 +78,7 @@ const enemies = {
           display: 'Chomp',
           tooltip: 'Toro attempts to eat you for massive damage!',
           priority: 4,
-          dodgeable: true,
+          interruptible: true,
           effects: [effectFunCall(['Monster:Attack', { amount: 18 }])],
           range: makeRange(0),
         },
@@ -87,7 +87,7 @@ const enemies = {
           display: 'Swipe',
           tooltip: 'High damage attack that staggers',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 12 }]),
             effectFunCall(['Monster:Move', { amount: -1 }]),
@@ -100,7 +100,7 @@ const enemies = {
           display: 'Lunge',
           tooltip: 'Charges forward for a horn attack',
           priority: 4,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 10 }]),
             effectFunCall(['Monster:Move', { amount: -5 }]),
@@ -112,7 +112,7 @@ const enemies = {
           display: 'Roar',
           tooltip: 'A terrifying howl!',
           priority: 3,
-          dodgeable: false,
+          interruptible: false,
           effects: [effectFunCall(['Basic:Stamina', { amount: -5 }])],
           range: allRanges,
         },
@@ -146,7 +146,7 @@ const enemies = {
           display: 'Recover',
           tooltip: 'Mama needs its rest',
           priority: 1,
-          dodgeable: false,
+          interruptible: false,
           effects: [
             effectFunCall(['Effect:Stat', { target: 'Monster', hp: 3 }]),
           ],
@@ -157,7 +157,7 @@ const enemies = {
           display: 'Stomp',
           tooltip: 'Quickly, out of the way!',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 8 }]),
             effectFunCall('Effect:Stun'),
@@ -169,7 +169,7 @@ const enemies = {
           display: 'Call for Aid',
           tooltip: 'Calls for the litter to help',
           priority: 3,
-          dodgeable: false,
+          interruptible: false,
           effects: [
             effectFunCall(['Monster:Summon', { enemy: 'piripuru' }]),
             effectFunCall(['Effect:Stat', { target: 'Monster', hp: -5 }]),
@@ -207,7 +207,7 @@ const enemies = {
           display: 'Meditate',
           tooltip: 'And not about good vibes',
           priority: 1,
-          dodgeable: false,
+          interruptible: false,
           effects: [
             effectFunCall(['Effect:Stat', { target: 'Monster', attack: 1 }]),
             effectFunCall(['Monster:Move', { amount: 999 }]),
@@ -220,7 +220,7 @@ const enemies = {
           display: 'Rapid Slash - Retreat!',
           tooltip: 'Deals several strikes then moves away from the player',
           priority: 2,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Move', { amount: -5 }]),
             effectFunCall(['Monster:Attack', { amount: 2 }]),
@@ -235,7 +235,7 @@ const enemies = {
           display: 'Rapid Slash - Advance!',
           tooltip: 'Moves close to the player then deals several strikes',
           priority: 2,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Move', { amount: -5 }]),
             effectFunCall(['Monster:Attack', { amount: 2 }]),
@@ -249,7 +249,7 @@ const enemies = {
           display: 'Back Spikes',
           tooltip: 'Jumps and shoots several needles that cause bleed',
           priority: 4,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 1 }]),
             effectFunCall(['Monster:Attack', { amount: 1 }]),
@@ -287,7 +287,7 @@ const enemies = {
           display: 'Goad',
           tooltip: "Sounds like it's laughing at you",
           priority: 1,
-          dodgeable: false,
+          interruptible: false,
           effects: [
             effectFunCall([
               'Effect:Stat',
@@ -302,7 +302,7 @@ const enemies = {
           display: 'Peck',
           tooltip: 'What is worse, the force or the texture?',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 10 }]),
             effectFunCall('Effect:Stun'),
@@ -315,7 +315,7 @@ const enemies = {
           display: 'Fling Mud',
           tooltip: 'A large chunk coming right at you!',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 2 }]),
             effectFunCall(['Monster:Attack', { amount: 2 }]),
@@ -329,7 +329,7 @@ const enemies = {
           display: 'Spit Bile',
           tooltip: 'This disgusting liquid corrodes your armor',
           priority: 3,
-          dodgeable: true,
+          interruptible: true,
           effects: [
             effectFunCall(['Monster:Attack', { amount: 1 }]),
             effectFunCall(['Monster:Attack', { amount: 1 }]),
