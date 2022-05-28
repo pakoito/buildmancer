@@ -57,7 +57,7 @@ export const randomBuild = (rng: Chance.Chance, buildOverride?: Partial<Build>) 
 });
 
 export const playerStatsDefault: PlayerStats = {
-  hp: makeStat(10),
+  hp: makeStat(15),
   stamina: makeStat(6, (a) => a),
   staminaPerTurn: makeStat(2),
   speed: makeStat(0),
