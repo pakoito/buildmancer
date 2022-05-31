@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import { Button, Card, Col, Container, Navbar, Row } from 'react-bootstrap';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
@@ -14,34 +14,38 @@ root.render(
       <Row>
         <App />
       </Row>
-      <Row>
-        <Col xs={10}>
-          <Card.Text>
-            Buildmancer by pakoito (2022) for the{' '}
-            <a
-              href={
-                'https://boardgamegeek.com/thread/2875719/2022-solitaire-print-and-play-contest'
-              }
-            >
-              BGG's 2022 Solitaire Print and Play Contest
-            </a>
-            . Send your feedback and Replays to the{' '}
-            <a
-              href={
-                'https://boardgamegeek.com/thread/2858500/wip-buildmancer-pre-release-tinkering-player-build'
-              }
-            >
-              game entry thread
-            </a>
-            !
-          </Card.Text>
-        </Col>
-        <Col xs={2}>
-          <Button variant="secondary" active={false}>
-            [TBD] Print and Play
-          </Button>
-        </Col>
-      </Row>
+      <Card>
+        <Card.Body>
+          <Row>
+            <Col xs={10}>
+              <Card.Text>
+                Buildmancer by pakoito (2022) for the{' '}
+                <a
+                  href={
+                    'https://boardgamegeek.com/thread/2875719/2022-solitaire-print-and-play-contest'
+                  }
+                >
+                  BGG's 2022 Solitaire Print and Play Contest
+                </a>
+                . Send your feedback and Replays to the{' '}
+                <a
+                  href={
+                    'https://boardgamegeek.com/thread/2858500/wip-buildmancer-pre-release-tinkering-player-build'
+                  }
+                >
+                  game entry thread
+                </a>
+                !
+              </Card.Text>
+            </Col>
+            <Col>
+              <Button variant="secondary" active={false}>
+                [TBD] Print and Play
+              </Button>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
     </Container>
   </React.StrictMode>
 );

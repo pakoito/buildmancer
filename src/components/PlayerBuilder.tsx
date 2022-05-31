@@ -1,11 +1,12 @@
 import React from 'react';
-import { Container, Row, Form, Button, ButtonGroup, Navbar } from 'react-bootstrap';
+import { Container, Row, Form, Button, ButtonGroup, Navbar, Card } from 'react-bootstrap';
 import useScroll from '../hooks/useScroll';
 import { Build, Item, Player, PlayerStats, safeEntries, safeValues } from '../game/types';
 import { build } from '../game/data';
 import { Set } from 'immutable';
 import { buildPlayer } from '../game/playGame';
 import { randomPlayer, randomEnemy, randomName } from '../game/makeGame';
+import { chunk } from '../game/zFunDump';
 
 const systemBuildKeys: Set<keyof Build> = Set(['debug', 'basic']);
 
@@ -42,22 +43,20 @@ const PlayerBuilder = ({
 
   return (
     <Form onSubmit={onFormSubmit}>
-      <Container fluid style={{ marginBottom: '105px' }}>
-        <Row className="g-2">
-          {safeEntries(build).map(
-            ([type, values]) =>
-              !systemBuildKeys.has(type) && (
-                <ElementPicker
-                  setField={(value) => setField(type, value)}
-                  section={type}
-                  options={safeValues<{ [k: string]: Item }, string>(values)}
-                  key={type}
-                  isSelected={(value) => form[type].display === value.display}
-                />
-              )
-          )}
-        </Row>
-        <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
+      <Container fluid>
+        {safeEntries(build).map(
+          ([type, values]) =>
+            !systemBuildKeys.has(type) && (
+              <ElementPicker
+                setField={(value) => setField(type, value)}
+                section={type}
+                options={safeValues<{ [k: string]: Item }, string>(values)}
+                key={type}
+                isSelected={(value) => form[type].display === value.display}
+              />
+            )
+        )}
+        <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '115px' }}>
           <Container>
             <Navbar.Text>
               You are{' '}
@@ -106,24 +105,25 @@ const ElementPicker = ({
 
   return (
     <Row>
-      <Form.Label>{section}</Form.Label>
-      <br />
-      <ButtonGroup size="lg" className="mb-2">
-        {options.map((item) => (
-          <Button
-            key={item.display}
-            name={section}
-            id={`${item.display}`}
-            variant={isSelected(item) ? 'primary' : 'secondary'}
-            onClick={() => {
-              setField(item);
-              scrollTo();
-            }}
-          >
-            {item.display}
-          </Button>
-        ))}
-      </ButtonGroup>
+      <Card.Title>{section}</Card.Title>
+      {chunk(options, 4).map((itemChunk, idx) => (
+        <ButtonGroup size="lg" className="mb-2" key={idx}>
+          {itemChunk.map((item) => (
+            <Button
+              key={item.display}
+              name={section}
+              id={`${item.display}`}
+              variant={isSelected(item) ? 'primary' : 'secondary'}
+              onClick={() => {
+                setField(item);
+                scrollTo();
+              }}
+            >
+              {item.display}
+            </Button>
+          ))}
+        </ButtonGroup>
+      ))}
       <div id={`${section}-scroll`} ref={scrollRef} />
     </Row>
   );

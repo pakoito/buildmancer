@@ -8,6 +8,7 @@ import {
   OverlayTrigger,
   Container,
   Row,
+  Col,
 } from 'react-bootstrap';
 import {
   BuildRepository,
@@ -88,8 +89,6 @@ const PlayerCard: React.FC<{
           <Card.Text>{playerStats.status.bleed.turns} 🩸</Card.Text>
         )}
         {lastAction && <Card.Text>Last action: {lastAction}</Card.Text>}
-      </Card.Body>
-      <Container fluid>
         {canAct && hasPassives && (
           <Row>
             <b>Passives</b>
@@ -153,15 +152,12 @@ const PlayerCard: React.FC<{
                           </Popover>
                         )}
                       >
-                        <div>
-                          <Button
-                            active={selectedButtons.has(e.display)}
-                            disabled={playerStats.stamina.current < e.stamina}
-                            onClick={(_) => onClickEffect(idx)}
-                          >
-                            [<i>{hotkeys[idx]}</i>] <b>{e.display}</b>
-                          </Button>
-                          <br />
+                        <Button
+                          active={selectedButtons.has(e.display)}
+                          disabled={playerStats.stamina.current < e.stamina}
+                          onClick={(_) => onClickEffect(idx)}
+                        >
+                          [<i>{hotkeys[idx]}</i>] <b>{e.display}</b>
                           <Card.Text>
                             💪:{e.stamina} ⏱:
                             {clamp(e.priority - playerStats.speed.current, 0, 4)}
@@ -169,14 +165,14 @@ const PlayerCard: React.FC<{
                             🏹:
                             {e.range.length === 5 ? 'All' : e.range.join(', ')}
                           </Card.Text>
-                        </div>
+                        </Button>
                       </OverlayTrigger>
                     ))
                     .toArray()}
                 </ButtonGroup>
               </Row>
             ))}
-      </Container>
+      </Card.Body>
     </Card>
   );
 };

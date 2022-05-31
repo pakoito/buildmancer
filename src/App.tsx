@@ -78,7 +78,7 @@ function App() {
     case state.matches({ single: 'encounter' }):
       return (
         <EncounterBuilder
-          player={event.player[0]}
+          player={event.player}
           onSave={(enemies, enemiesStats) => {
             send('ENCOUNTER', {
               encounter: [enemies, enemiesStats],

@@ -1,7 +1,15 @@
 import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
 
-import { Player, Enemies, EnemiesStats, Build, EnemyInfo, safeValues } from '../game/types';
+import {
+  Player,
+  Enemies,
+  EnemiesStats,
+  Build,
+  EnemyInfo,
+  safeValues,
+  PlayerStats,
+} from '../game/types';
 import { enemies } from '../game/data';
 import { randomEnemy } from '../game/makeGame';
 
@@ -9,7 +17,7 @@ const EncounterBuilder = ({
   player,
   onSave,
 }: {
-  player: Player;
+  player: [Player, PlayerStats];
   onSave: (enemies: Enemies, enemiesStats: EnemiesStats) => void;
 }) => {
   const [encounter, setEncounter] = React.useState<EnemyInfo[]>([]);
@@ -20,10 +28,10 @@ const EncounterBuilder = ({
     // Size enforced by UI
     onSave(enemies as Enemies, enemiesStats as EnemiesStats);
   };
-  const displayType = (type: keyof Build) => <b>{player.build[type].display}</b>;
+  const displayType = (type: keyof Build) => <b>{player[0].build[type].display}</b>;
   return (
     <Form onSubmit={onFormSubmit}>
-      <Container fluid style={{ marginBottom: encounter.length > 0 ? '205px' : '105px' }}>
+      <Container fluid>
         <ButtonGroup size="lg" className="mb-2">
           {safeValues(enemies).map((enemy) => (
             <Button
@@ -62,13 +70,15 @@ const EncounterBuilder = ({
       <Navbar fixed="bottom" bg="dark" variant="dark" style={{ maxHeight: '100px' }}>
         <Container>
           <Navbar.Text>
-            You are <i>{player.lore.name}</i>, the {displayType('skill')} {displayType('class')}{' '}
+            You are <i>{player[0].lore.name}</i>, the {displayType('skill')} {displayType('class')}{' '}
             {displayType('charm')}
             <br />
-            who wields a {displayType('weapon')} and a {displayType('offhand')}
+            {player[1].hp.current} ❤
             <br />
-            and wears {displayType('armor')} with {displayType('headgear')} and{' '}
-            {displayType('footwear')}
+            {player[1].stamina.current} 💪 ({player[1].staminaPerTurn.current >= 0 && '+'}
+            {player[1].staminaPerTurn.current})<br />
+            Attack {player[1].attack.current} | Defence {player[1].defence.current} | Speed{' '}
+            {player[1].speed.current}
           </Navbar.Text>
           <ButtonGroup>
             <Button

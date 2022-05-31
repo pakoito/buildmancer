@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Card, Button, OverlayTrigger, Popover, Container, Col, Row } from 'react-bootstrap';
 import { Enemy, Effect, EnemyStats } from '../game/types';
 import { Seq } from 'immutable';
 
@@ -32,9 +32,9 @@ const skillPercents = (effects: Effect[]) =>
             </Popover>
           )}
         >
-          <div>
-            [{((v / effects.length) * 100).toFixed(2)}%] {display}
-          </div>
+          <>
+            <br />[{((v / effects.length) * 100).toFixed(2)}%] {display}
+          </>
         </OverlayTrigger>
       );
     });
@@ -49,35 +49,35 @@ const EnemyCard: React.FC<{
   hotkey: string;
 }> = ({ enemy, enemyStats, isSelected, onSelect, latestAttack, canAct, hotkey }) => (
   <Card bg={isSelected ? 'info' : undefined}>
+    {canAct && (
+      <Button disabled={isSelected} onClick={onSelect}>
+        [<i>{hotkey.toUpperCase()}</i>]
+      </Button>
+    )}
     <Card.Body>
       <Card.Title>
         {enemy.lore.name} {enemyStats.hp.current > 0 ? '' : <b>💀DEAD💀</b>}
       </Card.Title>
       <Card.Text>
         ❤:{enemyStats.hp.current} 🏹:{enemyStats.distance}
-      </Card.Text>
-      <Card.Text>
-        Attack {enemyStats.attack.current}
+        <br />A {enemyStats.attack.current} | D {enemyStats.defence.current} | S{' '}
+        {enemyStats.speed.current}
+        {enemyStats.status.bleed.turns > 0 && (
+          <>
+            <br />
+            {enemyStats.status.bleed.turns} 🩸
+          </>
+        )}
+        {latestAttack && (
+          <>
+            <br />
+            Latest attack: {latestAttack}
+          </>
+        )}
         <br />
-        Defence {enemyStats.defence.current}
-        <br />
-        Speed {enemyStats.speed.current}
-      </Card.Text>
-      {enemyStats.status.bleed.turns > 0 && (
-        <Card.Text>{enemyStats.status.bleed.turns} 🩸</Card.Text>
-      )}
-      {latestAttack && <Card.Text>Latest attack: {latestAttack}</Card.Text>}
-      <Card.Text>
         Next attack prediction:
-        <br />
         {skillPercents(enemy.rolls[enemyStats.distance].map((idx) => enemy.effects[idx]))}
-        <br />
       </Card.Text>
-      {canAct && (
-        <Button disabled={isSelected} onClick={onSelect}>
-          [<i>{hotkey.toUpperCase()}</i>] Select
-        </Button>
-      )}
     </Card.Body>
   </Card>
 );

@@ -141,7 +141,7 @@ const Game = ({
 
   return (
     <>
-      <Container fluid>
+      <Container>
         <Row className="justify-content-center align-items-flex-start">
           <Col>
             <Button onClick={onMenu}>
@@ -157,51 +157,11 @@ const Game = ({
               )}{' '}
               Turn {game.states.length} out of {game.turns}
             </Card.Title>
-            <PlayerCard
-              player={player}
-              playerStats={playerStats}
-              inventoryStats={inventoryStats}
-              disabledSkills={disabledSkills}
-              setDisabledSkills={setDisabledSkills}
-              onClickEffect={(idx) => handlePlayerEffect(idx)}
-              selectedButtons={selectedButtons}
-              hotkeys={playerHotkeys}
-              lastAction={
-                lastAttacks
-                  .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
-                  .map((a) => `${a.display}`)
-                  .join(' -> ') ?? undefined
-              }
-              canAct={canAct}
-            />
-            {timeTravel != null && (
-              <Row>
-                <ButtonGroup>
-                  {game.states.length > 1 && (
-                    <Button onClick={(_) => timeTravel.undo()}>
-                      [<i>A</i>] Undo ↩
-                    </Button>
-                  )}
-                  {timeTravel.redo && (
-                    <Button onClick={(_) => timeTravel.redo!!()}>
-                      [<i>D</i>] Redo ↪
-                    </Button>
-                  )}
-                </ButtonGroup>
-              </Row>
-            )}
-            <Row>
-              <ButtonGroup>
-                <Button onClick={(_) => hint(5, 100)}>
-                  <i>[H]</i> Hint
-                </Button>
-              </ButtonGroup>
-            </Row>
             <Row>
               {Seq(enemies)
                 .zip(Seq(enemiesStats))
                 .map(([enemy, stats], idx) => (
-                  <Col key={idx} xs={6} md={4}>
+                  <Col key={idx}>
                     <EnemyCard
                       key={idx}
                       enemyStats={stats}
@@ -220,24 +180,65 @@ const Game = ({
                   </Col>
                 ))}
             </Row>
-            <Card.Title>Debug</Card.Title>
-            <Row>
-              <ButtonGroup>
-                <Button onClick={handleShowLog}>
-                  [<i>L</i>] Log 🗒
-                </Button>
-                <Button onClick={save}>
-                  [<i>S</i>] Save Replay 📂
-                </Button>
-              </ButtonGroup>
-            </Row>
-            <Card.Title>Cheats</Card.Title>
-            <Row>
-              <ButtonGroup>
-                <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
-                <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
-              </ButtonGroup>
-            </Row>
+            <PlayerCard
+              player={player}
+              playerStats={playerStats}
+              inventoryStats={inventoryStats}
+              disabledSkills={disabledSkills}
+              setDisabledSkills={setDisabledSkills}
+              onClickEffect={(idx) => handlePlayerEffect(idx)}
+              selectedButtons={selectedButtons}
+              hotkeys={playerHotkeys}
+              lastAction={
+                lastAttacks
+                  .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
+                  .map((a) => `${a.display}`)
+                  .join(' -> ') ?? undefined
+              }
+              canAct={canAct}
+            />
+            <Card>
+              <Card.Title>Turns</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={(_) => hint(5, 100)}>
+                    <i>[H]</i> Hint
+                  </Button>
+                </ButtonGroup>
+                {timeTravel != null && (
+                  <ButtonGroup>
+                    {game.states.length > 1 && (
+                      <Button onClick={(_) => timeTravel.undo()}>
+                        [<i>A</i>] Undo ↩
+                      </Button>
+                    )}
+                    {timeTravel.redo && (
+                      <Button onClick={(_) => timeTravel.redo!!()}>
+                        [<i>D</i>] Redo ↪
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                )}
+              </Row>
+              <Card.Title>Debug</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={handleShowLog}>
+                    [<i>L</i>] Log 🗒
+                  </Button>
+                  <Button onClick={save}>
+                    [<i>S</i>] Save Replay 📂
+                  </Button>
+                </ButtonGroup>
+              </Row>
+              <Card.Title>Cheats</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
+                  <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
+                </ButtonGroup>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </Container>
