@@ -143,7 +143,7 @@ const Game = ({
     <>
       <Container fluid>
         <Row className="justify-content-center align-items-flex-start">
-          <Col sm={12} md={8}>
+          <Col>
             <Button onClick={onMenu}>
               [<i>Esc</i>] MAIN MENU
             </Button>

@@ -89,7 +89,7 @@ const PlayerCard: React.FC<{
         )}
         {lastAction && <Card.Text>Last action: {lastAction}</Card.Text>}
       </Card.Body>
-      <Container>
+      <Container fluid>
         {canAct && hasPassives && (
           <Row>
             <b>Passives</b>
