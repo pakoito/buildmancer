@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import { readFileSync, writeFileSync } from 'fs';
 import prettyjson from 'prettyjson';
-import { build, enemies } from '../game/data';
+import { enemies } from '../game/data';
 import { findBestPlay } from '../game/tinkerer';
 import PouchDb from 'pouchdb';
 import pouchFind from 'pouchdb-find';

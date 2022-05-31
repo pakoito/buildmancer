@@ -1,4 +1,4 @@
-import { List, Range } from 'immutable';
+import { Range } from 'immutable';
 import { Tuple } from './types';
 
 export const rangeArr = (max: number, min: number = 0) => {

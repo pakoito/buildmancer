@@ -1,6 +1,5 @@
 import minimist from 'minimist';
 import { BuildConfig, GameConfig, randGame, randBuild } from './tinkererTools';
-import prettyjson from 'prettyjson';
 import { rangeArr } from '../game/zFunDump';
 import { Chance } from 'chance';
 

@@ -6,9 +6,7 @@ import {
   ButtonGroup,
   Popover,
   OverlayTrigger,
-  Container,
   Row,
-  Col,
 } from 'react-bootstrap';
 import {
   BuildRepository,

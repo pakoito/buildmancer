@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card, Modal, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Modal, ButtonGroup, CardGroup } from 'react-bootstrap';
 
 import { DisabledSkills, MonsterTarget, Play } from '../game/types';
 
@@ -158,10 +158,10 @@ const Game = ({
               Turn {game.states.length} out of {game.turns}
             </Card.Title>
             <Row>
-              {Seq(enemies)
-                .zip(Seq(enemiesStats))
-                .map(([enemy, stats], idx) => (
-                  <Col key={idx}>
+              <CardGroup>
+                {Seq(enemies)
+                  .zip(Seq(enemiesStats))
+                  .map(([enemy, stats], idx) => (
                     <EnemyCard
                       key={idx}
                       enemyStats={stats}
@@ -177,8 +177,8 @@ const Game = ({
                       onSelect={() => setSelected(idx as MonsterTarget)}
                       hotkey={`${idx + 1}`}
                     />
-                  </Col>
-                ))}
+                  ))}
+              </CardGroup>
             </Row>
             <PlayerCard
               player={player}
@@ -198,46 +198,48 @@ const Game = ({
               canAct={canAct}
             />
             <Card>
-              <Card.Title>Turns</Card.Title>
-              <Row>
-                <ButtonGroup>
-                  <Button onClick={(_) => hint(5, 100)}>
-                    <i>[H]</i> Hint
-                  </Button>
-                </ButtonGroup>
-                {timeTravel != null && (
+              <Card.Body>
+                <Card.Title>Turns</Card.Title>
+                <Row>
                   <ButtonGroup>
-                    {game.states.length > 1 && (
-                      <Button onClick={(_) => timeTravel.undo()}>
-                        [<i>A</i>] Undo ↩
-                      </Button>
-                    )}
-                    {timeTravel.redo && (
-                      <Button onClick={(_) => timeTravel.redo!!()}>
-                        [<i>D</i>] Redo ↪
-                      </Button>
-                    )}
+                    <Button onClick={(_) => hint(5, 100)}>
+                      <i>[H]</i> Hint
+                    </Button>
                   </ButtonGroup>
-                )}
-              </Row>
-              <Card.Title>Debug</Card.Title>
-              <Row>
-                <ButtonGroup>
-                  <Button onClick={handleShowLog}>
-                    [<i>L</i>] Log 🗒
-                  </Button>
-                  <Button onClick={save}>
-                    [<i>S</i>] Save Replay 📂
-                  </Button>
-                </ButtonGroup>
-              </Row>
-              <Card.Title>Cheats</Card.Title>
-              <Row>
-                <ButtonGroup>
-                  <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
-                  <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
-                </ButtonGroup>
-              </Row>
+                  {timeTravel != null && (
+                    <ButtonGroup>
+                      {game.states.length > 1 && (
+                        <Button onClick={(_) => timeTravel.undo()}>
+                          [<i>A</i>] Undo ↩
+                        </Button>
+                      )}
+                      {timeTravel.redo && (
+                        <Button onClick={(_) => timeTravel.redo!!()}>
+                          [<i>D</i>] Redo ↪
+                        </Button>
+                      )}
+                    </ButtonGroup>
+                  )}
+                </Row>
+                <Card.Title>Debug</Card.Title>
+                <Row>
+                  <ButtonGroup>
+                    <Button onClick={handleShowLog}>
+                      [<i>L</i>] Log 🗒
+                    </Button>
+                    <Button onClick={save}>
+                      [<i>S</i>] Save Replay 📂
+                    </Button>
+                  </ButtonGroup>
+                </Row>
+                <Card.Title>Cheats</Card.Title>
+                <Row>
+                  <ButtonGroup>
+                    <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
+                    <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
+                  </ButtonGroup>
+                </Row>
+              </Card.Body>
             </Card>
           </Col>
         </Row>

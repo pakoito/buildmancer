@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, OverlayTrigger, Popover, Container, Col, Row } from 'react-bootstrap';
+import { Card, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { Enemy, Effect, EnemyStats } from '../game/types';
 import { Seq } from 'immutable';
 

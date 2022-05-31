@@ -1,17 +1,8 @@
 import { makeGameNew } from '../game/playGame';
-import {
-  Build,
-  Enemies,
-  EnemiesStats,
-  Play,
-  PlayerStats,
-  safeKeys,
-  safeValues,
-} from '../game/types';
+import { Build, Enemies, EnemiesStats, Play, PlayerStats, safeKeys } from '../game/types';
 import { build, enemies } from '../game/data';
 import { TinkererOptions } from '../game/tinkerer';
-import { rangeArr } from '../game/zFunDump';
-import { makeStat, defaultStatus, playerStatsDefault } from '../game/makeGame';
+import { playerStatsDefault } from '../game/makeGame';
 import { ArmorsIndex } from 'src/game/data/armors';
 import { CharmsIndex } from 'src/game/data/charms';
 import { ConsumablesIndex } from 'src/game/data/consumables';
