@@ -39,7 +39,7 @@ const GameInfoBar = () => {
         centered={true}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Game Log</Modal.Title>
+          <Modal.Title>Buildmancer Rules</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Buildmancer has your standard turn-based JRPG rules. If you're familiar with Pokemon,
@@ -88,9 +88,10 @@ const GameInfoBar = () => {
           different play modes!
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={() => showRules(false)}>
-            Close
-          </Button>
+          <ButtonGroup>
+            <Button onClick={() => globalThis.open(gameThread, '_blank')}>Send Feedback</Button>
+            <Button onClick={() => showRules(false)}>Close</Button>
+          </ButtonGroup>
         </Modal.Footer>
       </Modal>
     </>
