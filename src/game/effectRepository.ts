@@ -37,36 +37,6 @@ export function extractFunction({ effects }: Effect): ReduceFun {
 const effectFun = <T>(fun: ParametrizedFun<T>): EffectFun<T> =>
   ((params) => (origin, play, oldState) => fun(params)(origin, play, oldState)) as EffectFun<T>;
 
-const applyPoison = (
-  play: Play,
-  currentState: Snapshot,
-  { target, turns }: ReduceFunctionT['Reduce:PoisonBOT']
-) =>
-  pipe(
-    target === 'Player'
-      ? actions.changeStatPlayer(currentState, ({ hp }) => ({
-          hp: { ...hp, current: Math.max(0, hp.current - 1) },
-        }))
-      : actions.changeStatMonster(currentState, currentState.target, ({ hp }) => ({
-          hp: { ...hp, current: Math.max(0, hp.current - 1) },
-        })),
-    (newState) =>
-      turns > 0
-        ? actions.addBotEffect(newState, 'Player', {
-            display: `Poison ${
-              target === 'Player'
-                ? 'Player'
-                : play.enemies[target]!!.lore.name + ' [' + (target + 1) + ']'
-            }`,
-            tooltip: '',
-            range: allRanges,
-            priority: 4,
-            interruptible: false,
-            effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])],
-          })
-        : newState
-  );
-
 type SystemFunctionT = {
   'Utility:Cleanup': undefined;
   'Debug:GGWP': undefined;
@@ -322,6 +292,36 @@ const effectFunRepo: EffectFunctionRepository = {
   }),
   // #endregion ITEMS
 };
+
+const applyPoison = (
+  play: Play,
+  currentState: Snapshot,
+  { target, turns }: ReduceFunctionT['Reduce:PoisonBOT']
+) =>
+  pipe(
+    target === 'Player'
+      ? actions.changeStatPlayer(currentState, ({ hp }) => ({
+          hp: { ...hp, current: Math.max(0, hp.current - 1) },
+        }))
+      : actions.changeStatMonster(currentState, currentState.target, ({ hp }) => ({
+          hp: { ...hp, current: Math.max(0, hp.current - 1) },
+        })),
+    (newState) =>
+      turns > 0
+        ? actions.addBotEffect(newState, 'Player', {
+            display: `Poison ${
+              target === 'Player'
+                ? 'Player'
+                : play.enemies[target]!!.lore.name + ' [' + (target + 1) + ']'
+            }`,
+            tooltip: '',
+            range: allRanges,
+            priority: 4,
+            interruptible: false,
+            effects: [effectFunCall(['Reduce:PoisonBOT', { target: target, turns: turns - 1 }])],
+          })
+        : newState
+  );
 
 export type EffectFunctionT = SystemFunctionT &
   BasicFunctionT &
