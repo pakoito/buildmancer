@@ -141,18 +141,19 @@ const Game = ({
     <>
       <Container fluid>
         <Row>
-          <Col className="d-flex justify-content-between">
+          <Col className="d-flex justify-content-between align-items-center">
+            <Card.Title>
+              Turn {game.states.length} out of {game.turns}
+            </Card.Title>
             {gameState !== 'playing' && (
-              <Button onClick={() => onGameEnd(gameState, game)}>END GAME</Button>
+              <Button onClick={() => onGameEnd(gameState, game)}>
+                {gameState === 'loss'
+                  ? '❌❌DEFEAT❌❌'
+                  : gameState === 'win'
+                  ? '🎉🎉VICTORY🎉🎉'
+                  : '???'}
+              </Button>
             )}
-            {gameState === 'loss' ? (
-              <b> ❌❌DEFEAT❌❌ </b>
-            ) : gameState === 'win' ? (
-              <b> 🎉🎉VICTORY🎉🎉 </b>
-            ) : (
-              ''
-            )}
-            Turn {game.states.length} out of {game.turns}
             <Button onClick={onMenu}>
               [<i>Esc</i>] MAIN MENU
             </Button>
@@ -178,23 +179,25 @@ const Game = ({
                 />
               ))}
           </CardGroup>
-          <PlayerCard
-            player={player}
-            playerStats={playerStats}
-            inventoryStats={inventoryStats}
-            disabledSkills={disabledSkills}
-            setDisabledSkills={setDisabledSkills}
-            onClickEffect={(idx) => handlePlayerEffect(idx)}
-            selectedButtons={selectedButtons}
-            hotkeys={playerHotkeys}
-            lastAction={
-              lastAttacks
-                .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
-                .map((a) => `${a.display}`)
-                .join(' -> ') ?? undefined
-            }
-            canAct={gameState === 'playing'}
-          />
+          <Col>
+            <PlayerCard
+              player={player}
+              playerStats={playerStats}
+              inventoryStats={inventoryStats}
+              disabledSkills={disabledSkills}
+              setDisabledSkills={setDisabledSkills}
+              onClickEffect={(idx) => handlePlayerEffect(idx)}
+              selectedButtons={selectedButtons}
+              hotkeys={playerHotkeys}
+              lastAction={
+                lastAttacks
+                  .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
+                  .map((a) => `${a.display}`)
+                  .join(' -> ') ?? undefined
+              }
+              canAct={gameState === 'playing'}
+            />
+          </Col>
           <Card>
             <Card.Body>
               <Card.Title>Turns</Card.Title>
