@@ -151,7 +151,7 @@ const Game = ({
                   ? '❌❌DEFEAT❌❌'
                   : gameState === 'win'
                   ? '🎉🎉VICTORY🎉🎉'
-                  : '???'}
+                  : 'THIS IS A BUG, PLEASE REPORT IT'}
               </Button>
             )}
             <Button onClick={onMenu}>
