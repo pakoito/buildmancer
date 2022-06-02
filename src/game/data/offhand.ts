@@ -6,7 +6,6 @@ export type Offhands = { [k in OffhandsIndex]: Item };
 const offhands = {
   hook: {
     display: 'Hook',
-    passives: ['-Stamina'],
     effects: [
       {
         display: 'Get over here!',
@@ -24,7 +23,6 @@ const offhands = {
   },
   parry: {
     display: 'Parry Dagger',
-    passives: ['-Defence'],
     effects: [
       {
         display: 'Get over here!',
@@ -39,7 +37,7 @@ const offhands = {
   },
   shield: {
     display: 'Shield',
-    passives: ['+Defence', '-Speed'],
+    passives: ['+Defence', '-StaPerTurn'],
     effects: [
       {
         display: 'Not today!',
@@ -58,7 +56,7 @@ const offhands = {
   },
   wand: {
     display: 'Wand',
-    passives: ['-Defence', '-StaPerTurn'],
+    passives: ['-Defence'],
     effects: [
       {
         display: 'Magic Bolt',

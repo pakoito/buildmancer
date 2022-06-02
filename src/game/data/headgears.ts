@@ -6,7 +6,7 @@ export type Headgears = { [k in HeadgearsIndex]: Item };
 export const headgears = {
   helm: {
     display: 'Helm',
-    passives: ['+Defence', '+Defence', '-Speed', '-StaPerTurn'],
+    passives: ['+Defence', '+Defence', '-StaPerTurn'],
     tooltip: 'Big protection for slow combatants',
   },
   cap: {
@@ -16,7 +16,6 @@ export const headgears = {
   },
   magehat: {
     display: 'Mage Hat',
-    passives: ['-StaPerTurn'],
     tooltip: 'Small tricks for big plays',
     effects: [
       {

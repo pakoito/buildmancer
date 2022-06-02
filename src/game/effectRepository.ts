@@ -490,7 +490,7 @@ function attackPlayer(curr: Snapshot, amount: number): Snapshot {
 export type StatsFunIndex = keyof typeof statsRepository;
 export const statsRepository = {
   '+Health': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [
-    { ...player, hp: makeStat(player.hp.current + 3) },
+    { ...player, hp: makeStat(player.hp.current + 5) },
     enemies,
   ],
   '+StaPerTurn': (player: PlayerStats, enemies: EnemiesStats): [PlayerStats, EnemiesStats] => [

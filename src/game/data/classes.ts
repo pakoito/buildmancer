@@ -21,7 +21,7 @@ const classes = {
   },
   rogue: {
     display: 'Rogue',
-    passives: ['+Speed', '+Speed', '-Attack', '-Stamina'],
+    passives: ['+Speed', '+Speed', '-Stamina'],
     effects: [
       {
         display: 'Strategic Retreat',
@@ -36,7 +36,7 @@ const classes = {
   },
   berserk: {
     display: 'Berserk',
-    passives: ['+Attack', '+Attack', '+Attack', '-Defence', '-Defence', '-Health'],
+    passives: ['+Attack', '+Attack', '+StaPerTurn', '-Defence', '-Health'],
     effects: [
       {
         display: 'All or Nothing!',
@@ -59,7 +59,7 @@ const classes = {
   },
   mage: {
     display: 'Mage',
-    passives: ['+StaPerTurn', '+Stamina', '-Health', '-Speed'],
+    passives: ['+StaPerTurn', '+Stamina', '-Health'],
     effects: [
       {
         display: 'Just having a thought',

@@ -7,7 +7,6 @@ export const footwears = {
   slippers: {
     display: 'Slippers of Dooooodge!',
     tooltip: 'Allows you to dodge attacks',
-    passives: ['-Stamina'],
     effects: [
       {
         display: 'Advanced Dodge',
@@ -23,7 +22,6 @@ export const footwears = {
   boots: {
     display: 'Boots of Flight',
     tooltip: 'Avoid your enemies',
-    passives: ['-Defence'],
     eot: [
       {
         display: 'Flight!',
@@ -39,7 +37,7 @@ export const footwears = {
   greaves: {
     display: 'Greaves of Stability',
     tooltip: 'Extra resilient',
-    passives: ['+Defence', '-Speed'],
+    passives: ['-StaPerTurn'],
     effects: [
       {
         display: 'Dig your heels',

@@ -5,22 +5,22 @@ export type Charms = { [k in CharmsIndex]: Item };
 export const charms = {
   health: {
     display: 'of Health',
-    passives: ['+Health', '-Speed'],
+    passives: ['+Health'],
     tooltip: 'Increases your maximum health',
   },
   haste: {
     display: 'of Haste',
-    passives: ['+StaPerTurn', '-Stamina'],
+    passives: ['+StaPerTurn'],
     tooltip: 'Increases your maximum stamina regeneration',
   },
   resilience: {
     display: 'of Resilience',
-    passives: ['+Stamina', '-StaPerTurn'],
+    passives: ['+Stamina'],
     tooltip: 'Increases your maximum stamina',
   },
   strength: {
     display: 'of Strength',
-    passives: ['+Attack', '-Health', '-StaPerTurn'],
+    passives: ['+Attack', '-Defence'],
     tooltip: 'Increases your maximum attack',
   },
   swiftness: {
@@ -30,7 +30,7 @@ export const charms = {
   },
   defence: {
     display: 'of Defence',
-    passives: ['+Defence', '-Stamina', '-Speed'],
+    passives: ['+Defence', '-Speed'],
     tooltip: 'Increases your maximum defence',
   },
 };
