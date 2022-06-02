@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal, ButtonGroup } from 'react-bootstrap';
 
 const contestThread =
   'https://boardgamegeek.com/thread/2875719/2022-solitaire-print-and-play-contest';
@@ -12,8 +12,8 @@ const GameInfoBar = () => {
     <>
       <Card>
         <Card.Body>
-          <Row>
-            <Col xs={10}>
+          <Row className="d-flex justify-content-between align-items-center">
+            <Col xs={8}>
               <Card.Text>
                 Buildmancer by pakoito (2022) for the{' '}
                 <a href={contestThread}>BGG's 2022 Solitaire Print and Play Contest</a>. Send your
@@ -21,12 +21,12 @@ const GameInfoBar = () => {
               </Card.Text>
             </Col>
             <Col>
-              <Button onClick={() => showRules(true)}>Rules</Button>
-            </Col>
-            <Col>
-              <Button variant="secondary" active={false}>
-                [TBD] Print and Play
-              </Button>
+              <ButtonGroup size="lg">
+                <Button onClick={() => showRules(true)}>Rules</Button>
+                <Button variant="secondary" active={false}>
+                  {'Print & Play'}
+                </Button>
+              </ButtonGroup>
             </Col>
           </Row>
         </Card.Body>
