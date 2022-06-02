@@ -146,7 +146,7 @@ const Game = ({
             {gameState !== 'playing' && (
               <Button onClick={() => onGameEnd(gameState, game)}>
                 {gameState === 'loss'
-                  ? '❌❌DEFEAT❌❌'
+                  ? '💀💀DEFEAT💀💀'
                   : gameState === 'win'
                   ? '🎉🎉VICTORY🎉🎉'
                   : 'THIS IS A BUG, PLEASE REPORT IT'}
