@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, ButtonGroup, Form, Button, Navbar } from 'react-bootstrap';
-
 import {
   Player,
   Enemies,

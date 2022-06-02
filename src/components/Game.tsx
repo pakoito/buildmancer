@@ -1,7 +1,5 @@
 import { Container, Row, Col, Card, Modal, ButtonGroup, CardGroup } from 'react-bootstrap';
-
 import { DisabledSkills, MonsterTarget, Play } from '../game/types';
-
 import EnemyCard from './Enemy';
 import PlayerCard from './Player';
 import usePressedKeys from '../hooks/usePressedKeys';

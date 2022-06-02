@@ -1,7 +1,6 @@
 import './App.css';
 // import { readString } from "react-papaparse";
 import { Snapshot, Play, EnemyStats, Enemy, EnemiesStats, Enemies } from './game/types';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PlayerBuilder from './components/PlayerBuilder';
 import EncounterBuilder from './components/EncounterBuilder';
