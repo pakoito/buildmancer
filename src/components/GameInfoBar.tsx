@@ -63,9 +63,9 @@ const GameInfoBar = () => {
           stats.
           <br />
           Skills cost stamina 💪 to use. You have a maximum amount of total stamina, and an amount
-          that is restored per turn. Passive skills consume additional stamina.
+          that is restored per turn. Passive Skills consume additional stamina.
           <br />
-          Skills also have initiative ⏱, and the lowest between your skill and your enemy's
+          Skills also have initiative ⏱, and the lowest between your Skill and your enemy's
           determines which one will be resolved first. It is modified by your Speed stat.
           <br />
           Skills have a determined range 🏹, and whiff if the targeted enemy is outside of it at the
