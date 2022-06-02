@@ -65,6 +65,7 @@
     "prepare": "ts-patch install -s",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
+    "itch": "node itch/itch.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
