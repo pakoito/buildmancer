@@ -419,7 +419,7 @@ export type PlayState = 'win' | 'loss' | 'playing';
 
 export const playState = (play: Play): PlayState => {
   const state = previousState(play);
-  return state.player.hp.current <= 0
+  return play.states.length > play.turns || state.player.hp.current <= 0
     ? 'loss'
     : state.enemies.reduce((acc, monster) => acc + monster.hp.current, 0) <= 0
     ? 'win'

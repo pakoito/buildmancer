@@ -5,7 +5,7 @@ import { DisabledSkills, MonsterTarget, Play } from '../game/types';
 import EnemyCard from './Enemy';
 import PlayerCard from './Player';
 import usePressedKeys from '../hooks/usePressedKeys';
-import { playerActions } from '../game/playGame';
+import { playerActions, PlayState, playState } from '../game/playGame';
 import { Seq, Set } from 'immutable';
 import { previousState } from '../game/playGame';
 import { Button } from 'react-bootstrap';
@@ -23,6 +23,7 @@ export type GameProps = {
   hint: (iterations: number, population: number) => void;
   timeTravel: { undo: () => void; redo: (() => void) | undefined } | undefined;
   onMenu: () => void;
+  onGameEnd: (state: PlayState, play: Play) => void;
 };
 
 const playerHotkeys = [
@@ -54,6 +55,7 @@ const Game = ({
   timeTravel,
   hint,
   onMenu,
+  onGameEnd,
 }: GameProps): JSX.Element => {
   const { player, enemies } = game;
   const {
@@ -72,27 +74,13 @@ const Game = ({
     return () => updateGlobals({ ingame: undefined });
   }, [game, forceUpdate]);
 
+  const playerSkills = playerActions(player, inventoryStats);
+  const gameState = playState(game);
+
   const handleCloseLog = () => setShowLog(false);
   const handleShowLog = () => setShowLog(true);
 
-  const playerSkills = playerActions(player, inventoryStats);
-  const monsterHealth = enemiesStats.reduce((acc, m) => m.hp.current + acc, 0);
-  const isPlayerAlive = playerStats.hp.current > 0;
-  const areMonstersAlive = monsterHealth > 0;
-  const endGame = game.states.length < game.turns;
-  const canAct = isPlayerAlive && areMonstersAlive && endGame;
-
   const pressed = usePressedKeys((key) => {
-    if (!canAct) return;
-
-    const skillIndex = playerHotkeys.indexOf(key);
-    if (skillIndex !== -1) {
-      const skillNumber = playerHotkeys.indexOf(key);
-      const hasStamina = playerSkills[skillNumber].stamina <= playerStats.stamina.current;
-      if (!hasStamina) return;
-      handlePlayerEffect(skillNumber);
-    }
-
     if (key === 'Escape') {
       onMenu();
     }
@@ -113,6 +101,16 @@ const Game = ({
     }
     if (key === 'd' && timeTravel && timeTravel.redo != null) {
       timeTravel.redo();
+    }
+
+    if (gameState !== 'playing') return;
+
+    const skillIndex = playerHotkeys.indexOf(key);
+    if (skillIndex !== -1) {
+      const skillNumber = playerHotkeys.indexOf(key);
+      const hasStamina = playerSkills[skillNumber].stamina <= playerStats.stamina.current;
+      if (!hasStamina) return;
+      handlePlayerEffect(skillNumber);
     }
 
     const valNum = parseInt(key);
@@ -141,107 +139,106 @@ const Game = ({
 
   return (
     <>
-      <Container>
-        <Row className="justify-content-center align-items-flex-start">
-          <Col>
+      <Container fluid>
+        <Row>
+          <Col className="d-flex justify-content-between">
+            {gameState !== 'playing' && (
+              <Button onClick={() => onGameEnd(gameState, game)}>END GAME</Button>
+            )}
+            {gameState === 'loss' ? (
+              <b> ❌❌DEFEAT❌❌ </b>
+            ) : gameState === 'win' ? (
+              <b> 🎉🎉VICTORY🎉🎉 </b>
+            ) : (
+              ''
+            )}
+            Turn {game.states.length} out of {game.turns}
             <Button onClick={onMenu}>
               [<i>Esc</i>] MAIN MENU
             </Button>
-            <Card.Title>
-              {!isPlayerAlive ? (
-                <b>❌❌DEFEAT❌❌</b>
-              ) : !areMonstersAlive ? (
-                <b>🎉🎉VICTORY🎉🎉</b>
-              ) : (
-                ''
-              )}{' '}
-              Turn {game.states.length} out of {game.turns}
-            </Card.Title>
-            <Row>
-              <CardGroup>
-                {Seq(enemies)
-                  .zip(Seq(enemiesStats))
-                  .map(([enemy, stats], idx) => (
-                    <EnemyCard
-                      key={idx}
-                      enemyStats={stats}
-                      enemy={enemy}
-                      canAct={canAct}
-                      latestAttack={
-                        Seq(lastAttacks)
-                          .filter(({ origin, phase }) => origin === idx && phase === 'MAIN')
-                          .map((a) => `${a.display}`)
-                          .join(' -> ') ?? undefined
-                      }
-                      isSelected={idx === target}
-                      onSelect={() => setSelected(idx as MonsterTarget)}
-                      hotkey={`${idx + 1}`}
-                    />
-                  ))}
-              </CardGroup>
-            </Row>
-            <PlayerCard
-              player={player}
-              playerStats={playerStats}
-              inventoryStats={inventoryStats}
-              disabledSkills={disabledSkills}
-              setDisabledSkills={setDisabledSkills}
-              onClickEffect={(idx) => handlePlayerEffect(idx)}
-              selectedButtons={selectedButtons}
-              hotkeys={playerHotkeys}
-              lastAction={
-                lastAttacks
-                  .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
-                  .map((a) => `${a.display}`)
-                  .join(' -> ') ?? undefined
-              }
-              canAct={canAct}
-            />
-            <Card>
-              <Card.Body>
-                <Card.Title>Turns</Card.Title>
-                <Row>
-                  <ButtonGroup>
-                    <Button onClick={(_) => hint(5, 100)}>
-                      <i>[H]</i> Hint
-                    </Button>
-                  </ButtonGroup>
-                  {timeTravel != null && (
-                    <ButtonGroup>
-                      {game.states.length > 1 && (
-                        <Button onClick={(_) => timeTravel.undo()}>
-                          [<i>A</i>] Undo ↩
-                        </Button>
-                      )}
-                      {timeTravel.redo && (
-                        <Button onClick={(_) => timeTravel.redo!!()}>
-                          [<i>D</i>] Redo ↪
-                        </Button>
-                      )}
-                    </ButtonGroup>
-                  )}
-                </Row>
-                <Card.Title>Debug</Card.Title>
-                <Row>
-                  <ButtonGroup>
-                    <Button onClick={handleShowLog}>
-                      [<i>L</i>] Log 🗒
-                    </Button>
-                    <Button onClick={save}>
-                      [<i>S</i>] Save Replay 📂
-                    </Button>
-                  </ButtonGroup>
-                </Row>
-                <Card.Title>Cheats</Card.Title>
-                <Row>
-                  <ButtonGroup>
-                    <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
-                    <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
-                  </ButtonGroup>
-                </Row>
-              </Card.Body>
-            </Card>
           </Col>
+          <CardGroup>
+            {Seq(enemies)
+              .zip(Seq(enemiesStats))
+              .map(([enemy, stats], idx) => (
+                <EnemyCard
+                  key={idx}
+                  enemyStats={stats}
+                  enemy={enemy}
+                  canAct={gameState === 'playing'}
+                  latestAttack={
+                    Seq(lastAttacks)
+                      .filter(({ origin, phase }) => origin === idx && phase === 'MAIN')
+                      .map((a) => `${a.display}`)
+                      .join(' -> ') ?? undefined
+                  }
+                  isSelected={idx === target}
+                  onSelect={() => setSelected(idx as MonsterTarget)}
+                  hotkey={`${idx + 1}`}
+                />
+              ))}
+          </CardGroup>
+          <PlayerCard
+            player={player}
+            playerStats={playerStats}
+            inventoryStats={inventoryStats}
+            disabledSkills={disabledSkills}
+            setDisabledSkills={setDisabledSkills}
+            onClickEffect={(idx) => handlePlayerEffect(idx)}
+            selectedButtons={selectedButtons}
+            hotkeys={playerHotkeys}
+            lastAction={
+              lastAttacks
+                .filter((a) => a.origin === 'Player' && a.phase !== 'CLEANUP')
+                .map((a) => `${a.display}`)
+                .join(' -> ') ?? undefined
+            }
+            canAct={gameState === 'playing'}
+          />
+          <Card>
+            <Card.Body>
+              <Card.Title>Turns</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={(_) => hint(5, 100)}>
+                    <i>[H]</i> Hint
+                  </Button>
+                </ButtonGroup>
+                {timeTravel != null && (
+                  <ButtonGroup>
+                    {game.states.length > 1 && (
+                      <Button onClick={(_) => timeTravel.undo()}>
+                        [<i>A</i>] Undo ↩
+                      </Button>
+                    )}
+                    {timeTravel.redo && (
+                      <Button onClick={(_) => timeTravel.redo!!()}>
+                        [<i>D</i>] Redo ↪
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                )}
+              </Row>
+              <Card.Title>Debug</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={handleShowLog}>
+                    [<i>L</i>] Log 🗒
+                  </Button>
+                  <Button onClick={save}>
+                    [<i>S</i>] Save Replay 📂
+                  </Button>
+                </ButtonGroup>
+              </Row>
+              <Card.Title>Cheats</Card.Title>
+              <Row>
+                <ButtonGroup>
+                  <Button onClick={(_) => solveGame(5, 100)}>Solve ⌛</Button>
+                  <Button onClick={(_) => solveGame(20, 100)}>Solve thoroughly ⌛⌛⌛</Button>
+                </ButtonGroup>
+              </Row>
+            </Card.Body>
+          </Card>
         </Row>
       </Container>
       <Modal show={isLogShown} onHide={handleCloseLog} scrollable={true} centered={true}>

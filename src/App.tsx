@@ -16,7 +16,7 @@ import { dummyEnemy, randomEnemy, randomPlayer } from './game/makeGame';
 import { useMachine } from '@xstate/react';
 import { gameMenuMachine } from './stateMachines/menuStateMachine';
 import Menu from './components/menus/Menu';
-import SingleGame from './components/menus/SingleGame';
+import SingleGame from './components/SingleGame';
 import LoadScreen from './components/menus/LoadScreen';
 
 function App() {

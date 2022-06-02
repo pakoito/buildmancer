@@ -1,16 +1,10 @@
 import { Seq } from 'immutable';
 import React from 'react';
-import { findBestPlay } from '../../game/tinkerer';
-import { initialState, previousState } from '../../game/playGame';
-import {
-  PlayState,
-  playState,
-  setSelected,
-  setDisabledSkills,
-  handlePlayerEffect,
-} from '../../game/playGame';
-import { Play, Snapshot } from '../../game/types';
-import Game from '../Game';
+import { findBestPlay } from '../game/tinkerer';
+import { initialState, previousState } from '../game/playGame';
+import { PlayState, setSelected, setDisabledSkills, handlePlayerEffect } from '../game/playGame';
+import { Play, Snapshot } from '../game/types';
+import Game from './Game';
 
 const SingleGame = ({
   play,
@@ -29,14 +23,6 @@ const SingleGame = ({
   React.useEffect(() => {
     setGame(play);
   }, [play]);
-
-  React.useEffect(() => {
-    const gameState = playState(game);
-    const hasEnded = gameState !== 'playing';
-    if (hasEnded) {
-      onGameEnd(gameState, game);
-    }
-  }, [game]);
 
   const timeTravelObj = timeTravel
     ? {
@@ -64,6 +50,7 @@ const SingleGame = ({
       game={game}
       timeTravel={timeTravelObj}
       onMenu={onMenu}
+      onGameEnd={onGameEnd}
       setSelected={(idx) => {
         setRedo([]);
         setGame(setSelected(game, idx));
