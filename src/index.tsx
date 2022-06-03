@@ -9,13 +9,14 @@ import GameInfoBar from './components/GameInfoBar';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
+const rulesShown = globalThis.location?.hash?.split('#')[1] === 'rules';
 root.render(
   <React.StrictMode>
     <Container fluid>
       <Row>
         <App />
       </Row>
-      <GameInfoBar />
+      <GameInfoBar rulesShown={rulesShown} />
     </Container>
   </React.StrictMode>
 );

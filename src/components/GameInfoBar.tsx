@@ -6,8 +6,8 @@ const contestThread =
 const gameThread =
   'https://boardgamegeek.com/thread/2858500/wip-buildmancer-pre-release-tinkering-player-build';
 
-const GameInfoBar = () => {
-  const [areRulesShown, showRules] = React.useState(false);
+const GameInfoBar = ({ rulesShown }: { rulesShown: boolean }) => {
+  const [areRulesShown, showRules] = React.useState(rulesShown);
   return (
     <>
       <Card>
