@@ -13,7 +13,7 @@ const GameInfoBar = ({ rulesShown }: { rulesShown: boolean }) => {
       <Card>
         <Card.Body>
           <Row className="d-flex justify-content-between align-items-center">
-            <Col xs={8}>
+            <Col xs={8} xl={10}>
               <Card.Text>
                 Buildmancer by pakoito (2022) for the{' '}
                 <a href={contestThread}>BGG's 2022 Solitaire Print and Play Contest</a>. Send your
