@@ -13,19 +13,19 @@ const GameInfoBar = ({ rulesShown }: { rulesShown: boolean }) => {
       <Card>
         <Card.Body>
           <Row className="d-flex justify-content-between align-items-center">
-            <Col xs={8} xl={10}>
+            <Col>
               <Card.Text>
                 Buildmancer by pakoito (2022) for the{' '}
-                <a href={contestThread}>BGG's 2022 Solitaire Print and Play Contest</a>. Send your
-                feedback and Replays to the <a href={gameThread}>game entry thread</a>!
+                <a href={contestThread}>BGG's 2022 Solitaire Print and Play Contest</a>!
               </Card.Text>
             </Col>
-            <Col>
+            <Col className="d-flex justify-content-end">
               <ButtonGroup size="lg">
                 <Button onClick={() => showRules(true)}>Rules</Button>
                 <Button variant="secondary" active={false}>
                   {'Print & Play'}
                 </Button>
+                <Button onClick={() => globalThis.open(gameThread, '_blank')}>Send Feedback</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -89,7 +89,6 @@ const GameInfoBar = ({ rulesShown }: { rulesShown: boolean }) => {
         </Modal.Body>
         <Modal.Footer>
           <ButtonGroup>
-            <Button onClick={() => globalThis.open(gameThread, '_blank')}>Send Feedback</Button>
             <Button onClick={() => showRules(false)}>Close</Button>
           </ButtonGroup>
         </Modal.Footer>
